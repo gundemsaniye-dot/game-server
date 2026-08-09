@@ -3549,7 +3549,10 @@ export class Game extends Scene {
   private cancelMissileAim() {
     this.missileAimPointerId = undefined;
     this.missileAimStartedAt = 0;
-    this.updateMissileAim();
+    this.missileAimPad?.setVisible(false);
+    this.missileAimGuide?.setVisible(false);
+    this.missileAimFill?.setVisible(false);
+    this.missileAimReticle?.setVisible(false);
   }
 
   private currentMissileAimTarget() {
@@ -3570,6 +3573,20 @@ export class Game extends Scene {
     if (!this.missileAimPad || !this.missileAimGuide || !this.missileAimFill || !this.missileAimReticle) return;
 
     const visible = this.activePower === "missile";
+    if (
+      !visible &&
+      !this.missileAimPad.visible &&
+      !this.missileAimGuide.visible &&
+      !this.missileAimFill.visible &&
+      !this.missileAimReticle.visible
+    ) {
+      return;
+    }
+    if (!visible) {
+      this.cancelMissileAim();
+      return;
+    }
+
     const zone = this.levelRuntime.map.deployZone;
     const centerY = this.missileAimPointerId === undefined
       ? (zone.minY + zone.maxY) / 2
