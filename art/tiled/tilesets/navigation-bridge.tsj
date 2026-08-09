@@ -1,0 +1,18 @@
+{
+  "columns": 1,
+  "image": "../images/navigation-bridge.png",
+  "imageheight": 40,
+  "imagewidth": 40,
+  "margin": 0,
+  "name": "navigation-bridge",
+  "spacing": 0,
+  "tilecount": 1,
+  "tileheight": 40,
+  "tilewidth": 40,
+  "tiledversion": "1.11.0",
+  "type": "tileset",
+  "version": "1.10",
+  "tiles": [
+    { "id": 0, "properties": [{ "name": "navigationRole", "type": "string", "value": "bridge" }] }
+  ]
+}

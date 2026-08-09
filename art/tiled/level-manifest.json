@@ -1,0 +1,213 @@
+{
+  "project": "Castle Stormers",
+  "format": "Tiled JSON / Phaser Tilemap",
+  "levelCount": 20,
+  "world": {
+    "widthPx": 1280,
+    "heightPx": 720,
+    "grid": "32x18",
+    "tileSizePx": 40
+  },
+  "levels": [
+    {
+      "level": 1,
+      "mapId": "grasslands_01",
+      "file": "maps/level1.tmj",
+      "preview": "previews/grasslands_01.png",
+      "biome": "grasslands",
+      "pathStyle": "single_main_corridor_with_center_branch",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 2,
+      "mapId": "grasslands_02",
+      "file": "maps/level2.tmj",
+      "preview": "previews/grasslands_02.png",
+      "biome": "grasslands",
+      "pathStyle": "two_routes_around_vertical_river",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 3,
+      "mapId": "silent_forest_01",
+      "file": "maps/level3.tmj",
+      "preview": "previews/silent_forest_01.png",
+      "biome": "silent_forest",
+      "pathStyle": "open_crossroads",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 4,
+      "mapId": "silent_forest_02",
+      "file": "maps/level4.tmj",
+      "preview": "previews/silent_forest_02.png",
+      "biome": "silent_forest",
+      "pathStyle": "asymmetric_fork_and_rejoin",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 5,
+      "mapId": "silent_forest_03",
+      "file": "maps/level5.tmj",
+      "preview": "previews/silent_forest_03.png",
+      "biome": "silent_forest",
+      "pathStyle": "three_bridge_chokepoints",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 6,
+      "mapId": "muddy_fields_01",
+      "file": "maps/level6.tmj",
+      "preview": "previews/muddy_fields_01.png",
+      "biome": "muddy_fields",
+      "pathStyle": "single_winding_route_with_short_resource_loop",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 7,
+      "mapId": "muddy_fields_02",
+      "file": "maps/level7.tmj",
+      "preview": "previews/muddy_fields_02.png",
+      "biome": "muddy_fields",
+      "pathStyle": "two_asymmetric_routes_around_central_bog",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 8,
+      "mapId": "muddy_fields_03",
+      "file": "maps/level8.tmj",
+      "preview": "previews/muddy_fields_03.png",
+      "biome": "muddy_fields",
+      "pathStyle": "single_central_bridge_chokepoint_with_local_detours",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 9,
+      "mapId": "storm_valley_01",
+      "file": "maps/level9.tmj",
+      "preview": "previews/storm_valley_01.png",
+      "biome": "storm_valley",
+      "pathStyle": "direct_risky_bridge_plus_long_safe_route",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 10,
+      "mapId": "storm_valley_02",
+      "file": "maps/level10.tmj",
+      "preview": "previews/storm_valley_02.png",
+      "biome": "storm_valley",
+      "pathStyle": "staggered_split_routes_with_two_chokepoints",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 11,
+      "mapId": "storm_valley_03",
+      "file": "maps/level11.tmj",
+      "preview": "previews/storm_valley_03.png",
+      "biome": "storm_valley",
+      "pathStyle": "two_routes_with_midfield_switch_and_asymmetric_bridge_pressure",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 12,
+      "mapId": "dry_steppe_01",
+      "file": "maps/level12.tmj",
+      "preview": "previews/dry_steppe_01.png",
+      "biome": "dry_steppe",
+      "pathStyle": "single_zigzag_route_around_central_rock_field_with_local_resource_spurs",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 13,
+      "mapId": "dry_steppe_02",
+      "file": "maps/level13.tmj",
+      "preview": "previews/dry_steppe_02.png",
+      "biome": "dry_steppe",
+      "pathStyle": "two_full_routes_crossing_a_vertical_ravine_at_separate_bridges",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 14,
+      "mapId": "dry_steppe_03",
+      "file": "maps/level14.tmj",
+      "preview": "previews/dry_steppe_03.png",
+      "biome": "dry_steppe",
+      "pathStyle": "wide_direct_center_lane_plus_one_long_upper_flank",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 15,
+      "mapId": "desert_01",
+      "file": "maps/level15.tmj",
+      "preview": "previews/desert_01.png",
+      "biome": "desert",
+      "pathStyle": "two_asymmetric_canyon_crossings_one_short_and_one_long",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 16,
+      "mapId": "desert_02",
+      "file": "maps/level16.tmj",
+      "preview": "previews/desert_02.png",
+      "biome": "desert",
+      "pathStyle": "single_serpentine_canyon_route_with_two_local_supply_spurs",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 17,
+      "mapId": "frozen_pass_01",
+      "file": "maps/level17.tmj",
+      "preview": "previews/frozen_pass_01.png",
+      "biome": "snow",
+      "pathStyle": "two_full_routes_around_a_frozen_basin_with_separate_bridge_chokepoints",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 18,
+      "mapId": "frozen_pass_02",
+      "file": "maps/level18.tmj",
+      "preview": "previews/frozen_pass_02.png",
+      "biome": "snow",
+      "pathStyle": "single_central_causeway_crossing_three_sequential_ice_channels",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 19,
+      "mapId": "infernal_dungeon_01",
+      "file": "maps/level19.tmj",
+      "preview": "previews/infernal_dungeon_01.png",
+      "biome": "infernal",
+      "pathStyle": "short_dangerous_center_route_plus_long_upper_safe_route_over_lava_fissure",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    },
+    {
+      "level": 20,
+      "mapId": "ash_citadel_final",
+      "file": "maps/level20.tmj",
+      "preview": "previews/ash_citadel_final.png",
+      "biome": "infernal",
+      "pathStyle": "three_final_assault_routes_with_cross_lane_switches_and_staged_lava_bridges",
+      "worldWidth": 1280,
+      "worldHeight": 720
+    }
+  ]
+}

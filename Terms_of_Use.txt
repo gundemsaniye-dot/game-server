@@ -1,0 +1,180 @@
+CASTLE STORMERS TERMS OF USE
+
+Effective date: August 5, 2026
+Last updated: August 5, 2026
+
+These Terms of Use ("Terms") are a legal agreement between you and HATICE NUR ARI, operating under the developer name Next Gen Studio ("Developer," "we," "us," or "our"), concerning your download, installation, access to, and use of the mobile game Castle Stormers (the "Game"). The Game's Android package name is com.castlestormers.game.
+
+By downloading, installing, accessing, or using the Game, you confirm that you have read and agree to these Terms. If you do not agree, do not download or use the Game and uninstall it from your device.
+
+1. ELIGIBILITY AND MINORS
+
+You may use the Game only if you can legally enter into these Terms under the laws that apply to you. If you are under the legal age of majority where you live, a parent or legal guardian must review and agree to these Terms on your behalf and supervise your use of the Game.
+
+Parents and guardians are responsible for deciding whether the Game is appropriate for a child in their care, taking into account the age rating, fantasy battle content, and store listing.
+
+2. LICENSE TO USE THE GAME
+
+Subject to these Terms, we grant you a limited, personal, non-exclusive, non-transferable, non-sublicensable, and revocable license to install and use one copy of the Game on compatible devices that you own or control, solely for lawful, private, non-commercial entertainment and in accordance with Google Play's applicable rules.
+
+The Game is licensed, not sold. No ownership right in the Game or its content is transferred to you. All rights not expressly granted are reserved by the Developer and the relevant rights holders.
+
+3. CURRENT GAME FEATURES
+
+Castle Stormers is a strategy game that stores campaign progress, selected units, recent battle results, map progress where available, and preferences locally on your device.
+
+The current version:
+
+- does not require a player account;
+- does not provide online multiplayer, cloud saves, or social communication;
+- does not include advertising;
+- does not include in-app purchases or paid virtual items; and
+- does not promise that local progress can be restored after the Game is removed, its storage is cleared, or a device is lost, reset, damaged, or replaced.
+
+Features may be added, changed, balanced, limited, or removed in future versions. If a future release introduces purchases, subscriptions, advertising, accounts, online services, or material data processing, additional terms, disclosures, permissions, or consent may apply. We will update the relevant store disclosures and policies as required.
+
+4. ACCEPTABLE USE
+
+You agree to use the Game lawfully and only for its intended purpose. You must not, directly or indirectly:
+
+- copy, reproduce, republish, upload, distribute, sell, rent, lease, sublicense, or commercially exploit the Game or its content, except where applicable law expressly permits;
+- reverse engineer, decompile, disassemble, derive source code from, modify, translate, or create derivative works of the Game, except to the limited extent such a restriction is prohibited by applicable law or allowed by an applicable open-source license;
+- remove, alter, or obscure copyright, trademark, attribution, or other proprietary notices;
+- use cheats, bots, scripts, unauthorized automation, modified clients, exploits, or other methods designed to interfere with normal play or gain an unfair advantage;
+- intentionally exploit, publish, or encourage abuse of a security vulnerability or material game error instead of responsibly reporting it;
+- bypass, disable, damage, overload, or interfere with the Game, its security, its technical protections, Google Play, or any related system;
+- introduce malware, malicious code, or content intended to harm a device, service, or another person;
+- use the Game to violate intellectual-property, privacy, publicity, contractual, or other rights of any person;
+- misrepresent your affiliation with the Developer or use the Game for fraud or unlawful activity; or
+- use the Game in a way prohibited by Google Play's terms or applicable law.
+
+Nothing in these Terms prevents activities that applicable law expressly permits and does not allow the Developer to prohibit.
+
+5. LOCAL SAVES AND DEVICE RESPONSIBILITY
+
+Game progress and preferences are stored locally on your device. You are responsible for maintaining your device, operating system, available storage, security settings, and any backups you choose to use.
+
+Clearing the Game's application storage or uninstalling the Game may permanently delete your progress. Updates, device changes, operating-system behavior, file corruption, or technical errors may also affect local saves. Because the current Game does not maintain a cloud copy, we generally cannot recover lost progress.
+
+You must not edit or manipulate local files in a way that harms the Game, violates these Terms, or circumvents technical limitations.
+
+6. INTELLECTUAL PROPERTY
+
+The Game, including its name, original source code, gameplay presentation, artwork, graphics, characters, maps, animation, music, sound, text, design, and other content, is owned by or licensed to the Developer and is protected by applicable copyright, trademark, and other intellectual-property laws.
+
+Third-party names, libraries, assets, and trademarks belong to their respective owners. Castle Stormers uses open-source software, including the Phaser and Capacitor frameworks. The licenses applicable to open-source components govern those components and take priority over these Terms if there is a conflict. An open-source license does not grant you rights to Castle Stormers' original artwork, characters, branding, or other proprietary content.
+
+No permission is granted to use "Castle Stormers," "Next Gen Studio," associated logos, or other branding in a way that suggests sponsorship, endorsement, or affiliation without prior written permission.
+
+7. FEEDBACK AND SUPPORT SUBMISSIONS
+
+You may voluntarily send us bug reports, ideas, comments, or suggestions ("Feedback"). You keep ownership of any rights you already hold in your Feedback. You grant us a worldwide, perpetual, irrevocable, non-exclusive, royalty-free license to use, reproduce, adapt, and incorporate the Feedback for developing, improving, supporting, and promoting the Game, without an obligation to compensate you. This license does not include personal information contained in support correspondence, which is handled under the Privacy Policy.
+
+Do not send content that you do not have the right to provide. Do not send passwords, full payment-card information, government identification numbers, or store-account credentials.
+
+We may provide support at our discretion but do not guarantee a particular response time or that every issue can be resolved.
+
+8. PRIVACY
+
+Our Privacy Policy explains how information is handled in connection with the Game and forms part of these Terms. The current Game stores progress and preferences locally and does not transmit gameplay information or personal data to the Developer.
+
+The current Privacy Policy should be available from within the Game and through the Google Play listing. You may also request a copy at ipaddev.studio@icloud.com.
+
+9. GOOGLE PLAY AND THIRD-PARTY SERVICES
+
+Your use of Google Play and Android is governed by Google's applicable terms and privacy policies. Google Play may provide installation, updates, security scanning, parental controls, platform support, and other services. Your device manufacturer or operating-system provider may also apply separate terms.
+
+Google is not a party to these Terms between you and the Developer. To the extent permitted by applicable store rules, the Developer, not Google, is responsible for the Game, support for the Game, and addressing claims concerning the Game. Google and its affiliates may be third-party beneficiaries of the license provisions applicable to your use of the Game through Google Play and may enforce those provisions where Google Play's terms provide.
+
+We are not responsible for Google Play, Android, internet access, device-manufacturer services, or other third-party products that we do not control. References to third-party services do not imply endorsement.
+
+10. PURCHASES, PAYMENTS, AND ADVERTISING
+
+The current version of Castle Stormers contains no in-app purchases, paid virtual currency, subscriptions, or advertising.
+
+If paid content is introduced in a future release, purchases made through Google Play will also be governed by Google Play's billing, cancellation, and refund terms and by mandatory consumer law. Prices, taxes, payment processing, and refund eligibility may be managed by Google Play. Any virtual items introduced in the future would be licensed, not sold, would have no cash value outside the Game, and would be subject to the additional terms presented with that feature.
+
+11. UPDATES, COMPATIBILITY, AND CHANGES
+
+We may issue updates to correct errors, improve security or performance, rebalance gameplay, add or remove content, or comply with legal or platform requirements. Some updates may be required for continued use. We do not guarantee that the Game will remain compatible with every device, Android version, display configuration, or third-party service.
+
+We may change, suspend, or discontinue all or part of the Game where reasonably necessary. Where required by applicable law, we will provide appropriate notice. Nothing in this section limits mandatory consumer rights concerning paid digital content, if any paid content is offered in the future.
+
+12. AVAILABILITY AND MAINTENANCE
+
+We aim to provide a functional game but do not guarantee that the Game will always be available, uninterrupted, error-free, secure, or free from data loss. Maintenance, updates, device limitations, platform changes, force majeure events, or technical faults may interrupt access.
+
+The current Game is primarily designed for local play. The presence of an Android internet permission does not create a promise of online features or continuous network service.
+
+13. DISCLAIMER OF WARRANTIES
+
+To the maximum extent permitted by applicable law, the Game is provided "as is" and "as available." The Developer disclaims implied warranties and conditions, including merchantability, satisfactory quality, fitness for a particular purpose, non-infringement, uninterrupted availability, and error-free operation.
+
+You use the Game at your own reasonable risk. We do not warrant that progress will never be lost, that every defect will be corrected, or that the Game will meet every user's expectations.
+
+Some jurisdictions do not allow certain warranty exclusions. In those jurisdictions, the exclusions above apply only to the extent legally permitted. These Terms do not exclude or limit any warranty, remedy, or consumer right that cannot lawfully be excluded or limited.
+
+14. LIMITATION OF LIABILITY
+
+To the maximum extent permitted by applicable law, the Developer will not be liable for indirect, incidental, special, exemplary, punitive, or consequential loss; loss of profits, revenue, opportunity, goodwill, or data; device interruption; or loss of local game progress arising from or related to the Game or these Terms, even if the possibility of such loss was known.
+
+Where liability cannot lawfully be excluded, the Developer's total liability for claims connected with the free version of the Game will be limited to the greater of (a) the amount you paid directly for the Game during the 12 months before the event giving rise to the claim or (b) the minimum amount of liability required by applicable law.
+
+Nothing in these Terms excludes or limits liability for fraud, fraudulent misrepresentation, intentional misconduct, gross negligence where it cannot be limited, death or personal injury caused by negligence, or any other liability or statutory consumer remedy that cannot legally be excluded or limited.
+
+15. INDEMNITY
+
+To the extent permitted by applicable law, you agree to be responsible for reasonable losses, liabilities, damages, and costs arising from your intentional or unlawful misuse of the Game, your material breach of these Terms, or your infringement of another person's rights. This section does not require a consumer to indemnify the Developer for the Developer's own unlawful conduct, negligence, or breach and does not limit mandatory consumer protections.
+
+16. SUSPENSION AND TERMINATION
+
+You may terminate these Terms at any time by stopping use of and uninstalling the Game.
+
+We may suspend or terminate the license granted under these Terms if you materially breach them, misuse the Game, threaten security, or if the Game is discontinued. Where reasonable and legally required, we will provide notice and an opportunity to correct a remediable breach.
+
+Upon termination, your right to use the Game ends and you must uninstall it. Provisions that by their nature should survive termination, including intellectual-property, Feedback, warranty disclaimer, limitation of liability, dispute, and governing-law provisions, will survive. Termination does not affect rights or obligations that arose before termination or rights that cannot be limited by law.
+
+17. CHANGES TO THESE TERMS
+
+We may update these Terms to reflect changes in the Game, law, security needs, or platform rules. The "Last updated" date identifies the latest version. For material changes, we will provide notice in the Game, through the store listing, or by another reasonable method where required.
+
+If a change requires your consent under applicable law, it will not apply until valid consent is obtained. Otherwise, your continued use after the updated Terms become effective means you accept them. If you do not agree to updated Terms, stop using and uninstall the Game.
+
+18. GOVERNING LAW AND DISPUTES
+
+Before starting a formal dispute, please contact ipaddev.studio@icloud.com with the subject "Castle Stormers Legal Notice" and a description of the issue. We will attempt in good faith to resolve it informally.
+
+These Terms are governed by the laws of the Republic of Türkiye, without regard to conflict-of-law rules. Subject to mandatory consumer-protection and jurisdiction rules, disputes will be submitted to the competent courts and enforcement offices of Bursa, Türkiye.
+
+If you are a consumer, this choice of law and forum does not deprive you of mandatory protections or the right to bring a claim before a competent consumer authority or court available under the law of your country of residence. Nothing in these Terms requires arbitration or waives a right that cannot legally be waived.
+
+19. GENERAL TERMS
+
+These Terms and the Privacy Policy are the entire agreement between you and the Developer regarding the Game, except for applicable Google Play terms and any additional terms validly presented for a future feature.
+
+If a provision is held invalid or unenforceable, it will be enforced to the maximum lawful extent and the remaining provisions will remain in effect. Our failure to enforce a provision is not a waiver. You may not assign or transfer your rights under these Terms without our prior written consent. We may transfer these Terms as part of a lawful reorganization, merger, acquisition, or transfer of the Game, subject to applicable law and notice requirements.
+
+Section headings are for convenience only. The English-language version is the controlling version unless applicable law requires otherwise. Nothing in these Terms creates an employment, partnership, agency, fiduciary, or joint-venture relationship.
+
+20. CONTACT AND DEVELOPER INFORMATION
+
+Developer Name: Next Gen Studio
+Legal Name: HATICE NUR ARI
+
+Primary Support Email:
+ipaddev.studio@icloud.com
+
+Additional Contact Emails:
+devhtc@icloud.com
+appdivision.team@gmail.com
+
+Phone:
++90 534 358 84 18
+
+Address:
+30 AĞUSTOS ZAFER MAH. BOZYAKA CAD.
+B BLOK NO: 24B İÇ KAPI NO: 4
+16280 NİLÜFER / BURSA
+Türkiye
+
+For technical support, use the subject line "Castle Stormers Support." For legal notices, use the subject line "Castle Stormers Legal Notice."

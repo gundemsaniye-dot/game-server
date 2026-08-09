@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 4,
+  "id": "ash_citadel_final",
+  "displayName": "Ash Citadel Final",
+  "biome": "infernal_dungeon",
+  "seed": 159562,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 3353901,
+    "laneColor": 7755336,
+    "laneHighlightColor": 11041372,
+    "laneEdgeColor": 1643797,
+    "patches": [
+      {
+        "id": "ash_citadel_final_terrain_1",
+        "shape": "ellipse",
+        "x": 365,
+        "y": 137,
+        "width": 376,
+        "height": 205,
+        "color": 4866368,
+        "alpha": 0.77,
+        "rotation": 0.09,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "ash_citadel_final_terrain_2",
+        "shape": "rectangle",
+        "x": 810,
+        "y": 155,
+        "width": 353,
+        "height": 205,
+        "color": 7502715,
+        "alpha": 0.88,
+        "rotation": 0.01,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "ash_citadel_final_terrain_3",
+        "shape": "ellipse",
+        "x": 597,
+        "y": 364,
+        "width": 459,
+        "height": 253,
+        "color": 10449992,
+        "alpha": 0.77,
+        "rotation": -0.08,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "ash_citadel_final_terrain_4",
+        "shape": "ellipse",
+        "x": 428,
+        "y": 554,
+        "width": 374,
+        "height": 196,
+        "color": 4866368,
+        "alpha": 0.84,
+        "rotation": 0.07,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "ash_citadel_final_terrain_5",
+        "shape": "rectangle",
+        "x": 804,
+        "y": 563,
+        "width": 354,
+        "height": 199,
+        "color": 7502715,
+        "alpha": 0.83,
+        "rotation": 0.02,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "ash_citadel_final_terrain_6",
+        "shape": "ellipse",
+        "x": 629,
+        "y": 79,
+        "width": 253,
+        "height": 131,
+        "color": 10449992,
+        "alpha": 0.79,
+        "rotation": 0.03,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "ash_citadel_final_lava_1",
+        "shape": "ellipse",
+        "x": 494,
+        "y": 115.96363636363637,
+        "width": 132,
+        "height": 44,
+        "color": 13190948,
+        "alpha": 0.92,
+        "rotation": 0,
+        "depth": 7,
+        "material": "lava",
+        "collision": "lava",
+        "variant": 0
+      },
+      {
+        "id": "ash_citadel_final_lava_2",
+        "shape": "ellipse",
+        "x": 785,
+        "y": 605,
+        "width": 150,
+        "height": 46,
+        "color": 13190948,
+        "alpha": 0.92,
+        "rotation": 0,
+        "depth": 7,
+        "material": "lava",
+        "collision": "lava",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 58,
+      "points": [
+        {
+          "x": 310,
+          "y": 150
+        },
+        {
+          "x": 530,
+          "y": 204
+        },
+        {
+          "x": 750,
+          "y": 194
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 106,
+      "points": [
+        {
+          "x": 310,
+          "y": 360
+        },
+        {
+          "x": 530,
+          "y": 326
+        },
+        {
+          "x": 750,
+          "y": 394
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 58,
+      "points": [
+        {
+          "x": 310,
+          "y": 570
+        },
+        {
+          "x": 530,
+          "y": 514
+        },
+        {
+          "x": 750,
+          "y": 524
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "ash_citadel_final_wood_1",
+      "type": "tree",
+      "x": 560,
+      "y": 280,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-infernal_dungeon-burned-tree"
+      },
+      "scale": 0.155,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "ash_citadel_final_wood_2",
+      "type": "tree",
+      "x": 460,
+      "y": 360,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-infernal_dungeon-burned-tree"
+      },
+      "scale": 0.155,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "ash_citadel_final_wood_3",
+      "type": "tree",
+      "x": 800,
+      "y": 360,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-infernal_dungeon-burned-tree"
+      },
+      "scale": 0.155,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "ash_citadel_final_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-infernal_dungeon-burned-tree"
+      },
+      "x": 493,
+      "y": 502,
+      "scale": 0.21,
+      "rotation": 0,
+      "depth": 508,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "ash_citadel_final_object_2",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "obsidian",
+        "variant": 0
+      },
+      "x": 689,
+      "y": 124,
+      "scale": 0.71,
+      "rotation": 0.08,
+      "depth": 130,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "ash_citadel_final_object_3",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "lava_vent",
+        "variant": 1
+      },
+      "x": 586,
+      "y": 451,
+      "scale": 0.89,
+      "rotation": 0.01,
+      "depth": 457,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "ash_citadel_final_object_4",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 599,
+      "y": 597,
+      "scale": 0.69,
+      "rotation": 0.03,
+      "depth": 603,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "ash_citadel_final_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-infernal_dungeon-burned-tree"
+      },
+      "x": 517,
+      "y": 634,
+      "scale": 0.21,
+      "rotation": -0.07,
+      "depth": 640,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "ash_citadel_final_object_6",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "obsidian",
+        "variant": 0
+      },
+      "x": 769,
+      "y": 301,
+      "scale": 0.68,
+      "rotation": -0.1,
+      "depth": 307,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "ash_citadel_final_object_7",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "lava_vent",
+        "variant": 1
+      },
+      "x": 445,
+      "y": 625,
+      "scale": 0.87,
+      "rotation": -0.1,
+      "depth": 631,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "ash_citadel_final_object_8",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 426,
+      "y": 458,
+      "scale": 0.81,
+      "rotation": -0.06,
+      "depth": 464,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "ash_citadel_final_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-infernal_dungeon-burned-tree"
+      },
+      "x": 718,
+      "y": 514,
+      "scale": 0.23,
+      "rotation": 0.09,
+      "depth": 520,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1.02,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1,
+    "mageDamageMultiplier": 1.16,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "embers",
+    "intensity": 0.8
+  },
+  "recommendedUnits": [
+    "knife_thrower",
+    "mage",
+    "horseman"
+  ]
+}

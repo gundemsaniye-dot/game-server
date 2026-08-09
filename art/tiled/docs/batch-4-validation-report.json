@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "maps": [
+    {
+      "file": "desert_02.tmj",
+      "campaignIndex": 16,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 1,
+      "laneConnectors": 2,
+      "bridges": 2,
+      "hazards": 3,
+      "objects": 29
+    },
+    {
+      "file": "frozen_pass_01.tmj",
+      "campaignIndex": 17,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 0,
+      "bridges": 4,
+      "hazards": 3,
+      "objects": 30
+    },
+    {
+      "file": "frozen_pass_02.tmj",
+      "campaignIndex": 18,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 1,
+      "laneConnectors": 2,
+      "bridges": 3,
+      "hazards": 6,
+      "objects": 33
+    },
+    {
+      "file": "infernal_dungeon_01.tmj",
+      "campaignIndex": 19,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 2,
+      "bridges": 4,
+      "hazards": 5,
+      "objects": 34
+    },
+    {
+      "file": "ash_citadel_final.tmj",
+      "campaignIndex": 20,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 3,
+      "laneConnectors": 2,
+      "bridges": 6,
+      "hazards": 6,
+      "objects": 41
+    }
+  ],
+  "errors": []
+}

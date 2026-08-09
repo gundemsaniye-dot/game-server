@@ -1,0 +1,69 @@
+{
+  "name": "castle-stormers",
+  "description": "Castle Stormers mobile strategy game.",
+  "version": "0.1.8",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phaserjs/template-vite-ts.git"
+  },
+  "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
+  "license": "MIT",
+  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+  "bugs": {
+    "url": "https://github.com/phaserjs/template-vite-ts/issues"
+  },
+  "homepage": "https://github.com/phaserjs/template-vite-ts#readme",
+  "scripts": {
+    "dev": "node log.js dev & node ./node_modules/vite/bin/vite.js --config vite/config.dev.mjs",
+    "build": "node log.js build & node ./node_modules/vite/bin/vite.js build --config vite/config.prod.mjs && node tools/prune-production-assets.mjs",
+    "dev-nolog": "npm run prepare:maps && node ./node_modules/vite/bin/vite.js --config vite/config.dev.mjs",
+    "build-nolog": "npm run prepare:maps && node ./node_modules/vite/bin/vite.js build --config vite/config.prod.mjs && node tools/prune-production-assets.mjs",
+    "assets:audit:production": "node tools/prune-production-assets.mjs --dry-run",
+    "android:sync": "npm run build-nolog && npx cap sync android",
+    "android:assets": "npx @capacitor/assets generate --android",
+    "android:build:debug": "npm run android:sync && cd android && JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" ./gradlew clean assembleDebug",
+    "android:build:release": "npm run android:sync && cd android && JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" ./gradlew clean bundleRelease",
+    "android:build:device-release": "npm run android:sync && cd android && JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" ./gradlew clean assembleDeviceRelease",
+    "android:perf:debug:diagnostic": "PATH=\"$(pwd)/.venv/bin:$PATH\" CAPACITOR_PERF_TEST=1 CAPACITOR_PERF_PROFILE=diagnostic CAPACITOR_WEB_DEBUG=1 VITE_ANDROID_PERF=1 VITE_ANDROID_PERF_PROFILE=diagnostic VITE_ANDROID_DIAGNOSTICS=1 npm run build-nolog && CAPACITOR_PERF_TEST=1 CAPACITOR_PERF_PROFILE=diagnostic CAPACITOR_WEB_DEBUG=1 npx cap sync android && cd android && JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" ./gradlew assembleDebug",
+    "android:perf:debug": "PATH=\"$(pwd)/.venv/bin:$PATH\" CAPACITOR_PERF_TEST=1 CAPACITOR_PERF_PROFILE=telemetry CAPACITOR_WEB_DEBUG=1 VITE_ANDROID_PERF=1 VITE_ANDROID_PERF_PROFILE=telemetry npm run build-nolog && CAPACITOR_PERF_TEST=1 CAPACITOR_PERF_PROFILE=telemetry CAPACITOR_WEB_DEBUG=1 npx cap sync android && cd android && JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" ./gradlew assembleDebug",
+    "android:perf:release": "PATH=\"$(pwd)/.venv/bin:$PATH\" CAPACITOR_PERF_TEST=1 CAPACITOR_PERF_PROFILE=telemetry VITE_ANDROID_PERF=1 VITE_ANDROID_PERF_PROFILE=telemetry npm run build-nolog && CAPACITOR_PERF_TEST=1 CAPACITOR_PERF_PROFILE=telemetry CAPACITOR_PERF_MOBILE_TEXTURES=0 npx cap sync android && cd android && JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" ./gradlew assembleBenchmark",
+    "android:perf:run": "node tools/run-android-perf.mjs",
+    "assets:generated": "python tools/build-generated-unit-atlases.py",
+    "assets:base-runs": "python tools/build-base-unit-run-cycles.py",
+    "assets:atlases": "node tools/build-unit-atlases.mjs",
+    "assets:map-atlases": "python tools/build-map-prop-atlases.py",
+    "validate:atlases": "node tools/validate-unit-atlases.mjs && python tools/validate-unit-visual-continuity.py",
+    "generate:maps": "node tools/generate-campaign-maps.mjs",
+    "validate:maps": "node tools/validate-campaign-maps.mjs",
+    "tiled:pilots": "node tools/create-tiled-pilots.mjs",
+    "tiled:source": "node tools/create-tiled-pilots.mjs",
+    "tiled:build": "node tools/build-tiled-maps.mjs",
+    "tiled:validate": "node tools/validate-tiled-maps.mjs",
+    "tiled:check": "npm run tiled:trees:check && npm run tiled:build && npm run tiled:validate",
+    "prepare:maps": "python3 tools/build-reference-map-tiles.py && python3 tools/build-navigation-marker-tiles.py && npm run tiled:nav:standardize && npm run campaign:economy && npm run tiled:trees:normalize && npm run tiled:build && npm run assets:map-atlases",
+    "campaign:economy": "node tools/normalize-campaign-economy.mjs",
+    "campaign:economy:check": "node tools/normalize-campaign-economy.mjs --check",
+    "campaign:balance:check": "node tools/validate-balance-suite.mjs",
+    "tiled:nav:standardize": "node tools/standardize-tiled-navigation.mjs",
+    "tiled:trees:normalize": "node tools/normalize-tiled-tree-placement.mjs",
+    "tiled:trees:check": "node tools/normalize-tiled-tree-placement.mjs --check",
+    "predev": "npm run prepare:maps",
+    "prebuild": "npm run prepare:maps"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.3.1"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "phaser": "4.0.0",
+    "terser": "^5.39.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "fsevents@2.3.3": true
+  }
+}

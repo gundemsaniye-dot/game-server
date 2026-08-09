@@ -1,0 +1,375 @@
+{
+  "frames": {
+    "ash-blossom-crown.png": {
+      "frame": {
+        "x": 139,
+        "y": 195,
+        "w": 257,
+        "h": 145
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 145
+      }
+    },
+    "ash-pile.png": {
+      "frame": {
+        "x": 659,
+        "y": 165,
+        "w": 290,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 290,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 290,
+        "h": 205
+      }
+    },
+    "ash-swirl.png": {
+      "frame": {
+        "x": 1220,
+        "y": 171,
+        "w": 239,
+        "h": 193
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 239,
+        "h": 193
+      },
+      "sourceSize": {
+        "w": 239,
+        "h": 193
+      }
+    },
+    "black-pebbles.png": {
+      "frame": {
+        "x": 1716,
+        "y": 157,
+        "w": 319,
+        "h": 221
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 319,
+        "h": 221
+      },
+      "sourceSize": {
+        "w": 319,
+        "h": 221
+      }
+    },
+    "blackened-stone.png": {
+      "frame": {
+        "x": 2273,
+        "y": 162,
+        "w": 278,
+        "h": 211
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 278,
+        "h": 211
+      },
+      "sourceSize": {
+        "w": 278,
+        "h": 211
+      }
+    },
+    "burned-tree.png": {
+      "frame": {
+        "x": 79,
+        "y": 548,
+        "w": 378,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 378,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 378,
+        "h": 512
+      }
+    },
+    "burnt-earth.png": {
+      "frame": {
+        "x": 673,
+        "y": 713,
+        "w": 262,
+        "h": 181
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 262,
+        "h": 181
+      },
+      "sourceSize": {
+        "w": 262,
+        "h": 181
+      }
+    },
+    "charred-wood.png": {
+      "frame": {
+        "x": 1216,
+        "y": 701,
+        "w": 247,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 247,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 247,
+        "h": 205
+      }
+    },
+    "ember-grass.png": {
+      "frame": {
+        "x": 1741,
+        "y": 723,
+        "w": 269,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 269,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 269,
+        "h": 161
+      }
+    },
+    "ember-mushroom.png": {
+      "frame": {
+        "x": 2283,
+        "y": 731,
+        "w": 257,
+        "h": 145
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 145
+      }
+    },
+    "ember-mushroom-crown.png": {
+      "frame": {
+        "x": 165,
+        "y": 1261,
+        "w": 205,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 157
+      }
+    },
+    "infernal-ruin.png": {
+      "frame": {
+        "x": 565,
+        "y": 1084,
+        "w": 478,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 478,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 478,
+        "h": 512
+      }
+    },
+    "lava-crack.png": {
+      "frame": {
+        "x": 1218,
+        "y": 1243,
+        "w": 244,
+        "h": 194
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 244,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 244,
+        "h": 194
+      }
+    },
+    "lava-vent.png": {
+      "frame": {
+        "x": 1620,
+        "y": 1115,
+        "w": 512,
+        "h": 450
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 450
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 450
+      }
+    },
+    "obsidian-shard.png": {
+      "frame": {
+        "x": 2309,
+        "y": 1261,
+        "w": 205,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 157
+      }
+    },
+    "obsidian-spike.png": {
+      "frame": {
+        "x": 98,
+        "y": 1620,
+        "w": 339,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 339,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 339,
+        "h": 512
+      }
+    },
+    "scorched-stump.png": {
+      "frame": {
+        "x": 666,
+        "y": 1791,
+        "w": 275,
+        "h": 169
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 275,
+        "h": 169
+      },
+      "sourceSize": {
+        "w": 275,
+        "h": 169
+      }
+    },
+    "warm-ash-trace.png": {
+      "frame": {
+        "x": 1203,
+        "y": 1787,
+        "w": 274,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 274,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 274,
+        "h": 177
+      }
+    }
+  },
+  "meta": {
+    "app": "Castle Raid 2 map prop atlas builder",
+    "version": "1.0",
+    "image": "infernal_dungeon.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 2680,
+      "h": 2144
+    },
+    "scale": "1"
+  }
+}

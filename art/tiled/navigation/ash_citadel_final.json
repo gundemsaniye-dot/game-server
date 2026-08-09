@@ -1,0 +1,14 @@
+{
+  "mapId": "ash_citadel_final",
+  "blocked": {
+    "rectangles": [[15, 0, 16, 17]],
+    "cells": []
+  },
+  "bridges": {
+    "rectangles": [],
+    "cells": [[15, 2], [16, 2], [15, 3], [16, 3], [15, 9], [16, 9], [15, 15], [16, 15]]
+  },
+  "costs": {
+    "2": []
+  }
+}

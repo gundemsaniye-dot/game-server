@@ -1,0 +1,12 @@
+{
+  "compatibilityVersion": 1100,
+  "extensionsPath": "extensions",
+  "fileFormatVersion": 1,
+  "folders": [
+    "maps",
+    "tilesets",
+    "images"
+  ],
+  "propertyTypes": [],
+  "type": "project"
+}

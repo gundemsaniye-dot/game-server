@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "maps": [
+    {
+      "file": "storm_valley_03.tmj",
+      "campaignIndex": 11,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 1,
+      "bridges": 5,
+      "hazards": 6,
+      "objects": 35
+    },
+    {
+      "file": "dry_steppe_01.tmj",
+      "campaignIndex": 12,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 1,
+      "laneConnectors": 2,
+      "bridges": 0,
+      "hazards": 3,
+      "objects": 27
+    },
+    {
+      "file": "dry_steppe_02.tmj",
+      "campaignIndex": 13,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 0,
+      "bridges": 4,
+      "hazards": 3,
+      "objects": 29
+    },
+    {
+      "file": "dry_steppe_03.tmj",
+      "campaignIndex": 14,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 2,
+      "bridges": 0,
+      "hazards": 3,
+      "objects": 28
+    },
+    {
+      "file": "desert_01.tmj",
+      "campaignIndex": 15,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 2,
+      "bridges": 4,
+      "hazards": 4,
+      "objects": 33
+    }
+  ],
+  "errors": []
+}

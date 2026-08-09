@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "world": {
+    "widthPx": 1280,
+    "heightPx": 720,
+    "tileWidth": 40,
+    "tileHeight": 40,
+    "gridWidth": 32,
+    "gridHeight": 18
+  },
+  "requiredLayers": [
+    "00_GROUND_BASE",
+    "01_GROUND_TERRAIN",
+    "02_GROUND_TRANSITIONS",
+    "03_HAZARD_VISUALS",
+    "04_ROADS",
+    "05_BRIDGES",
+    "06_DETAILS_BELOW",
+    "07_DETAILS_ABOVE",
+    "NAV_BLOCKED",
+    "NAV_COST",
+    "OBJECTS_BELOW",
+    "OBJECTS_SORTED"
+  ],
+  "anchors": {
+    "playerCastle": {
+      "layer": "OBJECTS_SORTED",
+      "type": "CastleAnchor"
+    },
+    "enemyCastle": {
+      "layer": "OBJECTS_SORTED",
+      "type": "CastleAnchor"
+    },
+    "playerDeploy": {
+      "layer": "OBJECTS_BELOW",
+      "type": "DeployZone"
+    },
+    "enemySpawn": {
+      "layer": "OBJECTS_BELOW",
+      "type": "SpawnZone"
+    },
+    "resourceNode": {
+      "layer": "OBJECTS_SORTED",
+      "type": "ResourceNode",
+      "multiple": true
+    },
+    "towerSlot": {
+      "layer": "OBJECTS_SORTED",
+      "type": "TowerSlot",
+      "multiple": true
+    },
+    "lanePath": {
+      "layer": "OBJECTS_BELOW",
+      "type": "LanePath",
+      "multiple": true
+    },
+    "laneConnector": {
+      "layer": "OBJECTS_BELOW",
+      "type": "LaneConnector",
+      "multiple": true
+    },
+    "bridge": {
+      "layer": "OBJECTS_BELOW",
+      "type": "BridgeZone",
+      "multiple": true
+    },
+    "hazardZone": {
+      "layer": "OBJECTS_BELOW",
+      "type": "HazardZone",
+      "multiple": true
+    },
+    "tree/rock": {
+      "layer": "OBJECTS_SORTED",
+      "type": "Obstacle",
+      "multiple": true
+    }
+  },
+  "tileProperties": [
+    "terrainType",
+    "walkable",
+    "moveCost",
+    "blocksDeploy",
+    "damagePerSecond"
+  ]
+}

@@ -1,0 +1,395 @@
+{
+  "frames": {
+    "ancient-stump.png": {
+      "frame": {
+        "x": 129,
+        "y": 162,
+        "w": 278,
+        "h": 211
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 278,
+        "h": 211
+      },
+      "sourceSize": {
+        "w": 278,
+        "h": 211
+      }
+    },
+    "dark-forest-soil.png": {
+      "frame": {
+        "x": 686,
+        "y": 165,
+        "w": 236,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 236,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 236,
+        "h": 205
+      }
+    },
+    "elderwood-stump.png": {
+      "frame": {
+        "x": 1220,
+        "y": 171,
+        "w": 239,
+        "h": 193
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 239,
+        "h": 193
+      },
+      "sourceSize": {
+        "w": 239,
+        "h": 193
+      }
+    },
+    "exposed-roots.png": {
+      "frame": {
+        "x": 1773,
+        "y": 189,
+        "w": 205,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 157
+      }
+    },
+    "fallen-log.png": {
+      "frame": {
+        "x": 2156,
+        "y": 175,
+        "w": 512,
+        "h": 186
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 186
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 186
+      }
+    },
+    "fallen-twig.png": {
+      "frame": {
+        "x": 133,
+        "y": 723,
+        "w": 269,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 269,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 269,
+        "h": 161
+      }
+    },
+    "fern-cluster.png": {
+      "frame": {
+        "x": 659,
+        "y": 701,
+        "w": 290,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 290,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 290,
+        "h": 205
+      }
+    },
+    "forest-stone.png": {
+      "frame": {
+        "x": 1220,
+        "y": 707,
+        "w": 239,
+        "h": 193
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 239,
+        "h": 193
+      },
+      "sourceSize": {
+        "w": 239,
+        "h": 193
+      }
+    },
+    "forest-stream.png": {
+      "frame": {
+        "x": 1726,
+        "y": 691,
+        "w": 300,
+        "h": 226
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 226
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 226
+      }
+    },
+    "foxglove-cluster.png": {
+      "frame": {
+        "x": 2275,
+        "y": 715,
+        "w": 274,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 274,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 274,
+        "h": 177
+      }
+    },
+    "leaf-litter.png": {
+      "frame": {
+        "x": 144,
+        "y": 1237,
+        "w": 247,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 247,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 247,
+        "h": 205
+      }
+    },
+    "moss-patch.png": {
+      "frame": {
+        "x": 689,
+        "y": 1264,
+        "w": 229,
+        "h": 152
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 229,
+        "h": 152
+      },
+      "sourceSize": {
+        "w": 229,
+        "h": 152
+      }
+    },
+    "moss-rock.png": {
+      "frame": {
+        "x": 1084,
+        "y": 1110,
+        "w": 512,
+        "h": 459
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 459
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 459
+      }
+    },
+    "mossy-hooftrail.png": {
+      "frame": {
+        "x": 1756,
+        "y": 1243,
+        "w": 239,
+        "h": 193
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 239,
+        "h": 193
+      },
+      "sourceSize": {
+        "w": 239,
+        "h": 193
+      }
+    },
+    "mushroom-ring.png": {
+      "frame": {
+        "x": 2252,
+        "y": 1229,
+        "w": 319,
+        "h": 221
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 319,
+        "h": 221
+      },
+      "sourceSize": {
+        "w": 319,
+        "h": 221
+      }
+    },
+    "pine-cluster.png": {
+      "frame": {
+        "x": 23,
+        "y": 1620,
+        "w": 490,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 490,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 490,
+        "h": 512
+      }
+    },
+    "pinecone-scatter.png": {
+      "frame": {
+        "x": 682,
+        "y": 1779,
+        "w": 244,
+        "h": 194
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 244,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 244,
+        "h": 194
+      }
+    },
+    "tiny-puddle.png": {
+      "frame": {
+        "x": 1207,
+        "y": 1777,
+        "w": 266,
+        "h": 198
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 266,
+        "h": 198
+      },
+      "sourceSize": {
+        "w": 266,
+        "h": 198
+      }
+    },
+    "watchtower.png": {
+      "frame": {
+        "x": 1733,
+        "y": 1620,
+        "w": 286,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 286,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 286,
+        "h": 512
+      }
+    }
+  },
+  "meta": {
+    "app": "Castle Raid 2 map prop atlas builder",
+    "version": "1.0",
+    "image": "silent_forest.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 2680,
+      "h": 2144
+    },
+    "scale": "1"
+  }
+}

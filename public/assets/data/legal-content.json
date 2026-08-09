@@ -1,0 +1,38 @@
+{
+  "language": "en",
+  "appName": "Castle Stormers",
+  "version": "0.1.8",
+  "effectiveDate": "August 5, 2026",
+  "sections": [
+    {
+      "id": "privacy",
+      "title": "PRIVACY POLICY",
+      "summary": "How the game handles your information",
+      "body": "Castle Stormers stores campaign progress, selected units, map progress, and sound preferences locally on your device. The current release does not require an account and does not intentionally collect your name, email address, contacts, precise location, photos, or advertising identifiers. Platform and device services may process technical information under their own policies. If analytics, advertising, cloud saves, accounts, or purchases are added, this policy and the store disclosures will be updated before that release."
+    },
+    {
+      "id": "terms",
+      "title": "TERMS OF USE",
+      "summary": "Rules for playing Castle Stormers",
+      "body": "Castle Stormers grants you a personal, limited, revocable, non-transferable license to play the game for lawful, non-commercial entertainment. Do not distribute game files, interfere with services, exploit bugs, use unauthorized automation, or attempt to gain unfair access. The game may be balanced, updated, suspended, or changed over time. To the extent permitted by law, the game is provided as available without a guarantee of uninterrupted operation. The terms of the store from which you downloaded the game also apply."
+    },
+    {
+      "id": "data",
+      "title": "DATA & DELETION",
+      "summary": "Local saves, retention, and deletion",
+      "body": "The current release has no online player account. Progress and preferences remain on your device until you clear the app's storage or uninstall the game. Either action removes the locally stored game data and may permanently erase campaign progress. Because no server account is created, there is currently no remote account record to delete. If account features are introduced, Castle Stormers will add in-app and web account-deletion methods before that feature is released."
+    },
+    {
+      "id": "support",
+      "title": "SUPPORT",
+      "summary": "How to get help",
+      "body": "For technical help, billing questions, or privacy requests, use the developer contact shown on the official App Store or Google Play listing. Include your device model, operating-system version, game version, and a short description of the issue. Never send passwords, full payment-card details, or store-account credentials. Purchases and refunds, if introduced, may also be subject to the support and refund rules of the store that processed the payment."
+    },
+    {
+      "id": "licenses",
+      "title": "OPEN-SOURCE NOTICES",
+      "summary": "Software used to build the game",
+      "body": "Castle Stormers is built with Phaser, which is distributed under the MIT License. Copyright notices and license terms for open-source components remain with their respective owners. Additional third-party notices will be kept with the release documentation whenever new libraries or services are added. Castle Stormers artwork, characters, names, and original game content are not granted under those open-source licenses."
+    }
+  ]
+}

@@ -1,0 +1,395 @@
+{
+  "frames": {
+    "broken-branch.png": {
+      "frame": {
+        "x": 64,
+        "y": 179,
+        "w": 274,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 274,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 274,
+        "h": 177
+      }
+    },
+    "charged-crystal-sprig.png": {
+      "frame": {
+        "x": 458,
+        "y": 165,
+        "w": 290,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 290,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 290,
+        "h": 205
+      }
+    },
+    "cliff-rock.png": {
+      "frame": {
+        "x": 816,
+        "y": 12,
+        "w": 378,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 378,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 378,
+        "h": 512
+      }
+    },
+    "crystal-shard.png": {
+      "frame": {
+        "x": 1278,
+        "y": 195,
+        "w": 257,
+        "h": 145
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 145
+      }
+    },
+    "heather-bush.png": {
+      "frame": {
+        "x": 1664,
+        "y": 165,
+        "w": 290,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 290,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 290,
+        "h": 205
+      }
+    },
+    "lichen-patch.png": {
+      "frame": {
+        "x": 79,
+        "y": 707,
+        "w": 244,
+        "h": 194
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 244,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 244,
+        "h": 194
+      }
+    },
+    "lightning-mast.png": {
+      "frame": {
+        "x": 508,
+        "y": 548,
+        "w": 189,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 189,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 189,
+        "h": 512
+      }
+    },
+    "mountain-stream.png": {
+      "frame": {
+        "x": 862,
+        "y": 705,
+        "w": 285,
+        "h": 198
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 285,
+        "h": 198
+      },
+      "sourceSize": {
+        "w": 285,
+        "h": 198
+      }
+    },
+    "rain-puddle.png": {
+      "frame": {
+        "x": 1278,
+        "y": 715,
+        "w": 257,
+        "h": 178
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 178
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 178
+      }
+    },
+    "rainwater-rill.png": {
+      "frame": {
+        "x": 1694,
+        "y": 728,
+        "w": 229,
+        "h": 152
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 229,
+        "h": 152
+      },
+      "sourceSize": {
+        "w": 229,
+        "h": 152
+      }
+    },
+    "ruined-arch.png": {
+      "frame": {
+        "x": 12,
+        "y": 1084,
+        "w": 377,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 377,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 377,
+        "h": 512
+      }
+    },
+    "scorched-soil.png": {
+      "frame": {
+        "x": 513,
+        "y": 1238,
+        "w": 179,
+        "h": 204
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 179,
+        "h": 204
+      },
+      "sourceSize": {
+        "w": 179,
+        "h": 204
+      }
+    },
+    "slate-pebbles.png": {
+      "frame": {
+        "x": 881,
+        "y": 1237,
+        "w": 247,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 247,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 247,
+        "h": 205
+      }
+    },
+    "slate-rock.png": {
+      "frame": {
+        "x": 1304,
+        "y": 1261,
+        "w": 205,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 157
+      }
+    },
+    "storm-crystal.png": {
+      "frame": {
+        "x": 1627,
+        "y": 1084,
+        "w": 363,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 363,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 363,
+        "h": 512
+      }
+    },
+    "storm-scar-bush.png": {
+      "frame": {
+        "x": 66,
+        "y": 1795,
+        "w": 269,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 269,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 269,
+        "h": 161
+      }
+    },
+    "wet-earth.png": {
+      "frame": {
+        "x": 472,
+        "y": 1785,
+        "w": 262,
+        "h": 181
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 262,
+        "h": 181
+      },
+      "sourceSize": {
+        "w": 262,
+        "h": 181
+      }
+    },
+    "wind-grass.png": {
+      "frame": {
+        "x": 845,
+        "y": 1765,
+        "w": 319,
+        "h": 221
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 319,
+        "h": 221
+      },
+      "sourceSize": {
+        "w": 319,
+        "h": 221
+      }
+    },
+    "wind-shrub.png": {
+      "frame": {
+        "x": 1269,
+        "y": 1791,
+        "w": 275,
+        "h": 169
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 275,
+        "h": 169
+      },
+      "sourceSize": {
+        "w": 275,
+        "h": 169
+      }
+    }
+  },
+  "meta": {
+    "app": "Castle Raid 2 map prop atlas builder",
+    "version": "1.0",
+    "image": "storm_valley.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 2010,
+      "h": 2144
+    },
+    "scale": "1"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "language": "en",
+  "levels": {
+    "level_001": {
+      "title": "The Faded Field",
+      "body": "The Ash King's raiders burned the royal standard and vanished north with a shard of the crown. Hold the Faded Field—then follow the arrows waiting on the road ahead."
+    },
+    "level_002": {
+      "title": "First Arrows",
+      "body": "Enemy archers have sealed the northern road, but one carries the first warlord's orders. Break their line and discover why every trail leads into the Silent Woodline."
+    },
+    "level_003": {
+      "title": "Silent Woodline",
+      "body": "The Silent Woodline has swallowed every royal scout sent beneath its branches. At dusk, fresh hoofprints appear beside their abandoned banners—and they lead deeper into the forest."
+    },
+    "level_004": {
+      "title": "Hoofbreak Trail",
+      "body": "Enemy cavalry races along a broken trail, carrying the crown fragment toward an ancient grove. Stop the riders before they reach the warlord waiting beneath the oldest trees."
+    },
+    "level_005": {
+      "title": "Deep Forest Clash",
+      "body": "The Forest Warlord makes his final stand around the first fragment. When the shard is reclaimed, its surface reveals a road drowned beneath black water."
+    },
+    "level_006": {
+      "title": "Mire Spear",
+      "body": "Long spears guard every crossing through the flooded lowlands. Yet the soldiers are protecting more than a road—chains disappear into the fog beyond the mire."
+    },
+    "level_007": {
+      "title": "Worker's Bog",
+      "body": "The chains belong to captured villagers forced to feed the enemy war machine. Free them, and they may reveal what waits behind the shielded fortress across the bog."
+    },
+    "level_008": {
+      "title": "Shield in the Mire",
+      "body": "A shielded garrison seals the only causeway out of the mire. Its commander bears an iron sigil that grows warmer whenever thunder rolls beyond the mountains."
+    },
+    "level_009": {
+      "title": "Thunder Approach",
+      "body": "The iron sigil opens the road into Storm Valley, where lightning answers the warlord's horns. Before the climb begins, unseen archers take their positions above."
+    },
+    "level_010": {
+      "title": "Ranged Pressure",
+      "body": "Archers command every ridge leading to the Iron Warlord's citadel. As the final bow falls silent, a forbidden flame rises from the tower ahead."
+    },
+    "level_011": {
+      "title": "First Flame of Magic",
+      "body": "The Iron Warlord has awakened the second fragment's forbidden flame. Extinguish it—and learn why the shard shows a royal caravan dying far across the steppe."
+    },
+    "level_012": {
+      "title": "Cracked Provision",
+      "body": "The royal caravan lies shattered, its provisions scattered across the steppe. Every surviving crate bears the same knife mark, and riders circle beyond the dust."
+    },
+    "level_013": {
+      "title": "Fast Dust",
+      "body": "Knife riders strike from the dust and vanish before the line can answer. One captured raider speaks of a black banner guarding the last road west."
+    },
+    "level_014": {
+      "title": "Banner of the Last Road",
+      "body": "The black banner marks the last defended road before the desert. Beyond it waits no army—only a trail of empty wells and footprints that end in open sand."
+    },
+    "level_015": {
+      "title": "Widening Desert",
+      "body": "The final wells have been poisoned, and the desert widens without mercy. Beneath the dunes, hidden blades wait for anyone who follows the vanished tracks."
+    },
+    "level_016": {
+      "title": "Needles in Sand",
+      "body": "The Sand Warlord rises from the dunes with the third fragment and an army of hidden blades. When the shard is taken, it points toward a seal buried in eternal ice."
+    },
+    "level_017": {
+      "title": "Frozen Seal",
+      "body": "The final fragment lies beyond the frozen pass, locked inside a seal no living mage can open. When the ice begins to crack, something ancient wakes behind the northern gate."
+    },
+    "level_018": {
+      "title": "Long Winter Siege",
+      "body": "The Winter Warlord has awakened and sealed the northern gate behind an endless siege. Defeat him, reunite the crown, and reveal the road hidden beneath its four fragments."
+    },
+    "level_019": {
+      "title": "Infernal Gate",
+      "body": "The restored crown opens a road through fire to the Infernal Gate. Beyond it, the Ash King waits—and the crown begins to pulse as if it remembers the citadel."
+    },
+    "level_020": {
+      "title": "Ash Citadel Final",
+      "body": "Every fragment, every fallen banner, and every road has led to the Ash Citadel. Defeat the Ash King and return the restored crown to a realm that refused to kneel."
+    }
+  }
+}

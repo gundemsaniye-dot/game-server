@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 4,
+  "id": "storm_valley_03",
+  "displayName": "First Flame of Magic",
+  "biome": "storm_valley",
+  "seed": 88291,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 6846336,
+    "laneColor": 11116425,
+    "laneHighlightColor": 13551022,
+    "laneEdgeColor": 4279123,
+    "patches": [
+      {
+        "id": "storm_valley_03_terrain_1",
+        "shape": "ellipse",
+        "x": 387,
+        "y": 154,
+        "width": 384,
+        "height": 233,
+        "color": 7502715,
+        "alpha": 0.82,
+        "rotation": 0.06,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "storm_valley_03_terrain_2",
+        "shape": "rectangle",
+        "x": 802,
+        "y": 169,
+        "width": 384,
+        "height": 222,
+        "color": 7168580,
+        "alpha": 0.84,
+        "rotation": 0.04,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "storm_valley_03_terrain_3",
+        "shape": "ellipse",
+        "x": 592,
+        "y": 361,
+        "width": 489,
+        "height": 241,
+        "color": 4866368,
+        "alpha": 0.87,
+        "rotation": -0.02,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "storm_valley_03_terrain_4",
+        "shape": "ellipse",
+        "x": 406,
+        "y": 586,
+        "width": 384,
+        "height": 194,
+        "color": 7502715,
+        "alpha": 0.79,
+        "rotation": -0.08,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "storm_valley_03_terrain_5",
+        "shape": "rectangle",
+        "x": 802,
+        "y": 545,
+        "width": 348,
+        "height": 208,
+        "color": 7168580,
+        "alpha": 0.79,
+        "rotation": -0.03,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "storm_valley_03_terrain_6",
+        "shape": "ellipse",
+        "x": 615,
+        "y": 84,
+        "width": 260,
+        "height": 124,
+        "color": 4866368,
+        "alpha": 0.88,
+        "rotation": 0,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "storm_valley_03_water_1",
+        "shape": "ellipse",
+        "x": 600,
+        "y": 139.21818181818182,
+        "width": 154,
+        "height": 44,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      },
+      {
+        "id": "storm_valley_03_water_2",
+        "shape": "ellipse",
+        "x": 812,
+        "y": 586.6363636363636,
+        "width": 116,
+        "height": 44,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 62,
+      "points": [
+        {
+          "x": 310,
+          "y": 150
+        },
+        {
+          "x": 530,
+          "y": 206
+        },
+        {
+          "x": 750,
+          "y": 238
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 86,
+      "points": [
+        {
+          "x": 310,
+          "y": 360
+        },
+        {
+          "x": 530,
+          "y": 346
+        },
+        {
+          "x": 750,
+          "y": 374
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 62,
+      "points": [
+        {
+          "x": 310,
+          "y": 572
+        },
+        {
+          "x": 530,
+          "y": 510
+        },
+        {
+          "x": 750,
+          "y": 478
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "storm_valley_03_wood_1",
+      "type": "tree",
+      "x": 420,
+      "y": 200,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "storm_valley_03_wood_2",
+      "type": "tree",
+      "x": 840,
+      "y": 200,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "storm_valley_03_wood_3",
+      "type": "tree",
+      "x": 420,
+      "y": 520,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "storm_valley_03_wood_4",
+      "type": "tree",
+      "x": 840,
+      "y": 520,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "storm_valley_03_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "crystal",
+        "variant": 2
+      },
+      "x": 726,
+      "y": 616,
+      "scale": 0.76,
+      "rotation": 0,
+      "depth": 622,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "storm_valley_03_object_2",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 3
+      },
+      "x": 720,
+      "y": 114,
+      "scale": 0.77,
+      "rotation": 0.04,
+      "depth": 120,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "storm_valley_03_object_3",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 504,
+      "y": 568,
+      "scale": 0.39,
+      "rotation": 0.11,
+      "depth": 574,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "storm_valley_03_object_4",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 1
+      },
+      "x": 503,
+      "y": 428,
+      "scale": 0.74,
+      "rotation": -0.1,
+      "depth": 434,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "storm_valley_03_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "crystal",
+        "variant": 2
+      },
+      "x": 800,
+      "y": 652,
+      "scale": 0.79,
+      "rotation": -0.08,
+      "depth": 658,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "storm_valley_03_object_6",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 3
+      },
+      "x": 576,
+      "y": 433,
+      "scale": 0.89,
+      "rotation": 0.05,
+      "depth": 439,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "storm_valley_03_object_7",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 565,
+      "y": 69,
+      "scale": 0.39,
+      "rotation": -0.08,
+      "depth": 75,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "storm_valley_03_object_8",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 1
+      },
+      "x": 459,
+      "y": 264,
+      "scale": 0.66,
+      "rotation": -0.04,
+      "depth": 270,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1,
+    "archerRangeMultiplier": 0.88,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "storm",
+    "intensity": 0.68
+  },
+  "recommendedUnits": [
+    "mage",
+    "mace_guard"
+  ]
+}

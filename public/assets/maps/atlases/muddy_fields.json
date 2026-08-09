@@ -1,0 +1,395 @@
+{
+  "frames": {
+    "bog-mushroom-circle.png": {
+      "frame": {
+        "x": 139,
+        "y": 195,
+        "w": 257,
+        "h": 145
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 145
+      }
+    },
+    "cattail-crown.png": {
+      "frame": {
+        "x": 682,
+        "y": 171,
+        "w": 244,
+        "h": 194
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 244,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 244,
+        "h": 194
+      }
+    },
+    "cattail-tuft.png": {
+      "frame": {
+        "x": 1195,
+        "y": 165,
+        "w": 290,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 290,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 290,
+        "h": 205
+      }
+    },
+    "dead-tree.png": {
+      "frame": {
+        "x": 1680,
+        "y": 12,
+        "w": 391,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 391,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 391,
+        "h": 512
+      }
+    },
+    "driftwood.png": {
+      "frame": {
+        "x": 2277,
+        "y": 187,
+        "w": 269,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 269,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 269,
+        "h": 161
+      }
+    },
+    "lily-pad-crown.png": {
+      "frame": {
+        "x": 153,
+        "y": 728,
+        "w": 229,
+        "h": 152
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 229,
+        "h": 152
+      },
+      "sourceSize": {
+        "w": 229,
+        "h": 152
+      }
+    },
+    "lily-pads.png": {
+      "frame": {
+        "x": 644,
+        "y": 693,
+        "w": 319,
+        "h": 221
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 319,
+        "h": 221
+      },
+      "sourceSize": {
+        "w": 319,
+        "h": 221
+      }
+    },
+    "log-bridge.png": {
+      "frame": {
+        "x": 1084,
+        "y": 626,
+        "w": 512,
+        "h": 355
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 355
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 355
+      }
+    },
+    "marsh-pond.png": {
+      "frame": {
+        "x": 1758,
+        "y": 701,
+        "w": 236,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 236,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 236,
+        "h": 205
+      }
+    },
+    "marsh-stone.png": {
+      "frame": {
+        "x": 2297,
+        "y": 728,
+        "w": 229,
+        "h": 152
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 229,
+        "h": 152
+      },
+      "sourceSize": {
+        "w": 229,
+        "h": 152
+      }
+    },
+    "mud-pool.png": {
+      "frame": {
+        "x": 12,
+        "y": 1145,
+        "w": 512,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 390
+      }
+    },
+    "mud-splatter.png": {
+      "frame": {
+        "x": 701,
+        "y": 1261,
+        "w": 205,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 157
+      }
+    },
+    "reed-shore.png": {
+      "frame": {
+        "x": 1201,
+        "y": 1234,
+        "w": 278,
+        "h": 211
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 278,
+        "h": 211
+      },
+      "sourceSize": {
+        "w": 278,
+        "h": 211
+      }
+    },
+    "reeds.png": {
+      "frame": {
+        "x": 1671,
+        "y": 1084,
+        "w": 409,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 409,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 409,
+        "h": 512
+      }
+    },
+    "small-puddle.png": {
+      "frame": {
+        "x": 2269,
+        "y": 1241,
+        "w": 285,
+        "h": 198
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 285,
+        "h": 198
+      },
+      "sourceSize": {
+        "w": 285,
+        "h": 198
+      }
+    },
+    "swamp-grass.png": {
+      "frame": {
+        "x": 144,
+        "y": 1773,
+        "w": 247,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 247,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 247,
+        "h": 205
+      }
+    },
+    "swamp-mushroom.png": {
+      "frame": {
+        "x": 666,
+        "y": 1791,
+        "w": 275,
+        "h": 169
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 275,
+        "h": 169
+      },
+      "sourceSize": {
+        "w": 275,
+        "h": 169
+      }
+    },
+    "waterlogged-branch.png": {
+      "frame": {
+        "x": 1211,
+        "y": 1803,
+        "w": 257,
+        "h": 145
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 145
+      }
+    },
+    "wet-mud.png": {
+      "frame": {
+        "x": 1754,
+        "y": 1779,
+        "w": 244,
+        "h": 194
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 244,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 244,
+        "h": 194
+      }
+    }
+  },
+  "meta": {
+    "app": "Castle Raid 2 map prop atlas builder",
+    "version": "1.0",
+    "image": "muddy_fields.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 2680,
+      "h": 2144
+    },
+    "scale": "1"
+  }
+}

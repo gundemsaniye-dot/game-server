@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Castle Raid 2 Atlas Animation QA</title>
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #101214; font-family: Arial, Helvetica, sans-serif; }
+    canvas { display: block; width: 100vw; height: 100vh; image-rendering: auto; }
+  </style>
+</head>
+<body>
+<canvas id="qa"></canvas>
+<script>
+(() => {
+  const frameSize = 128;
+  const actionFrameCounts = { idle: 8, run: 16, attack: 8 };
+  const alphaThreshold = 16;
+  const actions = [
+    { name: 'idle', fps: 6 },
+    { name: 'run', fps: 16 },
+    { name: 'attack', fps: 10 }
+  ];
+  const baseUnits = [
+    ['player', 'horseman'], ['player', 'archer'], ['player', 'swordsman'], ['player', 'peasant'],
+    ['enemy', 'horseman'], ['enemy', 'archer'], ['enemy', 'swordsman'], ['enemy', 'peasant']
+  ];
+  const generatedUnits = [
+    ['player', 'mage'], ['player', 'knife_thrower'], ['player', 'mace_guard'], ['player', 'long_spearman'],
+    ['enemy', 'mage'], ['enemy', 'knife_thrower'], ['enemy', 'mace_guard'], ['enemy', 'long_spearman']
+  ];
+  const query = new URLSearchParams(window.location.search);
+  const units = query.has('generated')
+    ? generatedUnits
+    : baseUnits;
+  const getRunCycle = (type) => {
+    if (query.has('generated')) return { frameCount: 8, fps: 8 };
+    return { frameCount: 8, fps: 8 };
+  };
+  const getRunVisualScale = (type, actionName) => {
+    if (actionName !== 'run') return 1;
+    return ({
+      horseman: 104 / 86,
+      archer: 102 / 113,
+      swordsman: 101 / 106,
+      peasant: 1,
+      mage: 113 / 93,
+      knife_thrower: 113 / 108,
+      mace_guard: 113 / 96,
+      long_spearman: 113 / 61
+    })[type] || 1;
+  };
+  const getAtlasBottom = (type, actionName) => {
+    const idleBottoms = { horseman: 115, archer: 113, swordsman: 113 };
+    if (actionName === 'idle') return idleBottoms[type] || 112;
+    return 112;
+  };
+  const forcedAction = actions.find((action) => action.name === query.get('action'));
+
+  const canvas = document.getElementById('qa');
+  const ctx = canvas.getContext('2d');
+  const measureCanvas = document.createElement('canvas');
+  measureCanvas.width = frameSize;
+  measureCanvas.height = frameSize;
+  const measureCtx = measureCanvas.getContext('2d', { willReadFrequently: true });
+  const assets = new Map();
+  const metrics = new Map();
+
+  const resize = () => {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+
+  const loadUnit = async ([team, type]) => {
+    const key = `${team}-${type}`;
+    const [json, image] = await Promise.all([
+      fetch(`/assets/units/atlases/${key}.json?qa=${Date.now()}`).then((res) => {
+        if (!res.ok) throw new Error(`JSON ${key} ${res.status}`);
+        return res.json();
+      }),
+      new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error(`PNG ${key}`));
+        img.src = `/assets/units/atlases/${key}.png?qa=${Date.now()}`;
+      })
+    ]);
+    assets.set(key, { json, image });
+  };
+
+  const getFrame = (atlas, actionName, index) => atlas.frames[`${actionName}_${String(index).padStart(3, '0')}`].frame;
+
+  const measureFrame = (image, frame) => {
+    measureCtx.clearRect(0, 0, frameSize, frameSize);
+    measureCtx.drawImage(image, frame.x, frame.y, frame.w, frame.h, 0, 0, frameSize, frameSize);
+    const pixels = measureCtx.getImageData(0, 0, frameSize, frameSize).data;
+    let minX = frameSize, minY = frameSize, maxX = -1, maxY = -1;
+    let alphaWeight = 0, weightedX = 0, weightedY = 0;
+    for (let y = 0; y < frameSize; y += 1) {
+      for (let x = 0; x < frameSize; x += 1) {
+        const alpha = pixels[((y * frameSize + x) * 4) + 3];
+        if (alpha <= alphaThreshold) continue;
+        minX = Math.min(minX, x); minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+        alphaWeight += alpha; weightedX += x * alpha; weightedY += y * alpha;
+      }
+    }
+    if (maxX < 0) return { minX: 0, minY: 0, maxX: 0, maxY: 0, width: 0, height: 0, bottom: 0, centroidX: 0, centroidY: 0 };
+    return { minX, minY, maxX, maxY, width: maxX - minX + 1, height: maxY - minY + 1, bottom: maxY, centroidX: weightedX / alphaWeight, centroidY: weightedY / alphaWeight };
+  };
+
+  const span = (values) => Math.max(...values) - Math.min(...values);
+
+  const computeMetrics = () => {
+    for (const [team, type] of units) {
+      const key = `${team}-${type}`;
+      const asset = assets.get(key);
+      const byAction = {};
+      for (const action of actions) {
+        const actionFrameCount = action.name === 'run' ? getRunCycle(type).frameCount : actionFrameCounts[action.name];
+        const frames = Array.from({ length: actionFrameCount }, (_, index) => measureFrame(asset.image, getFrame(asset.json, action.name, index)));
+        byAction[action.name] = {
+          frames,
+          widthDelta: span(frames.map((frame) => frame.width)),
+          heightDelta: span(frames.map((frame) => frame.height)),
+          bottomDelta: span(frames.map((frame) => frame.bottom)),
+          centroidDelta: span(frames.map((frame) => frame.centroidX)),
+          centroidYDelta: span(frames.map((frame) => frame.centroidY))
+        };
+      }
+      metrics.set(key, byAction);
+    }
+    window.__atlasQaMetrics = Object.fromEntries(metrics);
+  };
+
+  const drawText = (text, x, y, size = 13, color = '#f5f0e8', align = 'left') => {
+    ctx.font = `700 ${size}px Arial`;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.58)';
+    ctx.fillText(text, x + 1, y + 1);
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
+  };
+
+  const drawChecker = (x, y, w, h) => {
+    const size = 12;
+    ctx.fillStyle = '#24282b';
+    ctx.fillRect(x, y, w, h);
+    for (let py = y; py < y + h; py += size) {
+      for (let px = x; px < x + w; px += size) {
+        ctx.fillStyle = ((px + py) / size) % 2 === 0 ? '#2f3639' : '#202427';
+        ctx.fillRect(px, py, size, size);
+      }
+    }
+  };
+
+  const drawUnit = (team, type, index, action, time) => {
+    const key = `${team}-${type}`;
+    const asset = assets.get(key);
+    const summary = metrics.get(key)[action.name];
+    const runCycle = action.name === 'run' ? getRunCycle(type) : null;
+    const actionFrameCount = runCycle ? runCycle.frameCount : actionFrameCounts[action.name];
+    const actionFps = runCycle ? runCycle.fps : action.fps;
+    const frameIndex = Math.floor(time / (1000 / actionFps)) % actionFrameCount;
+    const frame = getFrame(asset.json, action.name, frameIndex);
+    const metric = summary.frames[frameIndex];
+    const cols = window.innerWidth >= 980 ? 4 : 2;
+    const rows = Math.ceil(units.length / cols);
+    const margin = 24, header = 86, gap = 18;
+    const cellW = (window.innerWidth - (margin * 2) - (gap * (cols - 1))) / cols;
+    const cellH = (window.innerHeight - header - margin - (gap * (rows - 1))) / rows;
+    const col = index % cols;
+    const row = Math.floor(index / cols);
+    const x = margin + col * (cellW + gap);
+    const y = header + row * (cellH + gap);
+    const drawSize = Math.min(cellW - 28, cellH - 72, 180);
+    const spriteX = x + (cellW - drawSize) / 2;
+    const spriteY = y + 34 + (cellH - 66 - drawSize) / 2;
+    const scale = drawSize / frameSize;
+    const runVisualScale = getRunVisualScale(type, action.name);
+    const renderedSize = drawSize * runVisualScale;
+    const renderedX = spriteX + (drawSize - renderedSize) / 2;
+    const idleGroundY = spriteY + getAtlasBottom(type, 'idle') * scale;
+    const renderedY = idleGroundY - getAtlasBottom(type, action.name) * scale * runVisualScale;
+
+    drawChecker(spriteX, spriteY, drawSize, drawSize);
+    ctx.drawImage(asset.image, frame.x, frame.y, frame.w, frame.h, renderedX, renderedY, renderedSize, renderedSize);
+    ctx.strokeStyle = 'rgba(255,255,255,0.52)'; ctx.lineWidth = 1; ctx.strokeRect(spriteX, spriteY, drawSize, drawSize);
+    ctx.strokeStyle = summary.bottomDelta <= 1 ? '#6dff93' : '#ff5d57'; ctx.lineWidth = 2;
+    ctx.strokeRect(renderedX + metric.minX * scale * runVisualScale, renderedY + metric.minY * scale * runVisualScale, metric.width * scale * runVisualScale, metric.height * scale * runVisualScale);
+    drawText(`${team.toUpperCase()} ${type.toUpperCase()} / ${action.name.toUpperCase()}`, x, y, 13, '#ffffff');
+    drawText(`f ${String(frameIndex).padStart(2, '0')}  bottomΔ ${summary.bottomDelta}  wΔ ${summary.widthDelta}  hΔ ${summary.heightDelta}  cyΔ ${summary.centroidYDelta.toFixed(1)}`, x, y + 18, 11, '#d9e1e6');
+  };
+
+  const draw = (time) => {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.fillStyle = '#111416'; ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    const action = forcedAction || actions[Math.floor(time / 3000) % actions.length];
+    const runSummary = query.has('generated')
+      ? '8 FPS / 8 frames'
+      : '8 FPS / 8 frames';
+    drawText('ATLAS ANIMATION QA - ONE PNG + JSON PER UNIT', 24, 18, 16, '#ffffff');
+    drawText(`action ${action.name.toUpperCase()}   ${action.name === 'run' ? runSummary : `${action.fps} FPS`}`, window.innerWidth - 24, 42, 14, '#9be7ff', 'right');
+    drawText('QA cycles: idle → run → attack. Green box means stable bottom line for current action.', 24, 64, 12, '#d8e0e6');
+    units.forEach(([team, type], index) => drawUnit(team, type, index, action, time));
+    requestAnimationFrame(draw);
+  };
+
+  resize(); window.addEventListener('resize', resize);
+  Promise.all(units.map(loadUnit)).then(() => { computeMetrics(); requestAnimationFrame(draw); }).catch((error) => {
+    ctx.fillStyle = '#111416'; ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    drawText(`Asset load failed: ${error.message}`, 24, 24, 16, '#ff7777');
+  });
+})();
+</script>
+</body>
+</html>

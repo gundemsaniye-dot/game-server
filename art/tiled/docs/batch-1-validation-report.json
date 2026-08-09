@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "maps": [
+    {
+      "file": "grasslands_01.tmj",
+      "ok": true,
+      "errors": [],
+      "objects": 19
+    },
+    {
+      "file": "grasslands_02.tmj",
+      "ok": true,
+      "errors": [],
+      "objects": 25
+    },
+    {
+      "file": "silent_forest_01.tmj",
+      "ok": true,
+      "errors": [],
+      "objects": 23
+    },
+    {
+      "file": "silent_forest_02.tmj",
+      "ok": true,
+      "errors": [],
+      "objects": 22
+    },
+    {
+      "file": "silent_forest_03.tmj",
+      "ok": true,
+      "errors": [],
+      "objects": 30
+    }
+  ],
+  "errors": []
+}

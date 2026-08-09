@@ -1,0 +1,142 @@
+{
+  "columns": 8,
+  "image": "../images/grasslands-terrain.png",
+  "imageheight": 80,
+  "imagewidth": 320,
+  "margin": 0,
+  "name": "grasslands-terrain",
+  "spacing": 0,
+  "tilecount": 16,
+  "tileheight": 40,
+  "tilewidth": 40,
+  "tiles": [
+    {
+      "id": 0,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "ground"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "ground"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "hazard"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 999
+        },
+        {
+          "name": "blocksDeploy",
+          "type": "bool",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "bridge"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": 4
+    },
+    {
+      "id": 5
+    },
+    {
+      "id": 6
+    },
+    {
+      "id": 7
+    },
+    {
+      "id": 8
+    },
+    {
+      "id": 9
+    },
+    {
+      "id": 10
+    },
+    {
+      "id": 11
+    },
+    {
+      "id": 12
+    },
+    {
+      "id": 13
+    },
+    {
+      "id": 14
+    },
+    {
+      "id": 15
+    }
+  ],
+  "tiledversion": "1.11.0",
+  "tileoffset": {
+    "x": 0,
+    "y": 0
+  },
+  "type": "tileset",
+  "version": "1.10"
+}

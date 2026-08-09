@@ -1,0 +1,421 @@
+{
+  "schemaVersion": 4,
+  "id": "infernal_dungeon_01",
+  "displayName": "Infernal Gate",
+  "biome": "infernal_dungeon",
+  "seed": 151643,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 3353901,
+    "laneColor": 7755336,
+    "laneHighlightColor": 11041372,
+    "laneEdgeColor": 1643797,
+    "patches": [
+      {
+        "id": "infernal_dungeon_01_terrain_1",
+        "shape": "ellipse",
+        "x": 361,
+        "y": 164,
+        "width": 365,
+        "height": 235,
+        "color": 4866368,
+        "alpha": 0.81,
+        "rotation": 0.06,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "infernal_dungeon_01_terrain_2",
+        "shape": "rectangle",
+        "x": 809,
+        "y": 174,
+        "width": 356,
+        "height": 203,
+        "color": 7502715,
+        "alpha": 0.87,
+        "rotation": 0.07,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "infernal_dungeon_01_terrain_3",
+        "shape": "ellipse",
+        "x": 590,
+        "y": 364,
+        "width": 468,
+        "height": 240,
+        "color": 10449992,
+        "alpha": 0.85,
+        "rotation": 0.06,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "infernal_dungeon_01_terrain_4",
+        "shape": "ellipse",
+        "x": 426,
+        "y": 570,
+        "width": 381,
+        "height": 207,
+        "color": 4866368,
+        "alpha": 0.89,
+        "rotation": 0.05,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "infernal_dungeon_01_terrain_5",
+        "shape": "rectangle",
+        "x": 849,
+        "y": 544,
+        "width": 341,
+        "height": 185,
+        "color": 7502715,
+        "alpha": 0.91,
+        "rotation": 0.01,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "infernal_dungeon_01_terrain_6",
+        "shape": "ellipse",
+        "x": 614,
+        "y": 71,
+        "width": 283,
+        "height": 104,
+        "color": 10449992,
+        "alpha": 0.9,
+        "rotation": 0.1,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "infernal_dungeon_01_lava_1",
+        "shape": "ellipse",
+        "x": 612,
+        "y": 139.2090909090909,
+        "width": 170,
+        "height": 48,
+        "color": 13190948,
+        "alpha": 0.92,
+        "rotation": 0,
+        "depth": 7,
+        "material": "lava",
+        "collision": "lava",
+        "variant": 0
+      },
+      {
+        "id": "infernal_dungeon_01_lava_2",
+        "shape": "ellipse",
+        "x": 806,
+        "y": 587.7272727272727,
+        "width": 128,
+        "height": 46,
+        "color": 13190948,
+        "alpha": 0.92,
+        "rotation": 0,
+        "depth": 7,
+        "material": "lava",
+        "collision": "lava",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 64,
+      "points": [
+        {
+          "x": 310,
+          "y": 150
+        },
+        {
+          "x": 530,
+          "y": 208
+        },
+        {
+          "x": 750,
+          "y": 240
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 88,
+      "points": [
+        {
+          "x": 310,
+          "y": 360
+        },
+        {
+          "x": 530,
+          "y": 350
+        },
+        {
+          "x": 750,
+          "y": 370
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 64,
+      "points": [
+        {
+          "x": 310,
+          "y": 570
+        },
+        {
+          "x": 530,
+          "y": 506
+        },
+        {
+          "x": 750,
+          "y": 476
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "infernal_dungeon_01_wood_1",
+      "type": "tree",
+      "x": 640,
+      "y": 320,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-muddy_fields-dead-tree"
+      },
+      "scale": 0.15,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "infernal_dungeon_01_wood_2",
+      "type": "tree",
+      "x": 460,
+      "y": 400,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-muddy_fields-dead-tree"
+      },
+      "scale": 0.15,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "infernal_dungeon_01_wood_3",
+      "type": "tree",
+      "x": 800,
+      "y": 400,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-muddy_fields-dead-tree"
+      },
+      "scale": 0.15,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "infernal_dungeon_01_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-muddy_fields-dead-tree"
+      },
+      "x": 673,
+      "y": 76,
+      "scale": 0.23,
+      "rotation": -0.02,
+      "depth": 82,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "infernal_dungeon_01_object_2",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "obsidian",
+        "variant": 3
+      },
+      "x": 521,
+      "y": 433,
+      "scale": 0.78,
+      "rotation": -0.05,
+      "depth": 439,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "infernal_dungeon_01_object_3",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 0
+      },
+      "x": 643,
+      "y": 581,
+      "scale": 0.63,
+      "rotation": -0.05,
+      "depth": 587,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "infernal_dungeon_01_object_4",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 1
+      },
+      "x": 662,
+      "y": 645,
+      "scale": 0.78,
+      "rotation": 0.04,
+      "depth": 651,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "infernal_dungeon_01_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-muddy_fields-dead-tree"
+      },
+      "x": 602,
+      "y": 621,
+      "scale": 0.21,
+      "rotation": -0.1,
+      "depth": 627,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "infernal_dungeon_01_object_6",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "obsidian",
+        "variant": 3
+      },
+      "x": 492,
+      "y": 608,
+      "scale": 0.88,
+      "rotation": 0.01,
+      "depth": 614,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "infernal_dungeon_01_object_7",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 0
+      },
+      "x": 715,
+      "y": 556,
+      "scale": 0.79,
+      "rotation": 0.08,
+      "depth": 562,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "infernal_dungeon_01_object_8",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 1
+      },
+      "x": 623,
+      "y": 67,
+      "scale": 0.84,
+      "rotation": 0.1,
+      "depth": 73,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1.02,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1,
+    "mageDamageMultiplier": 1.16,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "embers",
+    "intensity": 0.55
+  },
+  "recommendedUnits": [
+    "mage",
+    "mace_guard"
+  ]
+}

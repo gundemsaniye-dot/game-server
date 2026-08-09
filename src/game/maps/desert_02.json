@@ -1,0 +1,436 @@
+{
+  "schemaVersion": 4,
+  "id": "desert_02",
+  "displayName": "Needles in Sand",
+  "biome": "desert",
+  "seed": 127886,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 13806953,
+    "laneColor": 14664068,
+    "laneHighlightColor": 15850661,
+    "laneEdgeColor": 9399357,
+    "patches": [
+      {
+        "id": "desert_02_terrain_1",
+        "shape": "ellipse",
+        "x": 407,
+        "y": 132,
+        "width": 386,
+        "height": 221,
+        "color": 14202479,
+        "alpha": 0.77,
+        "rotation": -0.03,
+        "depth": 3,
+        "material": "sand",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "desert_02_terrain_2",
+        "shape": "rectangle",
+        "x": 806,
+        "y": 153,
+        "width": 367,
+        "height": 231,
+        "color": 10449992,
+        "alpha": 0.86,
+        "rotation": 0,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "desert_02_terrain_3",
+        "shape": "ellipse",
+        "x": 627,
+        "y": 363,
+        "width": 496,
+        "height": 236,
+        "color": 4866368,
+        "alpha": 0.78,
+        "rotation": 0,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "desert_02_terrain_4",
+        "shape": "ellipse",
+        "x": 418,
+        "y": 581,
+        "width": 402,
+        "height": 206,
+        "color": 14202479,
+        "alpha": 0.87,
+        "rotation": 0,
+        "depth": 3,
+        "material": "sand",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "desert_02_terrain_5",
+        "shape": "rectangle",
+        "x": 809,
+        "y": 563,
+        "width": 357,
+        "height": 211,
+        "color": 10449992,
+        "alpha": 0.85,
+        "rotation": 0,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "desert_02_terrain_6",
+        "shape": "ellipse",
+        "x": 629,
+        "y": 85,
+        "width": 268,
+        "height": 124,
+        "color": 4866368,
+        "alpha": 0.77,
+        "rotation": 0.1,
+        "depth": 3,
+        "material": "ash",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "desert_02_water_1",
+        "shape": "ellipse",
+        "x": 510,
+        "y": 256,
+        "width": 148,
+        "height": 56,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      },
+      {
+        "id": "desert_02_water_2",
+        "shape": "ellipse",
+        "x": 782,
+        "y": 480,
+        "width": 176,
+        "height": 58,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 66,
+      "points": [
+        {
+          "x": 310,
+          "y": 150
+        },
+        {
+          "x": 530,
+          "y": 176
+        },
+        {
+          "x": 750,
+          "y": 146
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 78,
+      "points": [
+        {
+          "x": 310,
+          "y": 360
+        },
+        {
+          "x": 530,
+          "y": 342
+        },
+        {
+          "x": 750,
+          "y": 382
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 66,
+      "points": [
+        {
+          "x": 310,
+          "y": 570
+        },
+        {
+          "x": 530,
+          "y": 546
+        },
+        {
+          "x": 750,
+          "y": 590
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "desert_02_wood_1",
+      "type": "tree",
+      "x": 480,
+      "y": 320,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "desert_02_wood_2",
+      "type": "tree",
+      "x": 400,
+      "y": 320,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "desert_02_wood_3",
+      "type": "tree",
+      "x": 840,
+      "y": 320,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "desert_02_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 803,
+      "y": 44,
+      "scale": 0.34,
+      "rotation": 0.09,
+      "depth": 50,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "desert_02_object_2",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 0
+      },
+      "x": 668,
+      "y": 73,
+      "scale": 0.78,
+      "rotation": 0.06,
+      "depth": 79,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "desert_02_object_3",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 1
+      },
+      "x": 499,
+      "y": 64,
+      "scale": 0.7,
+      "rotation": 0,
+      "depth": 70,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "desert_02_object_4",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 2
+      },
+      "x": 636,
+      "y": 250,
+      "scale": 0.82,
+      "rotation": 0.02,
+      "depth": 256,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "desert_02_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 426,
+      "y": 32,
+      "scale": 0.39,
+      "rotation": -0.03,
+      "depth": 38,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "desert_02_object_6",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 0
+      },
+      "x": 823,
+      "y": 270,
+      "scale": 0.64,
+      "rotation": 0.04,
+      "depth": 276,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "desert_02_object_7",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 1
+      },
+      "x": 728,
+      "y": 222,
+      "scale": 0.81,
+      "rotation": -0.03,
+      "depth": 228,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "desert_02_object_8",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 2
+      },
+      "x": 518,
+      "y": 625,
+      "scale": 0.87,
+      "rotation": 0.04,
+      "depth": 631,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "desert_02_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 525,
+      "y": 42,
+      "scale": 0.38,
+      "rotation": -0.01,
+      "depth": 48,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1.12,
+    "peasantGatherMultiplier": 0.9,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "sandstorm",
+    "intensity": 0.55
+  },
+  "recommendedUnits": [
+    "long_spearman",
+    "horseman"
+  ]
+}

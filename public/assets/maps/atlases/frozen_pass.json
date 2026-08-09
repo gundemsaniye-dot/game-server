@@ -1,0 +1,375 @@
+{
+  "frames": {
+    "blue-ice-boulder.png": {
+      "frame": {
+        "x": 80,
+        "y": 155,
+        "w": 300,
+        "h": 226
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 226
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 226
+      }
+    },
+    "cracked-ice.png": {
+      "frame": {
+        "x": 560,
+        "y": 177,
+        "w": 262,
+        "h": 181
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 262,
+        "h": 181
+      },
+      "sourceSize": {
+        "w": 262,
+        "h": 181
+      }
+    },
+    "frost-grass.png": {
+      "frame": {
+        "x": 1050,
+        "y": 189,
+        "w": 205,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 157
+      }
+    },
+    "frozen-pond.png": {
+      "frame": {
+        "x": 1471,
+        "y": 169,
+        "w": 285,
+        "h": 198
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 285,
+        "h": 198
+      },
+      "sourceSize": {
+        "w": 285,
+        "h": 198
+      }
+    },
+    "frozen-tower.png": {
+      "frame": {
+        "x": 1913,
+        "y": 12,
+        "w": 322,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 322,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 322,
+        "h": 512
+      }
+    },
+    "ice-crystal.png": {
+      "frame": {
+        "x": 38,
+        "y": 548,
+        "w": 384,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 384,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 384,
+        "h": 512
+      }
+    },
+    "ice-flower.png": {
+      "frame": {
+        "x": 558,
+        "y": 705,
+        "w": 266,
+        "h": 198
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 266,
+        "h": 198
+      },
+      "sourceSize": {
+        "w": 266,
+        "h": 198
+      }
+    },
+    "ice-flower-crown.png": {
+      "frame": {
+        "x": 1018,
+        "y": 723,
+        "w": 269,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 269,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 269,
+        "h": 161
+      }
+    },
+    "ice-rock.png": {
+      "frame": {
+        "x": 1395,
+        "y": 548,
+        "w": 437,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 437,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 437,
+        "h": 512
+      }
+    },
+    "ice-shard.png": {
+      "frame": {
+        "x": 1970,
+        "y": 725,
+        "w": 209,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 209,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 157
+      }
+    },
+    "ice-stone.png": {
+      "frame": {
+        "x": 100,
+        "y": 1229,
+        "w": 261,
+        "h": 222
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 261,
+        "h": 222
+      },
+      "sourceSize": {
+        "w": 261,
+        "h": 222
+      }
+    },
+    "icy-stream.png": {
+      "frame": {
+        "x": 563,
+        "y": 1251,
+        "w": 257,
+        "h": 178
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 178
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 178
+      }
+    },
+    "packed-snow.png": {
+      "frame": {
+        "x": 1016,
+        "y": 1251,
+        "w": 272,
+        "h": 178
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 272,
+        "h": 178
+      },
+      "sourceSize": {
+        "w": 272,
+        "h": 178
+      }
+    },
+    "snow-drift.png": {
+      "frame": {
+        "x": 1513,
+        "y": 1195,
+        "w": 200,
+        "h": 289
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 200,
+        "h": 289
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 289
+      }
+    },
+    "snow-pebbles.png": {
+      "frame": {
+        "x": 1985,
+        "y": 1238,
+        "w": 179,
+        "h": 204
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 179,
+        "h": 204
+      },
+      "sourceSize": {
+        "w": 179,
+        "h": 204
+      }
+    },
+    "snow-pine.png": {
+      "frame": {
+        "x": 68,
+        "y": 1620,
+        "w": 325,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 325,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 325,
+        "h": 512
+      }
+    },
+    "snowy-branch.png": {
+      "frame": {
+        "x": 573,
+        "y": 1773,
+        "w": 236,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 236,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 236,
+        "h": 205
+      }
+    },
+    "snowy-log-crown.png": {
+      "frame": {
+        "x": 1038,
+        "y": 1800,
+        "w": 229,
+        "h": 152
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 229,
+        "h": 152
+      },
+      "sourceSize": {
+        "w": 229,
+        "h": 152
+      }
+    }
+  },
+  "meta": {
+    "app": "Castle Raid 2 map prop atlas builder",
+    "version": "1.0",
+    "image": "frozen_pass.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 2305,
+      "h": 2144
+    },
+    "scale": "1"
+  }
+}

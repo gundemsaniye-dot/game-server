@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 4,
+  "id": "dry_steppe_01",
+  "displayName": "Cracked Provision",
+  "biome": "dry_steppe",
+  "seed": 96210,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 11635284,
+    "laneColor": 13610354,
+    "laneHighlightColor": 15125394,
+    "laneEdgeColor": 7427640,
+    "patches": [
+      {
+        "id": "dry_steppe_01_terrain_1",
+        "shape": "ellipse",
+        "x": 391,
+        "y": 165,
+        "width": 396,
+        "height": 203,
+        "color": 10449992,
+        "alpha": 0.78,
+        "rotation": 0.09,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "dry_steppe_01_terrain_2",
+        "shape": "rectangle",
+        "x": 803,
+        "y": 189,
+        "width": 381,
+        "height": 224,
+        "color": 11438428,
+        "alpha": 0.84,
+        "rotation": -0.02,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "dry_steppe_01_terrain_3",
+        "shape": "ellipse",
+        "x": 599,
+        "y": 361,
+        "width": 479,
+        "height": 254,
+        "color": 7502715,
+        "alpha": 0.79,
+        "rotation": 0.08,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "dry_steppe_01_terrain_4",
+        "shape": "ellipse",
+        "x": 409,
+        "y": 570,
+        "width": 377,
+        "height": 217,
+        "color": 10449992,
+        "alpha": 0.91,
+        "rotation": -0.06,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "dry_steppe_01_terrain_5",
+        "shape": "rectangle",
+        "x": 815,
+        "y": 564,
+        "width": 361,
+        "height": 189,
+        "color": 11438428,
+        "alpha": 0.87,
+        "rotation": -0.03,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "dry_steppe_01_terrain_6",
+        "shape": "ellipse",
+        "x": 629,
+        "y": 92,
+        "width": 283,
+        "height": 117,
+        "color": 7502715,
+        "alpha": 0.92,
+        "rotation": -0.08,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 82,
+      "points": [
+        {
+          "x": 310,
+          "y": 148
+        },
+        {
+          "x": 530,
+          "y": 190
+        },
+        {
+          "x": 750,
+          "y": 126
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 96,
+      "points": [
+        {
+          "x": 310,
+          "y": 358
+        },
+        {
+          "x": 530,
+          "y": 316
+        },
+        {
+          "x": 750,
+          "y": 406
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 82,
+      "points": [
+        {
+          "x": 310,
+          "y": 574
+        },
+        {
+          "x": 530,
+          "y": 520
+        },
+        {
+          "x": 750,
+          "y": 598
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "dry_steppe_01_wood_1",
+      "type": "tree",
+      "x": 460,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "dry_steppe_01_wood_2",
+      "type": "tree",
+      "x": 800,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "dry_steppe_01_wood_3",
+      "type": "tree",
+      "x": 460,
+      "y": 500,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "dry_steppe_01_wood_4",
+      "type": "tree",
+      "x": 800,
+      "y": 500,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "dry_steppe_01_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 429,
+      "y": 79,
+      "scale": 0.37,
+      "rotation": 0.08,
+      "depth": 85,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "dry_steppe_01_object_2",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 0
+      },
+      "x": 766,
+      "y": 290,
+      "scale": 0.77,
+      "rotation": 0.07,
+      "depth": 296,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "dry_steppe_01_object_3",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 1
+      },
+      "x": 434,
+      "y": 445,
+      "scale": 0.77,
+      "rotation": 0.08,
+      "depth": 451,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "dry_steppe_01_object_4",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 2
+      },
+      "x": 668,
+      "y": 248,
+      "scale": 0.85,
+      "rotation": 0.1,
+      "depth": 254,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "dry_steppe_01_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 841,
+      "y": 350,
+      "scale": 0.39,
+      "rotation": 0.09,
+      "depth": 356,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "dry_steppe_01_object_6",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 0
+      },
+      "x": 765,
+      "y": 501,
+      "scale": 0.68,
+      "rotation": 0.03,
+      "depth": 507,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "dry_steppe_01_object_7",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 1
+      },
+      "x": 559,
+      "y": 632,
+      "scale": 0.77,
+      "rotation": 0,
+      "depth": 638,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "dry_steppe_01_object_8",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 2
+      },
+      "x": 819,
+      "y": 506,
+      "scale": 0.74,
+      "rotation": -0.04,
+      "depth": 512,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "dry_steppe_01_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 623,
+      "y": 525,
+      "scale": 0.4,
+      "rotation": 0.09,
+      "depth": 531,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1.04,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 0.92,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "dust",
+    "intensity": 0.25
+  },
+  "recommendedUnits": [
+    "horseman",
+    "long_spearman"
+  ]
+}

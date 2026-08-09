@@ -1,0 +1,395 @@
+{
+  "frames": {
+    "banner.png": {
+      "frame": {
+        "x": 168,
+        "y": 12,
+        "w": 200,
+        "h": 512
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 200,
+        "h": 512
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 512
+      }
+    },
+    "bleached-wood.png": {
+      "frame": {
+        "x": 665,
+        "y": 162,
+        "w": 278,
+        "h": 211
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 278,
+        "h": 211
+      },
+      "sourceSize": {
+        "w": 278,
+        "h": 211
+      }
+    },
+    "brittle-shrub.png": {
+      "frame": {
+        "x": 1211,
+        "y": 195,
+        "w": 257,
+        "h": 145
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 145
+      }
+    },
+    "cracked-earth.png": {
+      "frame": {
+        "x": 1745,
+        "y": 177,
+        "w": 262,
+        "h": 181
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 262,
+        "h": 181
+      },
+      "sourceSize": {
+        "w": 262,
+        "h": 181
+      }
+    },
+    "cracked-rock.png": {
+      "frame": {
+        "x": 2156,
+        "y": 43,
+        "w": 512,
+        "h": 450
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 450
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 450
+      }
+    },
+    "dry-bush.png": {
+      "frame": {
+        "x": 12,
+        "y": 598,
+        "w": 512,
+        "h": 412
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 412
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 412
+      }
+    },
+    "dry-creek.png": {
+      "frame": {
+        "x": 661,
+        "y": 705,
+        "w": 285,
+        "h": 198
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 285,
+        "h": 198
+      },
+      "sourceSize": {
+        "w": 285,
+        "h": 198
+      }
+    },
+    "dry-grass.png": {
+      "frame": {
+        "x": 1195,
+        "y": 701,
+        "w": 290,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 290,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 290,
+        "h": 205
+      }
+    },
+    "dry-twig.png": {
+      "frame": {
+        "x": 1754,
+        "y": 707,
+        "w": 244,
+        "h": 194
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 244,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 244,
+        "h": 194
+      }
+    },
+    "dust-ground.png": {
+      "frame": {
+        "x": 2283,
+        "y": 715,
+        "w": 257,
+        "h": 178
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 257,
+        "h": 178
+      },
+      "sourceSize": {
+        "w": 257,
+        "h": 178
+      }
+    },
+    "dusty-grass-whorl.png": {
+      "frame": {
+        "x": 133,
+        "y": 1259,
+        "w": 269,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 269,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 269,
+        "h": 161
+      }
+    },
+    "small-sandstone.png": {
+      "frame": {
+        "x": 681,
+        "y": 1256,
+        "w": 245,
+        "h": 168
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 245,
+        "h": 168
+      },
+      "sourceSize": {
+        "w": 245,
+        "h": 168
+      }
+    },
+    "steppe-flower.png": {
+      "frame": {
+        "x": 1203,
+        "y": 1251,
+        "w": 274,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 274,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 274,
+        "h": 177
+      }
+    },
+    "steppe-pebbles.png": {
+      "frame": {
+        "x": 1752,
+        "y": 1237,
+        "w": 247,
+        "h": 205
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 247,
+        "h": 205
+      },
+      "sourceSize": {
+        "w": 247,
+        "h": 205
+      }
+    },
+    "steppe-thistle.png": {
+      "frame": {
+        "x": 2309,
+        "y": 1261,
+        "w": 205,
+        "h": 157
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 157
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 157
+      }
+    },
+    "supply-wagon.png": {
+      "frame": {
+        "x": 12,
+        "y": 1640,
+        "w": 512,
+        "h": 471
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 512,
+        "h": 471
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 471
+      }
+    },
+    "thorn-bush.png": {
+      "frame": {
+        "x": 644,
+        "y": 1765,
+        "w": 319,
+        "h": 221
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 319,
+        "h": 221
+      },
+      "sourceSize": {
+        "w": 319,
+        "h": 221
+      }
+    },
+    "tumbleweed.png": {
+      "frame": {
+        "x": 1202,
+        "y": 1791,
+        "w": 275,
+        "h": 169
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 275,
+        "h": 169
+      },
+      "sourceSize": {
+        "w": 275,
+        "h": 169
+      }
+    },
+    "windflower-clump.png": {
+      "frame": {
+        "x": 1761,
+        "y": 1800,
+        "w": 229,
+        "h": 152
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 229,
+        "h": 152
+      },
+      "sourceSize": {
+        "w": 229,
+        "h": 152
+      }
+    }
+  },
+  "meta": {
+    "app": "Castle Raid 2 map prop atlas builder",
+    "version": "1.0",
+    "image": "dry_steppe.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 2680,
+      "h": 2144
+    },
+    "scale": "1"
+  }
+}

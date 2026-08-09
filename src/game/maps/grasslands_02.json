@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 4,
+  "id": "grasslands_02",
+  "displayName": "First Arrows",
+  "biome": "grasslands",
+  "seed": 17020,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 7973212,
+    "laneColor": 13283708,
+    "laneHighlightColor": 14732189,
+    "laneEdgeColor": 7627071,
+    "patches": [
+      {
+        "id": "grasslands_02_terrain_1",
+        "shape": "ellipse",
+        "x": 409,
+        "y": 133,
+        "width": 393,
+        "height": 226,
+        "color": 7315280,
+        "alpha": 0.86,
+        "rotation": 0.04,
+        "depth": 3,
+        "material": "grass",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "grasslands_02_terrain_2",
+        "shape": "rectangle",
+        "x": 794,
+        "y": 183,
+        "width": 362,
+        "height": 206,
+        "color": 11438428,
+        "alpha": 0.8,
+        "rotation": 0.07,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "grasslands_02_terrain_3",
+        "shape": "ellipse",
+        "x": 588,
+        "y": 358,
+        "width": 464,
+        "height": 230,
+        "color": 10449992,
+        "alpha": 0.81,
+        "rotation": 0.04,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "grasslands_02_terrain_4",
+        "shape": "ellipse",
+        "x": 443,
+        "y": 580,
+        "width": 395,
+        "height": 192,
+        "color": 7315280,
+        "alpha": 0.9,
+        "rotation": 0.01,
+        "depth": 3,
+        "material": "grass",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "grasslands_02_terrain_5",
+        "shape": "rectangle",
+        "x": 800,
+        "y": 566,
+        "width": 342,
+        "height": 184,
+        "color": 11438428,
+        "alpha": 0.91,
+        "rotation": -0.08,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "grasslands_02_terrain_6",
+        "shape": "ellipse",
+        "x": 658,
+        "y": 88,
+        "width": 267,
+        "height": 117,
+        "color": 10449992,
+        "alpha": 0.81,
+        "rotation": -0.02,
+        "depth": 3,
+        "material": "dry_soil",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "grasslands_02_water_1",
+        "shape": "ellipse",
+        "x": 650,
+        "y": 250,
+        "width": 190,
+        "height": 50,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 88,
+      "points": [
+        {
+          "x": 310,
+          "y": 155
+        },
+        {
+          "x": 530,
+          "y": 172
+        },
+        {
+          "x": 750,
+          "y": 138
+        },
+        {
+          "x": 970,
+          "y": 162
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 104,
+      "points": [
+        {
+          "x": 310,
+          "y": 356
+        },
+        {
+          "x": 530,
+          "y": 382
+        },
+        {
+          "x": 750,
+          "y": 338
+        },
+        {
+          "x": 970,
+          "y": 358
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 88,
+      "points": [
+        {
+          "x": 310,
+          "y": 568
+        },
+        {
+          "x": 530,
+          "y": 548
+        },
+        {
+          "x": 750,
+          "y": 590
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "grasslands_02_wood_1",
+      "type": "tree",
+      "x": 560,
+      "y": 360,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "grasslands_02_wood_2",
+      "type": "tree",
+      "x": 460,
+      "y": 120,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "grasslands_02_wood_3",
+      "type": "tree",
+      "x": 780,
+      "y": 180,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "grasslands_02_wood_4",
+      "type": "tree",
+      "x": 460,
+      "y": 440,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "grasslands_02_wood_5",
+      "type": "tree",
+      "x": 860,
+      "y": 500,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "grasslands_02_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 827,
+      "y": 392,
+      "scale": 0.22,
+      "rotation": -0.02,
+      "depth": 398,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "grasslands_02_object_2",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 422,
+      "y": 73,
+      "scale": 0.85,
+      "rotation": -0.09,
+      "depth": 79,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "grasslands_02_object_3",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 3
+      },
+      "x": 568,
+      "y": 652,
+      "scale": 0.63,
+      "rotation": 0.08,
+      "depth": 658,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "grasslands_02_object_4",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 0
+      },
+      "x": 498,
+      "y": 288,
+      "scale": 0.82,
+      "rotation": 0.08,
+      "depth": 294,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "grasslands_02_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 545,
+      "y": 78,
+      "scale": 0.24,
+      "rotation": -0.05,
+      "depth": 84,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "grasslands_02_object_6",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 842,
+      "y": 242,
+      "scale": 0.67,
+      "rotation": -0.07,
+      "depth": 248,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "grasslands_02_object_7",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 3
+      },
+      "x": 826,
+      "y": 488,
+      "scale": 0.66,
+      "rotation": -0.02,
+      "depth": 494,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "grasslands_02_object_8",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 0
+      },
+      "x": 655,
+      "y": 466,
+      "scale": 0.9,
+      "rotation": -0.09,
+      "depth": 472,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "grasslands_02_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 840,
+      "y": 328,
+      "scale": 0.24,
+      "rotation": -0.1,
+      "depth": 334,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "none",
+    "intensity": 0
+  },
+  "recommendedUnits": [
+    "swordsman",
+    "archer"
+  ]
+}

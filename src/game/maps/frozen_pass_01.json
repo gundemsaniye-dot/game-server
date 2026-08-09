@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 4,
+  "id": "frozen_pass_01",
+  "displayName": "Frozen Seal",
+  "biome": "frozen_pass",
+  "seed": 135805,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 14477805,
+    "laneColor": 12110800,
+    "laneHighlightColor": 16055293,
+    "laneEdgeColor": 7703959,
+    "patches": [
+      {
+        "id": "frozen_pass_01_terrain_1",
+        "shape": "ellipse",
+        "x": 411,
+        "y": 143,
+        "width": 397,
+        "height": 226,
+        "color": 15397877,
+        "alpha": 0.89,
+        "rotation": 0,
+        "depth": 3,
+        "material": "snow",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "frozen_pass_01_terrain_2",
+        "shape": "rectangle",
+        "x": 807,
+        "y": 173,
+        "width": 363,
+        "height": 199,
+        "color": 7502715,
+        "alpha": 0.86,
+        "rotation": -0.06,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "frozen_pass_01_terrain_3",
+        "shape": "ellipse",
+        "x": 634,
+        "y": 363,
+        "width": 487,
+        "height": 249,
+        "color": 11438428,
+        "alpha": 0.86,
+        "rotation": 0.1,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "frozen_pass_01_terrain_4",
+        "shape": "ellipse",
+        "x": 421,
+        "y": 564,
+        "width": 395,
+        "height": 195,
+        "color": 15397877,
+        "alpha": 0.83,
+        "rotation": 0.02,
+        "depth": 3,
+        "material": "snow",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "frozen_pass_01_terrain_5",
+        "shape": "rectangle",
+        "x": 823,
+        "y": 544,
+        "width": 370,
+        "height": 191,
+        "color": 7502715,
+        "alpha": 0.76,
+        "rotation": 0,
+        "depth": 3,
+        "material": "stone",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "frozen_pass_01_terrain_6",
+        "shape": "ellipse",
+        "x": 643,
+        "y": 93,
+        "width": 237,
+        "height": 117,
+        "color": 11438428,
+        "alpha": 0.82,
+        "rotation": 0.02,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "frozen_pass_01_water_1",
+        "shape": "ellipse",
+        "x": 620,
+        "y": 61.900000000000006,
+        "width": 194,
+        "height": 54,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 78,
+      "points": [
+        {
+          "x": 310,
+          "y": 150
+        },
+        {
+          "x": 530,
+          "y": 196
+        },
+        {
+          "x": 750,
+          "y": 130
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 90,
+      "points": [
+        {
+          "x": 310,
+          "y": 358
+        },
+        {
+          "x": 530,
+          "y": 314
+        },
+        {
+          "x": 750,
+          "y": 406
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 78,
+      "points": [
+        {
+          "x": 310,
+          "y": 572
+        },
+        {
+          "x": 530,
+          "y": 516
+        },
+        {
+          "x": 750,
+          "y": 600
+        },
+        {
+          "x": 970,
+          "y": 560
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "frozen_pass_01_wood_1",
+      "type": "tree",
+      "x": 520,
+      "y": 340,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "frozen_pass_01_wood_2",
+      "type": "tree",
+      "x": 440,
+      "y": 360,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "frozen_pass_01_wood_3",
+      "type": "tree",
+      "x": 800,
+      "y": 360,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "frozen_pass_01_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 850,
+      "y": 494,
+      "scale": 0.36,
+      "rotation": -0.02,
+      "depth": 500,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "frozen_pass_01_object_2",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 851,
+      "y": 463,
+      "scale": 0.28,
+      "rotation": -0.03,
+      "depth": 469,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "frozen_pass_01_object_3",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 502,
+      "y": 92,
+      "scale": 0.71,
+      "rotation": -0.05,
+      "depth": 98,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "frozen_pass_01_object_4",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 3
+      },
+      "x": 617,
+      "y": 460,
+      "scale": 0.63,
+      "rotation": -0.11,
+      "depth": 466,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "frozen_pass_01_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 509,
+      "y": 199,
+      "scale": 0.34,
+      "rotation": 0.11,
+      "depth": 205,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "frozen_pass_01_object_6",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 450,
+      "y": 205,
+      "scale": 0.27,
+      "rotation": -0.1,
+      "depth": 211,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "frozen_pass_01_object_7",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 861,
+      "y": 479,
+      "scale": 0.72,
+      "rotation": 0.01,
+      "depth": 485,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "frozen_pass_01_object_8",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 3
+      },
+      "x": 700,
+      "y": 489,
+      "scale": 0.8,
+      "rotation": 0.1,
+      "depth": 495,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 0.86,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1,
+    "mageDamageMultiplier": 1.1,
+    "shieldGuardHpMultiplier": 1.12
+  },
+  "weather": {
+    "type": "snow",
+    "intensity": 0.35
+  },
+  "recommendedUnits": [
+    "mace_guard",
+    "mage"
+  ]
+}

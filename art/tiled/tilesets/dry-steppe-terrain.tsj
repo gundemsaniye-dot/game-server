@@ -1,0 +1,106 @@
+{
+  "columns": 4,
+  "image": "../images/dry-steppe-terrain.png",
+  "imageheight": 40,
+  "imagewidth": 160,
+  "margin": 0,
+  "name": "dry-steppe-terrain",
+  "spacing": 0,
+  "tilecount": 4,
+  "tileheight": 40,
+  "tilewidth": 40,
+  "tiles": [
+    {
+      "id": 0,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "dry_soil"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 1.1
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "dry_soil"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 1.1
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "hazard"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 999
+        },
+        {
+          "name": "blocksDeploy",
+          "type": "bool",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "properties": [
+        {
+          "name": "terrainType",
+          "type": "string",
+          "value": "bridge"
+        },
+        {
+          "name": "walkable",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "name": "moveCost",
+          "type": "float",
+          "value": 1
+        }
+      ]
+    }
+  ],
+  "tiledversion": "1.11.0",
+  "tileoffset": {
+    "x": 0,
+    "y": 0
+  },
+  "type": "tileset",
+  "version": "1.10"
+}

@@ -1,0 +1,166 @@
+{
+    "activeFile": "maps/level2.tmj",
+    "expandedProjectPaths": [
+        "tilesets",
+        "maps"
+    ],
+    "file.lastUsedOpenFilter": "Tüm Dosyalar (*)",
+    "fileStates": {
+        "/Users/macpro/Desktop/grasslands_01.tmj": {
+            "scale": 0.5733,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 637.5370661084945,
+                "y": 604.3956043956043
+            }
+        },
+        "/Users/macpro/tilesets/reference-map-1.tsj": {
+            "scaleInDock": 1
+        },
+        "maps/grasslands_01.tmj": {
+            "scale": 1,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 635.5,
+                "y": 442.5
+            }
+        },
+        "maps/grasslands_02.tmj": {
+            "scale": 0.7124999999999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 639.2982456140352,
+                "y": 360.00000000000006
+            }
+        },
+        "maps/infernal_dungeon_01.tmj": {
+            "scale": 0.7124999999999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 638.5964912280702,
+                "y": 359.2982456140351
+            }
+        },
+        "maps/level1.tmj": {
+            "scale": 0.76,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 640.1315789473686,
+                "y": 359.8684210526316
+            }
+        },
+        "maps/level2.tmj": {
+            "scale": 0.7506,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 492.93898214761526,
+                "y": 286.437516653344
+            }
+        },
+        "maps/muddy_fields_01.tmj": {
+            "scale": 0.7124999999999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 638.5964912280702,
+                "y": 359.2982456140351
+            }
+        },
+        "maps/muddy_fields_02.tmj": {
+            "scale": 0.6598046875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 639.5832099934876,
+                "y": 359.1972056124563
+            }
+        },
+        "maps/muddy_fields_03.tmj": {
+            "scale": 0.6598046875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 639.5832099934876,
+                "y": 359.1972056124563
+            }
+        },
+        "maps/silent_forest_01.tmj": {
+            "scale": 0.6598046875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 639.5832099934876,
+                "y": 359.1972056124563
+            }
+        },
+        "maps/silent_forest_03.tmj": {
+            "scale": 0.5833593749999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 639.4000267845187,
+                "y": 359.98392928887114
+            }
+        },
+        "tilesets/forest-terrain.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/grasslands-terrain.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/infernal-terrain.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/muddy-terrain.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/navigation-blocked.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/navigation-bridge.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/navigation-cost.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/navigation-markers.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-1.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-19.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-2.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-3.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-5.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-6.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-7.tsj": {
+            "scaleInDock": 1
+        },
+        "tilesets/reference-map-8.tsj": {
+            "scaleInDock": 1
+        }
+    },
+    "openFiles": [
+        "maps/level2.tmj"
+    ],
+    "project": "castle-stormers.tiled-project",
+    "recentFiles": [
+        "maps/level2.tmj",
+        "maps/level1.tmj",
+        "maps/grasslands_01.tmj",
+        "maps/silent_forest_03.tmj",
+        "maps/silent_forest_01.tmj",
+        "maps/muddy_fields_03.tmj",
+        "maps/muddy_fields_02.tmj",
+        "maps/muddy_fields_01.tmj",
+        "maps/infernal_dungeon_01.tmj",
+        "maps/grasslands_02.tmj",
+        "/Users/macpro/Desktop/grasslands_01.tmj"
+    ]
+}

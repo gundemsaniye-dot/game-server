@@ -1,0 +1,450 @@
+{
+  "schemaVersion": 4,
+  "id": "muddy_fields_01",
+  "displayName": "Mire Spear",
+  "biome": "muddy_fields",
+  "seed": 48696,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 7828559,
+    "laneColor": 11376491,
+    "laneHighlightColor": 13679754,
+    "laneEdgeColor": 5326897,
+    "patches": [
+      {
+        "id": "muddy_fields_01_terrain_1",
+        "shape": "ellipse",
+        "x": 367,
+        "y": 138,
+        "width": 383,
+        "height": 210,
+        "color": 7168580,
+        "alpha": 0.86,
+        "rotation": -0.08,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "muddy_fields_01_terrain_2",
+        "shape": "rectangle",
+        "x": 797,
+        "y": 185,
+        "width": 348,
+        "height": 213,
+        "color": 11438428,
+        "alpha": 0.82,
+        "rotation": 0.08,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "muddy_fields_01_terrain_3",
+        "shape": "ellipse",
+        "x": 616,
+        "y": 360,
+        "width": 481,
+        "height": 246,
+        "color": 7315280,
+        "alpha": 0.8,
+        "rotation": -0.04,
+        "depth": 3,
+        "material": "grass",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "muddy_fields_01_terrain_4",
+        "shape": "ellipse",
+        "x": 394,
+        "y": 553,
+        "width": 366,
+        "height": 216,
+        "color": 7168580,
+        "alpha": 0.87,
+        "rotation": 0.07,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "muddy_fields_01_terrain_5",
+        "shape": "rectangle",
+        "x": 794,
+        "y": 565,
+        "width": 339,
+        "height": 206,
+        "color": 11438428,
+        "alpha": 0.89,
+        "rotation": -0.06,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "muddy_fields_01_terrain_6",
+        "shape": "ellipse",
+        "x": 658,
+        "y": 82,
+        "width": 252,
+        "height": 124,
+        "color": 7315280,
+        "alpha": 0.82,
+        "rotation": -0.09,
+        "depth": 3,
+        "material": "grass",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "muddy_fields_01_water_1",
+        "shape": "ellipse",
+        "x": 612,
+        "y": 258,
+        "width": 206,
+        "height": 62,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      },
+      {
+        "id": "muddy_fields_01_water_2",
+        "shape": "ellipse",
+        "x": 742,
+        "y": 476,
+        "width": 152,
+        "height": 58,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 74,
+      "points": [
+        {
+          "x": 310,
+          "y": 148
+        },
+        {
+          "x": 530,
+          "y": 178
+        },
+        {
+          "x": 750,
+          "y": 142
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 86,
+      "points": [
+        {
+          "x": 310,
+          "y": 358
+        },
+        {
+          "x": 530,
+          "y": 344
+        },
+        {
+          "x": 750,
+          "y": 376
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 74,
+      "points": [
+        {
+          "x": 310,
+          "y": 572
+        },
+        {
+          "x": 530,
+          "y": 542
+        },
+        {
+          "x": 750,
+          "y": 590
+        },
+        {
+          "x": 970,
+          "y": 560
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "muddy_fields_01_wood_1",
+      "type": "tree",
+      "x": 460,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "muddy_fields_01_wood_2",
+      "type": "tree",
+      "x": 800,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "muddy_fields_01_wood_3",
+      "type": "tree",
+      "x": 480,
+      "y": 520,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "muddy_fields_01_wood_4",
+      "type": "tree",
+      "x": 780,
+      "y": 540,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "muddy_fields_01_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 630,
+      "y": 444,
+      "scale": 0.31,
+      "rotation": 0.1,
+      "depth": 450,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_01_object_2",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "reeds",
+        "variant": 2
+      },
+      "x": 443,
+      "y": 78,
+      "scale": 0.8,
+      "rotation": 0.02,
+      "depth": 84,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_01_object_3",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 3
+      },
+      "x": 844,
+      "y": 70,
+      "scale": 0.62,
+      "rotation": 0.05,
+      "depth": 76,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "muddy_fields_01_object_4",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 0
+      },
+      "x": 530,
+      "y": 446,
+      "scale": 0.89,
+      "rotation": -0.11,
+      "depth": 452,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_01_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 468,
+      "y": 388,
+      "scale": 0.35,
+      "rotation": 0.07,
+      "depth": 394,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_01_object_6",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "reeds",
+        "variant": 2
+      },
+      "x": 416,
+      "y": 650,
+      "scale": 0.77,
+      "rotation": 0.04,
+      "depth": 656,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_01_object_7",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 3
+      },
+      "x": 853,
+      "y": 474,
+      "scale": 0.85,
+      "rotation": 0.07,
+      "depth": 480,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "muddy_fields_01_object_8",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "pebbles",
+        "variant": 0
+      },
+      "x": 769,
+      "y": 66,
+      "scale": 0.72,
+      "rotation": 0.02,
+      "depth": 72,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_01_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 437,
+      "y": 348,
+      "scale": 0.34,
+      "rotation": 0.04,
+      "depth": 354,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 0.92,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1.08,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "rain",
+    "intensity": 0.35
+  },
+  "recommendedUnits": [
+    "long_spearman",
+    "swordsman"
+  ]
+}

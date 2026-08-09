@@ -1,0 +1,463 @@
+{
+  "schemaVersion": 4,
+  "id": "silent_forest_03",
+  "displayName": "Deep Forest Clash",
+  "biome": "silent_forest",
+  "seed": 40777,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 4352839,
+    "laneColor": 10784358,
+    "laneHighlightColor": 13154702,
+    "laneEdgeColor": 3228975,
+    "patches": [
+      {
+        "id": "silent_forest_03_terrain_1",
+        "shape": "ellipse",
+        "x": 363,
+        "y": 165,
+        "width": 372,
+        "height": 206,
+        "color": 5465156,
+        "alpha": 0.9,
+        "rotation": -0.11,
+        "depth": 3,
+        "material": "forest_floor",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "silent_forest_03_terrain_2",
+        "shape": "rectangle",
+        "x": 796,
+        "y": 166,
+        "width": 352,
+        "height": 211,
+        "color": 7168580,
+        "alpha": 0.81,
+        "rotation": -0.1,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "silent_forest_03_terrain_3",
+        "shape": "ellipse",
+        "x": 609,
+        "y": 359,
+        "width": 490,
+        "height": 234,
+        "color": 11438428,
+        "alpha": 0.88,
+        "rotation": 0.1,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "silent_forest_03_terrain_4",
+        "shape": "ellipse",
+        "x": 392,
+        "y": 569,
+        "width": 373,
+        "height": 193,
+        "color": 5465156,
+        "alpha": 0.92,
+        "rotation": 0.06,
+        "depth": 3,
+        "material": "forest_floor",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "silent_forest_03_terrain_5",
+        "shape": "rectangle",
+        "x": 839,
+        "y": 546,
+        "width": 326,
+        "height": 192,
+        "color": 7168580,
+        "alpha": 0.82,
+        "rotation": -0.06,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "silent_forest_03_terrain_6",
+        "shape": "ellipse",
+        "x": 644,
+        "y": 74,
+        "width": 283,
+        "height": 131,
+        "color": 11438428,
+        "alpha": 0.78,
+        "rotation": -0.02,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "silent_forest_03_water_1",
+        "shape": "ellipse",
+        "x": 522,
+        "y": 128.41818181818184,
+        "width": 148,
+        "height": 48,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      },
+      {
+        "id": "silent_forest_03_water_2",
+        "shape": "ellipse",
+        "x": 802,
+        "y": 585.1818181818181,
+        "width": 136,
+        "height": 46,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 68,
+      "points": [
+        {
+          "x": 310,
+          "y": 152
+        },
+        {
+          "x": 530,
+          "y": 226
+        },
+        {
+          "x": 750,
+          "y": 248
+        },
+        {
+          "x": 970,
+          "y": 162
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 78,
+      "points": [
+        {
+          "x": 310,
+          "y": 356
+        },
+        {
+          "x": 530,
+          "y": 330
+        },
+        {
+          "x": 750,
+          "y": 390
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 68,
+      "points": [
+        {
+          "x": 310,
+          "y": 568
+        },
+        {
+          "x": 530,
+          "y": 492
+        },
+        {
+          "x": 750,
+          "y": 466
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "silent_forest_03_wood_1",
+      "type": "tree",
+      "x": 480,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "silent_forest_03_wood_2",
+      "type": "tree",
+      "x": 780,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "silent_forest_03_wood_3",
+      "type": "tree",
+      "x": 460,
+      "y": 480,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "silent_forest_03_wood_4",
+      "type": "tree",
+      "x": 800,
+      "y": 500,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "scale": 0.28,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "silent_forest_03_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 525,
+      "y": 349,
+      "scale": 0.37,
+      "rotation": -0.04,
+      "depth": 355,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_03_object_2",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 761,
+      "y": 646,
+      "scale": 0.34,
+      "rotation": 0.03,
+      "depth": 652,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_03_object_3",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 2
+      },
+      "x": 582,
+      "y": 599,
+      "scale": 0.71,
+      "rotation": -0.09,
+      "depth": 605,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_03_object_4",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 3
+      },
+      "x": 426,
+      "y": 99,
+      "scale": 0.76,
+      "rotation": 0.1,
+      "depth": 105,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_03_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 429,
+      "y": 89,
+      "scale": 0.38,
+      "rotation": -0.11,
+      "depth": 95,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_03_object_6",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 523,
+      "y": 72,
+      "scale": 0.36,
+      "rotation": -0.09,
+      "depth": 78,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_03_object_7",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 2
+      },
+      "x": 744,
+      "y": 630,
+      "scale": 0.74,
+      "rotation": 0.03,
+      "depth": 636,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_03_object_8",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 3
+      },
+      "x": 455,
+      "y": 637,
+      "scale": 0.7,
+      "rotation": 0.08,
+      "depth": 643,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_03_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 434,
+      "y": 54,
+      "scale": 0.4,
+      "rotation": -0.01,
+      "depth": 60,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_03_object_10",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-shared-pine-tree"
+      },
+      "x": 439,
+      "y": 668,
+      "scale": 0.33,
+      "rotation": -0.05,
+      "depth": 674,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1.1,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "mist",
+    "intensity": 0.35
+  },
+  "recommendedUnits": [
+    "peasant",
+    "horseman"
+  ]
+}

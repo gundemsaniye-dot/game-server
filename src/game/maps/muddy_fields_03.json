@@ -1,0 +1,450 @@
+{
+  "schemaVersion": 4,
+  "id": "muddy_fields_03",
+  "displayName": "Shield in the Mire",
+  "biome": "muddy_fields",
+  "seed": 64534,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 7828559,
+    "laneColor": 11376491,
+    "laneHighlightColor": 13679754,
+    "laneEdgeColor": 5326897,
+    "patches": [
+      {
+        "id": "muddy_fields_03_terrain_1",
+        "shape": "ellipse",
+        "x": 375,
+        "y": 160,
+        "width": 405,
+        "height": 219,
+        "color": 7168580,
+        "alpha": 0.78,
+        "rotation": -0.03,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "muddy_fields_03_terrain_2",
+        "shape": "rectangle",
+        "x": 799,
+        "y": 186,
+        "width": 395,
+        "height": 217,
+        "color": 11438428,
+        "alpha": 0.82,
+        "rotation": -0.03,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "muddy_fields_03_terrain_3",
+        "shape": "ellipse",
+        "x": 630,
+        "y": 360,
+        "width": 463,
+        "height": 237,
+        "color": 5465156,
+        "alpha": 0.79,
+        "rotation": -0.08,
+        "depth": 3,
+        "material": "forest_floor",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "muddy_fields_03_terrain_4",
+        "shape": "ellipse",
+        "x": 399,
+        "y": 558,
+        "width": 406,
+        "height": 193,
+        "color": 7168580,
+        "alpha": 0.78,
+        "rotation": 0.11,
+        "depth": 3,
+        "material": "mud",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "muddy_fields_03_terrain_5",
+        "shape": "rectangle",
+        "x": 821,
+        "y": 565,
+        "width": 364,
+        "height": 200,
+        "color": 11438428,
+        "alpha": 0.88,
+        "rotation": -0.05,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "muddy_fields_03_terrain_6",
+        "shape": "ellipse",
+        "x": 629,
+        "y": 98,
+        "width": 244,
+        "height": 111,
+        "color": 5465156,
+        "alpha": 0.91,
+        "rotation": -0.01,
+        "depth": 3,
+        "material": "forest_floor",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "muddy_fields_03_water_1",
+        "shape": "ellipse",
+        "x": 600,
+        "y": 139.92727272727274,
+        "width": 168,
+        "height": 58,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      },
+      {
+        "id": "muddy_fields_03_water_2",
+        "shape": "ellipse",
+        "x": 790,
+        "y": 583.5454545454545,
+        "width": 160,
+        "height": 60,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 1
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 58,
+      "points": [
+        {
+          "x": 310,
+          "y": 150
+        },
+        {
+          "x": 530,
+          "y": 214
+        },
+        {
+          "x": 750,
+          "y": 252
+        },
+        {
+          "x": 970,
+          "y": 162
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 68,
+      "points": [
+        {
+          "x": 310,
+          "y": 360
+        },
+        {
+          "x": 530,
+          "y": 332
+        },
+        {
+          "x": 750,
+          "y": 386
+        },
+        {
+          "x": 970,
+          "y": 360
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 58,
+      "points": [
+        {
+          "x": 310,
+          "y": 570
+        },
+        {
+          "x": 530,
+          "y": 500
+        },
+        {
+          "x": 750,
+          "y": 458
+        },
+        {
+          "x": 970,
+          "y": 558
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "muddy_fields_03_wood_1",
+      "type": "tree",
+      "x": 480,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "muddy_fields_03_wood_2",
+      "type": "tree",
+      "x": 780,
+      "y": 220,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "muddy_fields_03_wood_3",
+      "type": "tree",
+      "x": 420,
+      "y": 500,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "muddy_fields_03_wood_4",
+      "type": "tree",
+      "x": 780,
+      "y": 400,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "muddy_fields_03_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 560,
+      "y": 433,
+      "scale": 0.24,
+      "rotation": 0.06,
+      "depth": 439,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_03_object_2",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 0
+      },
+      "x": 525,
+      "y": 67,
+      "scale": 0.81,
+      "rotation": 0.09,
+      "depth": 73,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_03_object_3",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 1
+      },
+      "x": 688,
+      "y": 79,
+      "scale": 0.87,
+      "rotation": 0.09,
+      "depth": 85,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "muddy_fields_03_object_4",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 461,
+      "y": 117,
+      "scale": 0.64,
+      "rotation": 0.04,
+      "depth": 123,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "muddy_fields_03_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 423,
+      "y": 649,
+      "scale": 0.23,
+      "rotation": 0.05,
+      "depth": 655,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_03_object_6",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 0
+      },
+      "x": 432,
+      "y": 457,
+      "scale": 0.62,
+      "rotation": 0.06,
+      "depth": 463,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "muddy_fields_03_object_7",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 1
+      },
+      "x": 633,
+      "y": 80,
+      "scale": 0.79,
+      "rotation": 0.07,
+      "depth": 86,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "muddy_fields_03_object_8",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 2
+      },
+      "x": 435,
+      "y": 641,
+      "scale": 0.71,
+      "rotation": -0.02,
+      "depth": 647,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "muddy_fields_03_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 817,
+      "y": 70,
+      "scale": 0.21,
+      "rotation": 0.02,
+      "depth": 76,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 0.92,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1.08,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "rain",
+    "intensity": 0.5
+  },
+  "recommendedUnits": [
+    "mace_guard",
+    "archer"
+  ]
+}

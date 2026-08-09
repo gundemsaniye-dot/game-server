@@ -1,0 +1,15 @@
+{
+  "mapId": "replace-with-map-id",
+  "blocked": {
+    "rectangles": [[15, 0, 16, 17]],
+    "cells": []
+  },
+  "bridges": {
+    "rectangles": [],
+    "cells": [[15, 4], [16, 4]]
+  },
+  "costs": {
+    "2": [],
+    "3": []
+  }
+}

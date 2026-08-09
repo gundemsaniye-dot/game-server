@@ -1,0 +1,22 @@
+{
+  "columns": 5,
+  "image": "../images/navigation-markers.png",
+  "imageheight": 40,
+  "imagewidth": 200,
+  "margin": 0,
+  "name": "navigation-markers",
+  "spacing": 0,
+  "tilecount": 5,
+  "tileheight": 40,
+  "tilewidth": 40,
+  "tiledversion": "1.11.0",
+  "type": "tileset",
+  "version": "1.10",
+  "tiles": [
+    { "id": 0, "properties": [{ "name": "navigationRole", "type": "string", "value": "bridge" }] },
+    { "id": 1, "properties": [{ "name": "navigationRole", "type": "string", "value": "blocked" }] },
+    { "id": 2, "properties": [{ "name": "moveCost", "type": "int", "value": 2 }] },
+    { "id": 3, "properties": [{ "name": "moveCost", "type": "int", "value": 3 }] },
+    { "id": 4, "properties": [{ "name": "moveCost", "type": "int", "value": 4 }] }
+  ]
+}

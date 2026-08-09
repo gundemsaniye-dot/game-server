@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "maps": [
+    {
+      "file": "muddy_fields_01.tmj",
+      "campaignIndex": 6,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 1,
+      "laneConnectors": 1,
+      "bridges": 0,
+      "hazards": 2,
+      "objects": 25
+    },
+    {
+      "file": "muddy_fields_02.tmj",
+      "campaignIndex": 7,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 0,
+      "bridges": 2,
+      "hazards": 2,
+      "objects": 26
+    },
+    {
+      "file": "muddy_fields_03.tmj",
+      "campaignIndex": 8,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 1,
+      "laneConnectors": 2,
+      "bridges": 2,
+      "hazards": 4,
+      "objects": 30
+    },
+    {
+      "file": "storm_valley_01.tmj",
+      "campaignIndex": 9,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 2,
+      "bridges": 2,
+      "hazards": 2,
+      "objects": 28
+    },
+    {
+      "file": "storm_valley_02.tmj",
+      "campaignIndex": 10,
+      "ok": true,
+      "errors": [],
+      "lanePaths": 2,
+      "laneConnectors": 1,
+      "bridges": 4,
+      "hazards": 4,
+      "objects": 32
+    }
+  ],
+  "errors": []
+}

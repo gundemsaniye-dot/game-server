@@ -1,0 +1,35 @@
+{
+  "frames": {
+    "pine-tree.png": {
+      "frame": {
+        "x": 12,
+        "y": 12,
+        "w": 200,
+        "h": 289
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 200,
+        "h": 289
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 289
+      }
+    }
+  },
+  "meta": {
+    "app": "Castle Raid 2 map prop atlas builder",
+    "version": "1.0",
+    "image": "shared.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 448,
+      "h": 313
+    },
+    "scale": "1"
+  }
+}

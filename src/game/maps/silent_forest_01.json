@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 4,
+  "id": "silent_forest_01",
+  "displayName": "Silent Woodline",
+  "biome": "silent_forest",
+  "seed": 24939,
+  "world": {
+    "width": 1280,
+    "height": 720
+  },
+  "anchors": {
+    "playerCastle": {
+      "x": 248,
+      "y": 560,
+      "locked": true
+    },
+    "enemyCastle": {
+      "x": 1032,
+      "y": 105,
+      "locked": true
+    }
+  },
+  "deployZone": {
+    "x": 310,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "enemySpawnZone": {
+    "x": 970,
+    "width": 156,
+    "minY": 90,
+    "maxY": 630,
+    "locked": true
+  },
+  "terrain": {
+    "baseColor": 4352839,
+    "laneColor": 10784358,
+    "laneHighlightColor": 13154702,
+    "laneEdgeColor": 3228975,
+    "patches": [
+      {
+        "id": "silent_forest_01_terrain_1",
+        "shape": "ellipse",
+        "x": 413,
+        "y": 144,
+        "width": 404,
+        "height": 231,
+        "color": 5465156,
+        "alpha": 0.82,
+        "rotation": 0.07,
+        "depth": 3,
+        "material": "forest_floor",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "silent_forest_01_terrain_2",
+        "shape": "rectangle",
+        "x": 795,
+        "y": 164,
+        "width": 359,
+        "height": 208,
+        "color": 11438428,
+        "alpha": 0.8,
+        "rotation": 0.01,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "silent_forest_01_terrain_3",
+        "shape": "ellipse",
+        "x": 595,
+        "y": 359,
+        "width": 455,
+        "height": 242,
+        "color": 7315280,
+        "alpha": 0.88,
+        "rotation": -0.1,
+        "depth": 3,
+        "material": "grass",
+        "collision": "none",
+        "variant": 3
+      },
+      {
+        "id": "silent_forest_01_terrain_4",
+        "shape": "ellipse",
+        "x": 445,
+        "y": 564,
+        "width": 388,
+        "height": 215,
+        "color": 5465156,
+        "alpha": 0.85,
+        "rotation": 0.02,
+        "depth": 3,
+        "material": "forest_floor",
+        "collision": "none",
+        "variant": 1
+      },
+      {
+        "id": "silent_forest_01_terrain_5",
+        "shape": "rectangle",
+        "x": 813,
+        "y": 547,
+        "width": 355,
+        "height": 198,
+        "color": 11438428,
+        "alpha": 0.83,
+        "rotation": -0.07,
+        "depth": 3,
+        "material": "soil",
+        "collision": "none",
+        "variant": 0
+      },
+      {
+        "id": "silent_forest_01_terrain_6",
+        "shape": "ellipse",
+        "x": 615,
+        "y": 96,
+        "width": 237,
+        "height": 111,
+        "color": 7315280,
+        "alpha": 0.85,
+        "rotation": -0.1,
+        "depth": 3,
+        "material": "grass",
+        "collision": "none",
+        "variant": 2
+      },
+      {
+        "id": "silent_forest_01_water_1",
+        "shape": "ellipse",
+        "x": 602,
+        "y": 71.18181818181819,
+        "width": 176,
+        "height": 50,
+        "color": 5740981,
+        "alpha": 0.84,
+        "rotation": 0,
+        "depth": 7,
+        "material": "water",
+        "collision": "water",
+        "variant": 0
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "top",
+      "width": 80,
+      "points": [
+        {
+          "x": 310,
+          "y": 150
+        },
+        {
+          "x": 530,
+          "y": 202
+        },
+        {
+          "x": 750,
+          "y": 128
+        },
+        {
+          "x": 970,
+          "y": 160
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "width": 92,
+      "points": [
+        {
+          "x": 310,
+          "y": 360
+        },
+        {
+          "x": 530,
+          "y": 314
+        },
+        {
+          "x": 750,
+          "y": 404
+        },
+        {
+          "x": 970,
+          "y": 358
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "width": 80,
+      "points": [
+        {
+          "x": 310,
+          "y": 570
+        },
+        {
+          "x": 530,
+          "y": 520
+        },
+        {
+          "x": 750,
+          "y": 606
+        },
+        {
+          "x": 970,
+          "y": 560
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "silent_forest_01_wood_1",
+      "type": "tree",
+      "x": 640,
+      "y": 520,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "silent_forest_01_wood_2",
+      "type": "tree",
+      "x": 420,
+      "y": 200,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "silent_forest_01_wood_3",
+      "type": "tree",
+      "x": 780,
+      "y": 200,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "silent_forest_01_wood_4",
+      "type": "tree",
+      "x": 460,
+      "y": 520,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    },
+    {
+      "id": "silent_forest_01_wood_5",
+      "type": "tree",
+      "x": 860,
+      "y": 560,
+      "amount": 12,
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "scale": 0.17,
+      "rotation": 0,
+      "depth": 8
+    }
+  ],
+  "objects": [
+    {
+      "id": "silent_forest_01_object_1",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 776,
+      "y": 525,
+      "scale": 0.23,
+      "rotation": 0.07,
+      "depth": 531,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_01_object_2",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 3
+      },
+      "x": 483,
+      "y": 423,
+      "scale": 0.71,
+      "rotation": -0.05,
+      "depth": 429,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_01_object_3",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 0
+      },
+      "x": 613,
+      "y": 647,
+      "scale": 0.88,
+      "rotation": 0.03,
+      "depth": 653,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_01_object_4",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 1
+      },
+      "x": 811,
+      "y": 216,
+      "scale": 0.85,
+      "rotation": 0.05,
+      "depth": 222,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_01_object_5",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 438,
+      "y": 647,
+      "scale": 0.23,
+      "rotation": 0,
+      "depth": 653,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_01_object_6",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 3
+      },
+      "x": 836,
+      "y": 480,
+      "scale": 0.65,
+      "rotation": 0.05,
+      "depth": 486,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_01_object_7",
+      "kind": "decoration",
+      "visual": {
+        "source": "procedural",
+        "id": "branch",
+        "variant": 0
+      },
+      "x": 859,
+      "y": 255,
+      "scale": 0.69,
+      "rotation": 0.01,
+      "depth": 261,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_01_object_8",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "fallen_log",
+        "variant": 1
+      },
+      "x": 573,
+      "y": 430,
+      "scale": 0.72,
+      "rotation": -0.05,
+      "depth": 436,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    },
+    {
+      "id": "silent_forest_01_object_9",
+      "kind": "decoration",
+      "visual": {
+        "source": "asset",
+        "assetKey": "map-prop-frozen_pass-snow-pine"
+      },
+      "x": 466,
+      "y": 73,
+      "scale": 0.22,
+      "rotation": 0.05,
+      "depth": 79,
+      "footprintRadius": 20,
+      "blocksDeploy": false
+    },
+    {
+      "id": "silent_forest_01_object_10",
+      "kind": "obstacle",
+      "visual": {
+        "source": "procedural",
+        "id": "rock_cluster",
+        "variant": 3
+      },
+      "x": 477,
+      "y": 636,
+      "scale": 0.77,
+      "rotation": 0,
+      "depth": 642,
+      "footprintRadius": 20,
+      "blocksDeploy": true
+    }
+  ],
+  "modifiers": {
+    "globalSpeedMultiplier": 1,
+    "archerRangeMultiplier": 1,
+    "horsemanSpeedMultiplier": 1,
+    "peasantGatherMultiplier": 1.1,
+    "mageDamageMultiplier": 1,
+    "shieldGuardHpMultiplier": 1
+  },
+  "weather": {
+    "type": "mist",
+    "intensity": 0.25
+  },
+  "recommendedUnits": [
+    "peasant",
+    "archer"
+  ]
+}

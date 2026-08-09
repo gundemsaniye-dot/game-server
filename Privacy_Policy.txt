@@ -1,0 +1,173 @@
+CASTLE STORMERS PRIVACY POLICY
+
+Effective date: August 5, 2026
+Last updated: August 5, 2026
+
+This Privacy Policy explains how HATICE NUR ARI, operating under the developer name Next Gen Studio ("Developer," "we," "us," or "our"), handles information in connection with the mobile game Castle Stormers (the "Game"). The Game's Android package name is com.castlestormers.game.
+
+Please read this Privacy Policy carefully. If you do not agree with it, do not use the Game.
+
+1. PRIVACY SUMMARY
+
+The current version of Castle Stormers:
+
+- does not require or provide a user account;
+- does not transmit gameplay information or personal data from the Game to the Developer;
+- does not include advertising or advertising SDKs;
+- does not include analytics, tracking, or crash-reporting SDKs;
+- does not use an advertising identifier or create a user profile;
+- does not offer cloud saves, online multiplayer, social features, or user-generated content;
+- does not offer in-app purchases; and
+- stores game progress and preferences locally on the user's device.
+
+Accordingly, based on the functionality of the current production release, the Game does not collect or share user data as those terms are used in Google Play's Data safety section. Information that remains only on the user's device is described below for transparency.
+
+2. INFORMATION PROCESSED LOCALLY ON YOUR DEVICE
+
+Castle Stormers may create and access the following information solely on your device so that the Game can operate:
+
+- campaign and level progress, including completed and unlocked levels;
+- stars, unlocks, selected units, and selected combat loadout;
+- gameplay state and limited recent battle results, such as victory or defeat, battle duration, level identifier, castle health ratio, worker losses, completion time, and locally generated gameplay seeds;
+- map progress or locally saved game/map state where that feature is available;
+- sound and mute preferences; and
+- timestamps used to maintain local game progress.
+
+This information is stored in the Game's local application storage. It is used only to save progress, restore preferences, unlock content, balance normal gameplay on the device, and provide the Game's requested features. It is not transmitted by the production Game to the Developer or to advertising or analytics companies.
+
+Local game information is not used for advertising, marketing, cross-app tracking, credit decisions, or profiling.
+
+3. PERSONAL AND SENSITIVE INFORMATION
+
+The current version of the Game does not ask for, access, or intentionally collect:
+
+- your name, email address, postal address, or telephone number through the Game;
+- contacts, call logs, SMS messages, photos, videos, files, or calendar data;
+- precise or approximate location;
+- camera or microphone recordings;
+- health, financial, payment-card, authentication, or government identification data;
+- Android Advertising ID or other persistent device identifiers; or
+- browsing history or a list of other applications installed on your device.
+
+Please do not send passwords, payment-card details, government identification numbers, Google account credentials, or other unnecessary sensitive information when requesting support.
+
+4. ACCOUNTS AND ACCOUNT DELETION
+
+Castle Stormers does not create or maintain player accounts. Therefore, there is no Game account or server-side player profile for the Developer to delete.
+
+You can delete locally stored game progress and preferences by clearing Castle Stormers' storage in your Android device settings or by uninstalling the Game. This deletion is controlled by your device and is generally permanent. The Developer cannot recover deleted local progress and cannot remotely delete or restore data that never left your device.
+
+If a future version introduces accounts or server-side storage, we will update this Privacy Policy, update the Google Play Data safety disclosures, and provide any account- and data-deletion methods required by Google Play and applicable law before or when that functionality becomes available.
+
+5. DEVICE PERMISSIONS AND NETWORK ACCESS
+
+The Android application currently declares the INTERNET permission. This supports the underlying Android WebView/application framework and possible communication with platform services. The current production Game does not use this permission to send gameplay information or personal data to a Developer-operated server.
+
+The Game does not currently request Android runtime permissions for location, camera, microphone, contacts, phone, SMS, or media access.
+
+Development and testing builds may contain local diagnostic functions used by the Developer during development. These functions are disabled in the production release and are not used to transmit production users' gameplay data to the Developer.
+
+6. GOOGLE PLAY, ANDROID, AND THIRD-PARTY PLATFORM SERVICES
+
+The Game is distributed through Google Play and runs on Android. Google and your device manufacturer may independently process information such as download and purchase history, IP address, device information, security information, aggregated usage statistics, and crash or performance diagnostics as part of operating their platforms. Google Play may make aggregated store statistics or Android vitals available to developers.
+
+This platform-level processing is controlled by the relevant platform provider and is governed by its own terms and privacy policy, not by this Privacy Policy. For information about Google's practices, visit:
+
+https://policies.google.com/privacy
+
+The Game is built using the Phaser game framework and Capacitor application framework. In the current configuration, these frameworks provide game and application functionality and are not configured with advertising or analytics services that transmit user data to the Developer.
+
+7. INFORMATION YOU VOLUNTARILY PROVIDE OUTSIDE THE GAME
+
+If you contact us by email, telephone, or another support channel, we may receive the information you choose to provide, such as:
+
+- your name and contact details;
+- the content of your message and attachments;
+- your device model, operating-system version, and Game version;
+- technical details you voluntarily provide about an error; and
+- our correspondence with you.
+
+We use this information only to respond to your request, provide support, investigate errors, protect our legal rights, comply with law, and maintain necessary business records. Support information is provided voluntarily and is not collected automatically through the Game.
+
+Our email and communications service providers may process this correspondence on our behalf. Depending on the address used, these providers may include Apple iCloud Mail or Google Gmail. Their own privacy terms also apply to their services.
+
+8. HOW INFORMATION IS SHARED
+
+The current production Game does not transmit user data to us and does not sell or share user data with advertisers, data brokers, analytics providers, or other companies.
+
+Information voluntarily provided in a support request may be disclosed only:
+
+- to communications, hosting, or technical service providers that help us respond to the request;
+- when reasonably necessary to diagnose and resolve the issue you reported;
+- when required by applicable law, regulation, legal process, or a valid governmental request;
+- to protect the rights, safety, and security of users, the public, the Developer, or the Game; or
+- in connection with a merger, acquisition, reorganization, or transfer of the Game, subject to appropriate notice and legal safeguards.
+
+We do not sell personal information received through support communications.
+
+9. LEGAL BASES FOR SUPPORT COMMUNICATIONS
+
+Where data-protection law requires a legal basis, we process information you voluntarily submit for one or more of the following purposes: responding to your request or taking steps at your request; performing our obligations to you; complying with legal obligations; and pursuing legitimate interests such as providing support, maintaining security, preventing abuse, and establishing or defending legal claims. Where consent is the applicable basis, you may withdraw it, without affecting processing already lawfully performed.
+
+10. DATA RETENTION AND DELETION
+
+Local Game data remains on your device until it is overwritten through normal play, cleared through your device settings, or removed when you uninstall the Game. We do not receive or retain a server copy of that local data.
+
+Support correspondence is retained only for as long as reasonably necessary to resolve the request, maintain support history, prevent abuse, and satisfy legal, tax, accounting, or dispute-related obligations. As a general rule, we aim to delete or anonymize ordinary support correspondence within 24 months after the matter is closed, unless a longer period is required or permitted by law or necessary for an active dispute.
+
+You may request deletion of personal information that you voluntarily sent to us by emailing ipaddev.studio@icloud.com. We will verify and respond to the request as required by applicable law. We may retain limited information when legally required or when necessary to establish, exercise, or defend legal claims.
+
+11. DATA SECURITY
+
+Because local gameplay data remains on your device, its security also depends on the security of your device, Android, and any backup settings you control. We use reasonable administrative and technical measures appropriate to the nature of support information we receive. When personal data is transmitted through supported online services, those services are expected to use secure transmission methods such as HTTPS/TLS.
+
+No storage or transmission method is completely secure. You are responsible for maintaining the security of your device and email account and for avoiding unnecessary sensitive information in support messages.
+
+12. INTERNATIONAL PROCESSING
+
+If you contact us from outside Türkiye, your support information may be processed in Türkiye and in countries where our communications service providers operate. Where required, such transfers are handled using safeguards recognized under applicable data-protection law.
+
+13. CHILDREN'S PRIVACY
+
+The Game does not require an account and does not knowingly collect personal information from children through the Game. Local gameplay information stays on the device regardless of the user's age.
+
+Children should not send personal information through support channels without permission and supervision from a parent or legal guardian. If you are a parent or guardian and believe a child sent us personal information, contact us at ipaddev.studio@icloud.com. We will review and delete it where required by law.
+
+If the Game is offered to children in a jurisdiction with additional child-privacy requirements, we will apply those requirements. Any future advertising, analytics, or data-collection feature will be reviewed and disclosed before release, including under Google Play Families policies where applicable.
+
+14. YOUR PRIVACY RIGHTS
+
+Depending on your location, including under Türkiye's Personal Data Protection Law (KVKK) and the European Union/European Economic Area's General Data Protection Regulation (GDPR), you may have rights concerning personal information that we hold about you. These may include the right to request access, correction, deletion, restriction, objection, portability, or information about processing, and the right to lodge a complaint with a competent data-protection authority.
+
+Because the Game does not send local gameplay data to us, we cannot access, identify, export, correct, or delete that local data remotely. You can control it using your device settings as explained in Section 4.
+
+To exercise a right concerning support correspondence or ask a privacy question, contact ipaddev.studio@icloud.com. We may request reasonable information to verify your identity and the scope of your request.
+
+15. CHANGES TO THIS PRIVACY POLICY
+
+We may update this Privacy Policy to reflect changes to the Game, legal requirements, or our practices. The "Last updated" date will identify the latest version. If a change materially affects how the Game handles personal or sensitive user data, we will provide notice appropriate to the change and obtain consent where required before the new processing begins.
+
+The current policy will be made available through the Game and/or the official Google Play listing. Continued use after an update is subject to applicable law; it does not replace consent where consent is legally required.
+
+16. CONTACT AND DEVELOPER INFORMATION
+
+Developer Name: Next Gen Studio
+Legal Name / Data Controller: HATICE NUR ARI
+
+Primary Support and Privacy Email:
+ipaddev.studio@icloud.com
+
+Additional Contact Emails:
+devhtc@icloud.com
+appdivision.team@gmail.com
+
+Phone:
++90 534 358 84 18
+
+Address:
+30 AĞUSTOS ZAFER MAH. BOZYAKA CAD.
+B BLOK NO: 24B İÇ KAPI NO: 4
+16280 NİLÜFER / BURSA
+Türkiye
+
+For the fastest response to a privacy request, use the subject line "Castle Stormers Privacy Request" and email ipaddev.studio@icloud.com.
