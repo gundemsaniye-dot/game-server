@@ -101,8 +101,11 @@ export class Preloader extends Scene {
   }
 
   create() {
+    const params = new URLSearchParams(window.location.search);
+    const perf = getAndroidPerfRequest();
+    const qaAllowed = import.meta.env.DEV || perf.enabled;
 
-    if (new URLSearchParams(window.location.search).get("nativeReturn") === "menu") {
+    if (params.get("nativeReturn") === "menu") {
       castleLog("PRELOAD", "complete -> native return MainMenu");
       this.scene.start("MainMenu", { skipSplash: true });
       return;
@@ -116,6 +119,26 @@ export class Preloader extends Scene {
       this.registry.set("lastLevelId", "level_005");
       this.registry.set("newlyUnlockedUnitId", "long_spearman");
       this.scene.start("GameOver");
+      return;
+    }
+    if (qaAllowed && params.get("scene") === "online-result") {
+      this.registry.set("battleResult", params.get("result") === "win" ? "victory" : "defeat");
+      this.registry.set("onlineBattle", true);
+      this.registry.set("lastBattleMapId", "grasslands_01");
+      this.registry.set("onlinePlayerSide", params.get("side") === "right" ? "right" : "left");
+      this.registry.set("lastLevelId", "level_001");
+      this.registry.set("newlyUnlockedUnitId", null);
+      this.scene.start("GameOver");
+      return;
+    }
+    if (qaAllowed && params.get("scene") === "battle" && params.get("onlineUiQa") === "1") {
+      this.scene.start("Game", {
+        levelId: "level_001",
+        isOnline: true,
+        onlineUiQa: true,
+        roomId: "online-ui-qa",
+        side: params.get("side") === "right" ? "right" : "left",
+      });
       return;
     }
     if (import.meta.env.DEV && new URLSearchParams(window.location.search).get("scene") === "loadout") {

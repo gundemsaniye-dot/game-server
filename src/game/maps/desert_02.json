@@ -263,7 +263,7 @@
       "id": "desert_02_wood_3",
       "type": "tree",
       "x": 840,
-      "y": 320,
+      "y": 340,
       "amount": 12,
       "visual": {
         "source": "asset",

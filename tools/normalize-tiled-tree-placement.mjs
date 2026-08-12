@@ -1,5 +1,6 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { requireTmjMutationApproval } from "./lib/require-tmj-mutation-approval.mjs";
 import {
   forbiddenCellsUnderTreeFootprint,
   findNearestTreeSafePosition,
@@ -14,6 +15,7 @@ const root = process.cwd();
 const mapsRoot = path.join(root, "art", "tiled", "maps");
 const legacyMapsRoot = path.join(root, "src", "game", "maps");
 const checkOnly = process.argv.includes("--check");
+if (!checkOnly) requireTmjMutationApproval("normalize-tiled-tree-placement");
 const FORTRESS_PROP_MIN_X = 390;
 const FORTRESS_PROP_MAX_X = 890;
 const TREE_TO_TREE_GAP = 12;

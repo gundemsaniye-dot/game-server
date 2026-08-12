@@ -34,10 +34,6 @@ function createDefinition(mapId: keyof typeof MAP_BIOMES): TiledBattleMapDefinit
       tiledName: "navigation-blocked",
       textureKey: "tiles-navigation-blocked",
       imageUrl: "tiled/tilesets/navigation-blocked.png",
-    }, {
-      tiledName: "navigation-cost",
-      textureKey: "tiles-navigation-cost",
-      imageUrl: "tiled/tilesets/navigation-cost.png",
     }],
     mode: "tiled-hybrid",
     renderLegacyTerrain: false,

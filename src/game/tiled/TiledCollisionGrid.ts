@@ -17,6 +17,8 @@ const groundCell = (): NavCell => ({
 const hasTile = (tile: Phaser.Tilemaps.Tile | null | undefined) => Boolean(tile && tile.index >= 0);
 const hasNavigationRole = (tile: Phaser.Tilemaps.Tile | null | undefined, role: "bridge" | "blocked") =>
   hasTile(tile) && tile?.properties.navigationRole === role;
+const objectProperty = (object: Phaser.Types.Tilemaps.TiledObject, name: string) =>
+  object.properties?.find((property: { name?: string; value?: unknown }) => property.name === name)?.value;
 
 /** A read-only 20px grid built from the invisible Tiled navigation layers. */
 export class TiledCollisionGrid {
@@ -26,33 +28,23 @@ export class TiledCollisionGrid {
 
   constructor(tilemap: Phaser.Tilemaps.Tilemap) {
     const blocked = tilemap.getLayer("NAV_BLOCKED");
-    const costs = tilemap.getLayer("NAV_COST");
     const bridges = tilemap.getLayer("05_BRIDGES");
     for (let tileY = 0; tileY < 18; tileY += 1) {
       for (let tileX = 0; tileX < 32; tileX += 1) {
         const blockedTile = blocked?.data[tileY]?.[tileX] ?? null;
-        const costTile = costs?.data[tileY]?.[tileX] ?? null;
         const bridgeTile = bridges?.data[tileY]?.[tileX] ?? null;
         // A marker on the wrong layer must never silently change movement.
         // Only the explicit green bridge and red blocked marker properties are
         // accepted as movement data.
         const isBlocked = hasNavigationRole(blockedTile, "blocked");
         const isBridge = hasNavigationRole(bridgeTile, "bridge");
-        const properties = (
-          isBridge ? bridgeTile?.properties : isBlocked ? blockedTile?.properties : costTile?.properties ?? {}
-        ) as Record<string, unknown>;
-        // Reference-art Tilemaps use a unique visual tile in each cell, so
-        // navigation cost is authored directly as the NAV_COST GID (2..4)
-        // instead of relying on visual tileset properties.
-        const authoredCost = hasTile(costTile) && costTile ? costTile.index + 1 : undefined;
+        const properties = (isBridge ? bridgeTile?.properties : blockedTile?.properties ?? {}) as Record<string, unknown>;
         const nav = {
           walkable: isBridge ? true : properties.walkable !== false && !isBlocked,
           terrainType: isBridge
             ? "bridge"
             : typeof properties.terrainType === "string" ? properties.terrainType : isBlocked ? "solid" : "ground",
-          moveCost: typeof properties.moveCost === "number"
-            ? properties.moveCost
-            : authoredCost && authoredCost > 1 ? authoredCost : 1,
+          moveCost: typeof properties.moveCost === "number" ? properties.moveCost : 1,
           // Bridge decks stay walkable for troops but are reserved corridors:
           // units, resources and scenery cannot be deployed on them.
           blocksDeploy: isBridge || properties.blocksDeploy === true || (isBlocked && !isBridge),
@@ -62,6 +54,38 @@ export class TiledCollisionGrid {
           for (let offsetX = 0; offsetX < 2; offsetX += 1) {
             this.cells[tileY * 2 + offsetY][tileX * 2 + offsetX] = { ...nav };
           }
+        }
+      }
+    }
+    this.applyFortressObjectBlockers(tilemap);
+  }
+
+  private applyFortressObjectBlockers(tilemap: Phaser.Tilemaps.Tilemap) {
+    const layer = tilemap.getObjectLayer("GAMEPLAY_ZONES");
+    for (const object of layer?.objects ?? []) {
+      const type = object.type || (object as Phaser.Types.Tilemaps.TiledObject & { class?: string }).class || "";
+      if (type !== "CastleAnchor") continue;
+      if (objectProperty(object, "blocksNavigation") !== true) continue;
+      if (
+        typeof object.x !== "number" ||
+        typeof object.y !== "number" ||
+        typeof object.width !== "number" ||
+        typeof object.height !== "number" ||
+        object.width <= 0 ||
+        object.height <= 0
+      ) continue;
+
+      const first = this.worldToCell(object.x, object.y);
+      const last = this.worldToCell(object.x + object.width - 0.001, object.y + object.height - 0.001);
+      for (let row = first.row; row <= last.row; row += 1) {
+        for (let column = first.column; column <= last.column; column += 1) {
+          this.cells[row][column] = {
+            walkable: false,
+            terrainType: "solid",
+            moveCost: 999,
+            blocksDeploy: true,
+            damagePerSecond: 0,
+          };
         }
       }
     }

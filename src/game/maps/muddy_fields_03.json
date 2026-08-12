@@ -262,7 +262,7 @@
     {
       "id": "muddy_fields_03_wood_3",
       "type": "tree",
-      "x": 420,
+      "x": 480,
       "y": 500,
       "amount": 12,
       "visual": {
@@ -276,8 +276,8 @@
     {
       "id": "muddy_fields_03_wood_4",
       "type": "tree",
-      "x": 780,
-      "y": 400,
+      "x": 760,
+      "y": 480,
       "amount": 12,
       "visual": {
         "source": "asset",

@@ -115,9 +115,6 @@
         "tilesets/navigation-bridge.tsj": {
             "scaleInDock": 1
         },
-        "tilesets/navigation-cost.tsj": {
-            "scaleInDock": 1
-        },
         "tilesets/navigation-markers.tsj": {
             "scaleInDock": 1
         },

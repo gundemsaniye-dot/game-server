@@ -222,6 +222,15 @@ export default defineConfig({
     server: {
         port: 8080,
         // Permit temporary ngrok subdomains while testing this local dev server.
-        allowedHosts: ['.ngrok-free.dev']
+        allowedHosts: ['.ngrok-free.dev'],
+        proxy: {
+            // Keep online WebSocket traffic on the same origin as the game so
+            // temporary HTTPS ngrok domains work without hard-coded URLs.
+            '/socket': {
+                target: 'ws://127.0.0.1:3001',
+                ws: true,
+                changeOrigin: true
+            }
+        }
     }
 });

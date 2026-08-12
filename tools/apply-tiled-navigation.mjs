@@ -1,6 +1,9 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { tiledFileForMapId } from "./lib/tiled-level-manifest.mjs";
+import { requireTmjMutationApproval } from "./lib/require-tmj-mutation-approval.mjs";
+
+requireTmjMutationApproval("apply-tiled-navigation");
 
 const root = process.cwd();
 const mapsRoot = path.join(root, "art", "tiled", "maps");
@@ -52,21 +55,13 @@ for (const file of files) {
 
   const blocked = Array(cells).fill(0);
   const bridges = Array(cells).fill(0);
-  const costs = Array(cells).fill(0);
 
   applyRectangles(blocked, definition.blocked?.rectangles, 1, mapId);
   applyCells(blocked, definition.blocked?.cells, 1, mapId);
   applyRectangles(bridges, definition.bridges?.rectangles, 1, mapId);
   applyCells(bridges, definition.bridges?.cells, 1, mapId);
-  for (const [cost, entries] of Object.entries(definition.costs ?? {})) {
-    const numericCost = Number(cost);
-    if (!Number.isInteger(numericCost) || numericCost < 2 || numericCost > 4) throw new Error(`${mapId}: costs must be 2, 3, or 4.`);
-    applyCells(costs, entries, numericCost, mapId);
-  }
-
   layer(map, "NAV_BLOCKED").data = blocked;
   layer(map, "05_BRIDGES").data = bridges;
-  layer(map, "NAV_COST").data = costs;
   await writeFile(mapPath, `${JSON.stringify(map)}\n`);
   console.log(`Applied navigation: ${mapId}`);
 }

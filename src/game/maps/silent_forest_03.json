@@ -234,8 +234,8 @@
     {
       "id": "silent_forest_03_wood_1",
       "type": "tree",
-      "x": 480,
-      "y": 220,
+      "x": 460,
+      "y": 240,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -249,7 +249,7 @@
       "id": "silent_forest_03_wood_2",
       "type": "tree",
       "x": 780,
-      "y": 220,
+      "y": 280,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -263,7 +263,7 @@
       "id": "silent_forest_03_wood_3",
       "type": "tree",
       "x": 460,
-      "y": 480,
+      "y": 500,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -297,10 +297,10 @@
         "assetKey": "map-prop-shared-pine-tree"
       },
       "x": 525,
-      "y": 349,
+      "y": 369,
       "scale": 0.37,
       "rotation": -0.04,
-      "depth": 355,
+      "depth": 375,
       "footprintRadius": 20,
       "blocksDeploy": false
     },

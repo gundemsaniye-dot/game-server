@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Build Phaser/Tiled-ready 40px tile atlases from the approved map artwork.
-
-Each supplied 1672x941 reference is scaled once to the fixed 1280x720 battle
-area, then cut into the game's native 32x18 grid.  Using a unique tile for
-every cell keeps the rendered result visually identical to the approved map
-while retaining a real Phaser Tilemap for render order and navigation.
-"""
+"""Build the Tiled editor preview and matching reference tileset."""
 
 from __future__ import annotations
 
@@ -24,8 +18,11 @@ MAP_DIR = ROOT / "art" / "tiled" / "maps"
 TILE_SIZE = 40
 MAP_COLUMNS = 32
 MAP_ROWS = 18
-ATLAS_COLUMNS = 24
-ATLAS_ROWS = 24
+# Keep atlas rows identical to map rows. Tile IDs stay row-major and the
+# Tilesets panel now shows the coherent map instead of wrapping each 32-tile
+# map row across a 24-column square texture.
+ATLAS_COLUMNS = MAP_COLUMNS
+ATLAS_ROWS = MAP_ROWS
 
 MANIFEST_PATH = ROOT / "art" / "tiled" / "level-manifest.json"
 
@@ -80,39 +77,24 @@ def build_level(level: int, map_file: str) -> None:
     navigation_tilesets = [
         {"firstgid": 577, "source": "../tilesets/navigation-bridge.tsj"},
         {"firstgid": 578, "source": "../tilesets/navigation-blocked.tsj"},
-        {"firstgid": 579, "source": "../tilesets/navigation-cost.tsj"},
     ]
-    tiled_map["tilesets"] = [{"firstgid": 1, "source": f"../tilesets/reference-map-{level}.tsj"}, *navigation_tilesets]
-    base = next(layer for layer in tiled_map["layers"] if layer["name"] == "00_GROUND_BASE")
-    base["data"] = list(range(1, MAP_COLUMNS * MAP_ROWS + 1))
-    base["visible"] = False
-    # These legacy paint layers contain an earlier procedural layout. Phaser
-    # already ignores them for reference-art maps; hide them in Tiled too so
-    # authors see the approved single-piece composition without overlays.
-    editor_hidden_layers = {
-        "01_GROUND_TERRAIN", "02_GROUND_TRANSITIONS", "03_HAZARD_VISUALS",
-        "04_ROADS", "06_DETAILS_BELOW", "07_DETAILS_ABOVE",
-    }
-    for layer in tiled_map["layers"]:
-        if layer.get("name") in editor_hidden_layers:
-            layer["visible"] = False
+    expected_tilesets = [{"firstgid": 1, "source": f"../tilesets/reference-map-{level}.tsj"}, *navigation_tilesets]
 
     preview_name = "REFERENCE_ART_PREVIEW"
     preview = next((layer for layer in tiled_map["layers"] if layer["name"] == preview_name), None)
-    if preview is None:
-        next_id = max((layer.get("id", 0) for layer in tiled_map["layers"]), default=0) + 1
-        preview = {"id": next_id, "name": preview_name, "type": "imagelayer"}
-        tiled_map["layers"] = [preview, *tiled_map["layers"]]
-        tiled_map["nextlayerid"] = max(tiled_map.get("nextlayerid", 1), next_id + 1)
-    preview.update({
-        "x": 0, "y": 0, "offsetx": 0, "offsety": 0,
-        "opacity": 1, "visible": True,
+    expected_preview = {
+        "type": "imagelayer", "visible": True, "locked": True,
         "image": f"../images/reference-preview-{level}.png",
         "imagewidth": MAP_COLUMNS * TILE_SIZE,
         "imageheight": MAP_ROWS * TILE_SIZE,
-        "repeatx": False, "repeaty": False,
-    })
-    write_json(map_path, tiled_map)
+    }
+    if tiled_map.get("tilesets") != expected_tilesets or preview is None or any(
+        preview.get(key) != value for key, value in expected_preview.items()
+    ):
+        raise ValueError(
+            f"{map_file}: locked TMJ metadata does not match generated reference assets. "
+            "The source map was not modified; notify the user and update it deliberately in Tiled."
+        )
 
 
 def main() -> None:

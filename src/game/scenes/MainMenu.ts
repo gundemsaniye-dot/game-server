@@ -6,15 +6,21 @@ import {
   releaseCampaignTexture,
   releaseSplashTextures,
 } from "../assets/RuntimeAssets";
+import { MenuLevelRuntime } from "../types/MapTypes";
+import { NetworkClient } from "../network/NetworkClient";
 import { playSceneMusic } from "../audio/GameAudio";
 import { castleLog } from "../utils/DevLog";
 
 type MenuButtonConfig = {
   action: string;
   hoverKey: string;
-  sourceBox: SourceBox;
+  sourceBox?: SourceBox;
   onClick: () => void;
   hoverScale?: number;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 };
 
 type SourceBox = readonly [left: number, top: number, right: number, bottom: number];
@@ -221,36 +227,181 @@ export class MainMenu extends Scene {
   private createMainMenuVisuals() {
     this.add.image(640, 360, "menu-background").setDisplaySize(MENU_WIDTH, MENU_HEIGHT).setDepth(0);
     this.add.image(640, 360, "menu-logo-base").setDisplaySize(MENU_WIDTH, MENU_HEIGHT).setDepth(10);
-    this.add.image(640, 360, "menu-start-base").setDisplaySize(MENU_WIDTH, MENU_HEIGHT).setDepth(20);
-    this.add.image(640, 360, "menu-upgrades-base").setDisplaySize(MENU_WIDTH, MENU_HEIGHT).setDepth(20);
-    this.add.image(640, 360, "menu-settings-base").setDisplaySize(MENU_WIDTH, MENU_HEIGHT).setDepth(20);
+    this.add.image(500, 630, "menu-upgrades-base").setDisplaySize(171, 136).setDepth(20);
+    this.add.image(780, 630, "menu-settings-base").setDisplaySize(168, 136).setDepth(20);
   }
 
   private createMenuButtons() {
-    this.createHitButton({
-      action: "start",
-      hoverKey: "menu-start-hover",
-      sourceBox: [551, 431, 1135, 628],
-      hoverScale: 1.035,
+    this.createModeButton({
+      texture: "menu-campaign-button",
+      label: "CAMPAIGN",
+      x: 640,
+      y: 408,
+      width: 414,
+      height: 92,
+      fontSize: 34,
       onClick: () => this.startMapSelect(),
     });
 
     this.createHitButton({
       action: "upgrades",
       hoverKey: "menu-upgrades-hover",
-      sourceBox: [405, 635, 667, 843],
+      x: 500,
+      y: 630,
+      width: 171,
+      height: 136,
       onClick: () => this.scene.start("ArmyLoadout"),
     });
     this.createHitButton({
       action: "settings",
       hoverKey: "menu-settings-hover",
-      sourceBox: [1012, 636, 1268, 843],
+      x: 780,
+      y: 630,
+      width: 168,
+      height: 136,
       onClick: () => this.openSettings(),
+    });
+
+    this.createModeButton({
+      texture: "menu-online-pvp-button",
+      label: "1V1 ONLINE",
+      x: 640,
+      y: 497,
+      width: 414,
+      height: 92,
+      fontSize: 26,
+      labelOffsetY: 7,
+      onClick: () => this.startOnlineMatch(),
     });
   }
 
+  private createModeButton(config: {
+    texture: string;
+    label: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    fontSize: number;
+    labelOffsetY?: number;
+    onClick: () => void;
+  }) {
+    const plate = this.add.image(0, 0, config.texture).setDisplaySize(config.width, config.height);
+    const label = this.add.text(0, config.labelOffsetY ?? 0, config.label, {
+      fontFamily: "Arial Black",
+      fontSize: `${config.fontSize}px`,
+      color: "#ffffff",
+      stroke: "#120b08",
+      strokeThickness: Math.max(5, Math.round(config.fontSize * 0.16)),
+      align: "center",
+    }).setOrigin(0.5);
+    const button = this.add.container(config.x, config.y, [plate, label])
+      .setDepth(60)
+      .setSize(config.width, config.height)
+      .setInteractive({ useHandCursor: true });
+
+    button.on("pointerover", () => button.setScale(1.035));
+    button.on("pointerout", () => button.setScale(1));
+    button.on("pointerdown", () => {
+      this.sound.play("select-sfx", { volume: 0.32 });
+      config.onClick();
+    });
+  }
+
+  private async startOnlineMatch() {
+    const net = NetworkClient.getInstance();
+
+    // Create dark backdrop
+    const backdrop = this.add.rectangle(640, 360, 1280, 720, 0x070b12, 0.88)
+      .setDepth(200)
+      .setInteractive();
+
+    // Modal panel box
+    const modal = this.add.rectangle(640, 360, 520, 280, 0x121b29, 0.96)
+      .setStrokeStyle(4, 0x27d6f0)
+      .setDepth(201);
+
+    const titleText = this.add.text(640, 250, "1V1 ONLINE EŞLEŞME", {
+      fontFamily: "Arial Black",
+      fontSize: "26px",
+      color: "#ffffff",
+      stroke: "#000000",
+      strokeThickness: 5,
+    }).setOrigin(0.5).setDepth(202);
+
+    const statusText = this.add.text(640, 340, "Sunucuya bağlanılıyor...", {
+      fontFamily: "Arial",
+      fontSize: "20px",
+      color: "#7ee7f8",
+      stroke: "#000000",
+      strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(202);
+
+    // Cancel Button
+    const cancelBtn = this.add.text(640, 440, "  İPTAL  ", {
+      fontFamily: "Arial Black",
+      fontSize: "18px",
+      color: "#ffffff",
+      backgroundColor: "#b43a29",
+      padding: { x: 20, y: 8 },
+    }).setOrigin(0.5).setDepth(202).setInteractive({ useHandCursor: true });
+
+    const closeOverlay = () => {
+      backdrop.destroy();
+      modal.destroy();
+      titleText.destroy();
+      statusText.destroy();
+      cancelBtn.destroy();
+    };
+
+    cancelBtn.on("pointerdown", () => {
+      this.sound.play("select-sfx", { volume: 0.32 });
+      net.disconnect();
+      closeOverlay();
+    });
+
+    try {
+      await net.connect();
+      statusText.setText("Rakip aranıyor...");
+
+      net.once("match_found", () => {
+        statusText.setText("RAKİP BULUNDU! HAZIRLANILIYOR...");
+        statusText.setColor("#55ff88");
+      });
+
+      net.once("initial_state", () => {
+        const authoritativeSide = net.playerSide;
+        const authoritativeRoomId = net.roomId;
+        if (!authoritativeSide || !authoritativeRoomId) {
+          statusText.setText("SUNUCU TARAF BİLGİSİ EKSİK");
+          statusText.setColor("#ff4444");
+          return;
+        }
+        statusText.setText("ARENA YÜKLENİYOR...");
+        closeOverlay();
+        this.scene.start("Game", {
+          isOnline: true,
+          roomId: authoritativeRoomId,
+          side: authoritativeSide,
+          levelId: "level_001",
+          mapIndex: 0,
+          playerLoadout: ["peasant", "swordsman", "archer", "horseman"],
+          attemptSeed: net.matchSeed ?? undefined,
+        });
+      });
+
+      net.findMatch();
+    } catch (err) {
+      statusText.setText("Sunucuya bağlanılamadı!");
+      statusText.setColor("#ff4444");
+      setTimeout(() => closeOverlay(), 2500);
+    }
+  }
+
   private createHitButton(config: MenuButtonConfig) {
-    const box = this.sourceBoxToGame(config.sourceBox);
+    const box = config.sourceBox
+      ? this.sourceBoxToGame(config.sourceBox)
+      : { x: config.x!, y: config.y!, width: config.width!, height: config.height! };
     const hoverButton = this.add
       .image(box.x, box.y, config.hoverKey)
       .setDisplaySize(box.width, box.height)

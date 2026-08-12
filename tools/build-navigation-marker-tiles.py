@@ -16,11 +16,6 @@ SIZE = 40
 MARKERS = {
     "navigation-bridge.png": [(46, 229, 107, 190)],
     "navigation-blocked.png": [(239, 51, 64, 156)],
-    "navigation-cost.png": [
-        (42, 163, 240, 145),
-        (37, 112, 222, 158),
-        (115, 70, 185, 170),
-    ],
 }
 
 

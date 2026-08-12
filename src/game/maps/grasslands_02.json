@@ -220,7 +220,7 @@
       "id": "grasslands_02_wood_1",
       "type": "tree",
       "x": 560,
-      "y": 360,
+      "y": 400,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -233,8 +233,8 @@
     {
       "id": "grasslands_02_wood_2",
       "type": "tree",
-      "x": 460,
-      "y": 120,
+      "x": 560,
+      "y": 200,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -262,7 +262,7 @@
       "id": "grasslands_02_wood_4",
       "type": "tree",
       "x": 460,
-      "y": 440,
+      "y": 500,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -276,7 +276,7 @@
       "id": "grasslands_02_wood_5",
       "type": "tree",
       "x": 860,
-      "y": 500,
+      "y": 520,
       "amount": 12,
       "visual": {
         "source": "asset",

@@ -205,7 +205,7 @@
       "id": "dry_steppe_02_wood_1",
       "type": "tree",
       "x": 520,
-      "y": 340,
+      "y": 80,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -218,7 +218,7 @@
     {
       "id": "dry_steppe_02_wood_2",
       "type": "tree",
-      "x": 440,
+      "x": 420,
       "y": 360,
       "amount": 12,
       "visual": {
@@ -232,7 +232,7 @@
     {
       "id": "dry_steppe_02_wood_3",
       "type": "tree",
-      "x": 800,
+      "x": 840,
       "y": 360,
       "amount": 12,
       "visual": {

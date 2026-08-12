@@ -247,8 +247,8 @@
     {
       "id": "storm_valley_01_wood_3",
       "type": "tree",
-      "x": 440,
-      "y": 500,
+      "x": 420,
+      "y": 520,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -376,7 +376,7 @@
         "source": "asset",
         "assetKey": "map-prop-shared-pine-tree"
       },
-      "x": 423,
+      "x": 523,
       "y": 391,
       "scale": 0.39,
       "rotation": 0.02,

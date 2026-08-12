@@ -14,12 +14,12 @@ type ImageAsset = Readonly<{ key: string; path: string }>;
 type AudioAsset = Readonly<{ key: string; path: string }>;
 
 export const MAIN_MENU_TEXTURES: readonly ImageAsset[] = [
-  { key: "menu-background", path: "ui/menu/start-v2/menu-background-clean-v3.png" },
+  { key: "menu-background", path: "ui/menu/start-v2/menu-background-clean-v4.png" },
   { key: "menu-logo-base", path: "ui/menu/start-v2/menu-logo-layer-v2.png" },
-  { key: "menu-start-base", path: "ui/menu/start-v2/menu-start-button-layer-v2.png" },
-  { key: "menu-upgrades-base", path: "ui/menu/start-v2/menu-upgrades-button-layer-v2.png" },
-  { key: "menu-settings-base", path: "ui/menu/start-v2/menu-settings-button-layer-v2.png" },
-  { key: "menu-start-hover", path: "ui/menu/start-v2/buttons/start-hover-v2.png" },
+  { key: "menu-upgrades-base", path: "ui/menu/start-v2/buttons/upgrades-base-compact-v1.png" },
+  { key: "menu-settings-base", path: "ui/menu/start-v2/buttons/settings-base-compact-v1.png" },
+  { key: "menu-campaign-button", path: "ui/menu/start-v2/buttons/campaign-button-v1.png" },
+  { key: "menu-online-pvp-button", path: "ui/menu/start-v2/buttons/online-pvp-button-v1.png" },
   { key: "menu-upgrades-hover", path: "ui/menu/start-v2/buttons/upgrades-hover-v2.png" },
   { key: "menu-settings-hover", path: "ui/menu/start-v2/buttons/settings-hover-v2.png" },
 ];
@@ -57,6 +57,11 @@ const BATTLE_AUDIO: readonly AudioAsset[] = [
   { key: "axe-hit-3", path: "audio/axe-hit-3.mp3" },
   { key: "horse-run-short", path: "audio/horse-run-short.mp3" },
   { key: "horse-neigh-short", path: "audio/horse-neigh-short.mp3" },
+];
+
+const POWER_BATTLE_AUDIO: readonly AudioAsset[] = [
+  { key: "online-missile-impact-sfx", path: "audio/online-missile-impact.mp3" },
+  { key: "online-ice-blast-sfx", path: "audio/online-ice-blast.mp3" },
 ];
 
 function queueImages(scene: Scene, assets: readonly ImageAsset[]) {
@@ -110,6 +115,12 @@ export function queueBattleAudio(scene: Scene) {
   }
 }
 
+export function queuePowerBattleAudio(scene: Scene) {
+  for (const asset of POWER_BATTLE_AUDIO) {
+    if (!scene.cache.audio.exists(asset.key)) scene.load.audio(asset.key, asset.path);
+  }
+}
+
 export function queueUnitAtlases(
   scene: Scene,
   playerUnitIds: readonly UnitId[],
@@ -159,6 +170,11 @@ export function releaseBattleRuntimeMemory(scene: Scene) {
   // Disabled texture release for performance to prevent Android VRAM fragmentation
   for (const asset of BATTLE_AUDIO) {
     scene.sound.stopByKey(asset.key);
+  }
+  for (const asset of POWER_BATTLE_AUDIO) {
+    scene.sound.stopByKey(asset.key);
+    scene.sound.removeByKey(asset.key);
+    scene.cache.audio.remove(asset.key);
   }
 }
 

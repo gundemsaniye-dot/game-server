@@ -39,7 +39,25 @@ export default defineConfig({
         }
     },
     server: {
-        port: 8080
+        port: 8080,
+        allowedHosts: ['.ngrok-free.dev'],
+        proxy: {
+            '/socket': {
+                target: 'ws://127.0.0.1:3001',
+                ws: true,
+                changeOrigin: true
+            }
+        }
+    },
+    preview: {
+        allowedHosts: ['.ngrok-free.dev'],
+        proxy: {
+            '/socket': {
+                target: 'ws://127.0.0.1:3001',
+                ws: true,
+                changeOrigin: true
+            }
+        }
     },
     plugins: [
         phasermsg()

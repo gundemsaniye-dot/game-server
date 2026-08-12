@@ -1,9 +1,31 @@
 import { generateRectTexture } from "../assets/RuntimeAssets";
 import { Scene } from "phaser";
+import { NetworkClient } from "../network/NetworkClient";
+import { OnlineMatchRuntime } from "../network/OnlineMatchRuntime";
+import type {
+  OnlineCommandError,
+  OnlineGameEnd,
+  OnlineMatchSnapshot,
+  OnlinePowerCast,
+  OnlineReadyState,
+  OnlineUnitState,
+} from "../network/NetworkProtocol";
+import {
+  deploymentGuideBounds,
+  deployHomeEdge,
+  formationWorldOffset,
+  resolveDeploymentClick,
+  type SideGeometry,
+} from "../../../shared/online/SideGeometry";
+import {
+  CASTLE_CONTACT_CLEARANCE,
+  CASTLE_CONTACT_TOLERANCE,
+} from "../../../shared/online/CastleContact";
 import { t } from "../i18n/Localization";
 import {
   ALL_UNIT_IDS,
   queueBattleAudio,
+  queuePowerBattleAudio,
   queueBattleStructures,
   queueUnitAtlases,
   releaseCampaignTexture,
@@ -67,6 +89,7 @@ import {
 } from "../systems/ProgressionStore";
 import { preloadTiledBattleMap } from "../tiled/TiledAssetLoader";
 import { TiledCollisionGrid } from "../tiled/TiledCollisionGrid";
+import { applyTiledGameplayObjects, onlineSideGeometry } from "../tiled/TiledGameplayMap";
 import { getTiledBattleMapDefinition } from "../tiled/TiledMapRegistry";
 import { renderTiledBattleMap } from "../tiled/TiledMapRenderer";
 import type { NavigationProfile, TiledMapRenderResult } from "../tiled/TiledTypes";
@@ -104,6 +127,7 @@ interface CastleState {
   maxHp: number;
   x: number;
   y: number;
+  frontX: number;
   hpFill: Phaser.GameObjects.Rectangle;
 }
 
@@ -165,6 +189,11 @@ interface BattleUnit {
   navQaCrossedBridge?: boolean;
   navQaReachedEnemy?: boolean;
   navQaBlockedLogged?: boolean;
+  onlineFromX?: number;
+  onlineFromY?: number;
+  onlineTargetX?: number;
+  onlineTargetY?: number;
+  onlineInterpolationAt?: number;
   reserveWaveId?: string;
   visualDepthBucket?: number;
   visualHpWidth?: number;
@@ -212,10 +241,13 @@ interface ResourceNode {
   reservedBy: number[];
   respawnAt?: number;
   container: Phaser.GameObjects.Container;
-  stump: Phaser.GameObjects.Image;
+  stump: Phaser.GameObjects.Rectangle;
   barFill: Phaser.GameObjects.Image;
   treeParts: ResourceTreePart[];
   barBack: Phaser.GameObjects.Image;
+  onlineResourceId?: number;
+  onlineRevision?: number;
+  onlineSide?: Side;
 }
 
 interface UnitButton {
@@ -266,18 +298,11 @@ const PROJECTILE_FLIGHT_MS = 285;
 // Keep battle alerts implemented so they can be restored later, but leave
 // their presentation disabled for the current UI pass.
 const SHOW_BATTLE_ALERTS = false;
-// Castle anchors already sit on the inward-facing wall/door line. The old
-// 56px padding was effectively a second invisible wall and let melee units
-// damage a fortress while visibly standing in open ground.
-// Castle anchors sit near the middle of the authored fortress artwork. The
-// The visible facade is roughly 80px toward the battlefield. Melee range adds
-// its own final stand-off, keeping feet outside the wall without making units
-// look detached from the castle.
-const CASTLE_FRONT_OFFSET = 80;
+// Castle contact uses the authored TMJ deploy/spawn zone edge. Anchors stay as
+// visual/HP bar points only; they must not create an invisible hit wall.
 // Keep archers visibly committed to a siege instead of letting them fire from
 // a detached position in the open field. Unit combat keeps its authored range;
 // this tighter value only controls the final stand-off from a fortress facade.
-const ARCHER_CASTLE_RANGE = 96;
 const UNIT_DEPLOY_COOLDOWN_MS: Record<UnitType, number> = {
   // V9: combat units must be truly spammable by repeated taps.
   // Only worker keeps a tiny lock so one physical touch cannot double-submit.
@@ -365,13 +390,22 @@ const PRODUCTION_CONSOLE_LOG_SCOPES = new Set([
 ]);
 const MISSILE_COOLDOWN_MS = 35_000;
 const ICE_BLAST_COOLDOWN_MS = 45_000;
-const MISSILE_RADIUS = 108;
-const MISSILE_DAMAGE = 118;
+const MISSILE_RADIUS = 67;
+const MISSILE_DAMAGE = 9_999;
 const PLAYER_MISSILE_MIN_RANGE = 92;
 const PLAYER_MISSILE_CHARGE_MS = 1_550;
-const ICE_BLAST_RADIUS = 116;
+const ICE_BLAST_RADIUS = 72;
 const ICE_BLAST_DURATION_MS = 6_000;
 const ICE_BLAST_SLOW_FACTOR = 0;
+const POWER_FX_MAX_ACTIVE_BURSTS = IS_ANDROID_RUNTIME ? 2 : 3;
+const POWER_FX_MISSILE_FRAGMENTS = IS_ANDROID_RUNTIME ? 7 : 14;
+const POWER_FX_ICE_SHARDS = IS_ANDROID_RUNTIME ? 6 : 12;
+const MISSILE_GROUND_MARK_MS = 10_000;
+const POWER_SFX_MAX_ACTIVE = 2;
+const MISSILE_GROUND_TEXTURE = "power-ground-missile-v1";
+const ICE_GROUND_TEXTURE = "power-ground-ice-v1";
+const POWER_GROUND_TEXTURE_WIDTH = 192;
+const POWER_GROUND_TEXTURE_HEIGHT = 128;
 
 type PowerType = "missile" | "ice";
 
@@ -466,6 +500,7 @@ const WORKER_CARRY_CAPACITY = 3;
 const WORKER_DEPOSIT_MS = 560;
 const WORKER_RESOURCE_REACH = 24;
 const WORKER_HOME_REACH = 28;
+const CASTLE_APPROACH_FINAL_X_WINDOW = 18;
 // Resource trees use the same authored art as map foliage, but their previous
 // raw map scale made them look like giant trees. Keep them identifiable via
 // the resource bar, not by making the sprite larger than nearby decoration.
@@ -493,6 +528,9 @@ const WALL_VISUAL_SCALE = 0.84;
 const UNIT_HP_BAR_WIDTH = 32;
 const CASTLE_HP_BAR_WIDTH = 68;
 const DEPLOY_TEXTURE_KEY = "cached-deploy-lane-v2";
+const RIGHT_SIDE_DEPLOY_EDGE_INSET_X = 24;
+const CASTLE_SIDE_DEPLOY_CLICK_EXTENSION_X = 72;
+const DEPLOY_POSITIVE_X_REDUCTION = 35;
 
 const randomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
@@ -525,6 +563,10 @@ export class Game extends Scene {
   private readonly activeSpatialBucketKeys: number[] = [];
   private readonly arrowPool: Phaser.GameObjects.Image[] = [];
   private readonly hitEffectPool: Phaser.GameObjects.Image[] = [];
+  private readonly powerFxShardPool: Phaser.GameObjects.Image[] = [];
+  private readonly powerFxDebrisPool: Phaser.GameObjects.Rectangle[] = [];
+  private readonly activePowerSfx = new Set<Phaser.Sound.BaseSound>();
+  private activePowerFxBursts = 0;
   private levelRuntime: LevelRuntime = getLevelRuntime("level_001");
   private battleStartData: BattleStartData = this.levelRuntime.battleStartData;
   private units: BattleUnit[] = [];
@@ -556,6 +598,7 @@ export class Game extends Scene {
   private missileAimGuide: Phaser.GameObjects.Rectangle;
   private missileAimFill: Phaser.GameObjects.Rectangle;
   private missileAimReticle: Phaser.GameObjects.Image;
+  private missileAimPercentText: Phaser.GameObjects.Text;
   private pendingBatchBack: Phaser.GameObjects.Rectangle;
   private pendingBatchText: Phaser.GameObjects.Text;
   private warningText: Phaser.GameObjects.Text;
@@ -587,7 +630,6 @@ export class Game extends Scene {
     this.levelRuntime.battleStartData.attemptSeed,
   );
   private directorText: Phaser.GameObjects.Text;
-  private timerText: Phaser.GameObjects.Text;
   private battleLog: Array<Record<string, unknown>> = [];
   private playerIncomeEvents: Array<{ atMs: number; amount: number }> = [];
   private enemyIncomeEvents: Array<{ atMs: number; amount: number }> = [];
@@ -605,6 +647,7 @@ export class Game extends Scene {
   private pauseButton: Phaser.GameObjects.Rectangle;
   private pauseLabel: Phaser.GameObjects.Text;
   private removeSelectionButton?: Phaser.GameObjects.Container;
+  private removeSelectionLabel?: Phaser.GameObjects.Text;
   private removeSelectionVisible = false;
   private storyOverlayObjects: Phaser.GameObjects.GameObject[] = [];
   private isPaused = false;
@@ -662,21 +705,49 @@ export class Game extends Scene {
   private tiledNavigation?: TiledCollisionGrid;
   private tiledPathfinder?: TiledNavigation;
 
+  public isOnline: boolean = false;
+  public roomId?: string;
+  public localPlayerSide: "left" | "right" = "left";
+  private onlineUiQa = false;
+  private onlineRuntime?: OnlineMatchRuntime;
+  private onlineLastSnapshotSequence = -1;
+  private onlineMatchDurationMs = 0;
+  private onlineGeometry?: SideGeometry;
+  private onlineOpponentGeometry?: SideGeometry;
+  private onlineClientReadySent = false;
+  private onlineMatchStarted = false;
+  private onlineLeaveDialogOpen = false;
+  private onlineReadyOverlay?: Phaser.GameObjects.Container;
+  private onlineReadyOwnText?: Phaser.GameObjects.Text;
+  private onlineReadyOpponentText?: Phaser.GameObjects.Text;
+  private playerDeployZone!: { x: number; minY: number; maxY: number; width: number };
+
   constructor() {
     super("Game");
   }
 
-  init(data?: Partial<BattleStartData> & { levelId?: string | number }) {
+  init(data?: Partial<BattleStartData> & { levelId?: string | number, side?: "left" | "right", isOnline?: boolean, roomId?: string, onlineUiQa?: boolean }) {
+    this.isOnline = data?.isOnline === true;
+    this.roomId = data?.roomId;
+    this.localPlayerSide = data?.side === "right" ? "right" : "left";
+
     this.androidPerf = getAndroidPerfRequest();
+    this.onlineUiQa = data?.onlineUiQa === true && (import.meta.env.DEV || this.androidPerf.enabled);
     this.androidPerfProfiling =
       this.androidPerf.enabled || import.meta.env.VITE_ANDROID_DIAGNOSTICS === "1";
     const suiteCase = this.currentBalanceSuiteCase();
     this.levelRuntime = getLevelRuntime(suiteCase?.levelId ?? data?.levelId, data?.mapOverride);
+
+    this.playerDeployZone = (this.isOnline && this.localPlayerSide === "right")
+      ? this.levelRuntime.map.enemySpawnZone
+      : this.levelRuntime.map.deployZone;
     this.editorPreview = data?.editorPreview === true;
     this.editorReturnScene = data?.returnScene;
-    this.balanceQaMode = this.isBalanceQaPath();
+    this.balanceQaMode = !this.isOnline && this.isBalanceQaPath();
     this.balanceQaLoadout = referenceLoadoutForLevel(this.levelRuntime.level);
-    const requestedLoadout = this.balanceQaMode
+    const requestedLoadout = this.isOnline
+      ? (["peasant", "swordsman", "archer", "horseman"] as UnitType[])
+      : this.balanceQaMode
       ? (["peasant", ...this.balanceQaLoadout] as UnitType[])
       : data?.playerLoadout;
     const playerLoadout =
@@ -720,13 +791,18 @@ export class Game extends Scene {
       this.isTargetingQaPath() ||
       this.isNavigationQaPath() ||
       this.isSoldierMenuTestPath();
-    const playerUnitIds = loadAllUnits
+    const playerUnitIds = this.isOnline
+      ? this.battleStartData.playerLoadout
+      : loadAllUnits
       ? ALL_UNIT_IDS
       : [...this.battleStartData.playerLoadout, ...(this.levelRuntime.level.rewards.unlockUnit ? [this.levelRuntime.level.rewards.unlockUnit] : [])];
-    const enemyUnitIds = loadAllUnits ? ALL_UNIT_IDS : this.levelRuntime.enemyUnitIds;
+    const enemyUnitIds = this.isOnline
+      ? playerUnitIds
+      : loadAllUnits ? ALL_UNIT_IDS : this.levelRuntime.enemyUnitIds;
     queueUnitAtlases(this, playerUnitIds, enemyUnitIds);
     if (!usesReferenceVisuals) queueBattleStructures(this);
     queueBattleAudio(this);
+    queuePowerBattleAudio(this);
     preloadTiledBattleMap(this, this.levelRuntime.map.id);
     const visualItems = usesReferenceVisuals
       ? this.levelRuntime.map.resources
@@ -753,6 +829,8 @@ export class Game extends Scene {
     releaseMainMenuTextures(this);
     releaseCampaignTexture(this);
     this.resetState();
+    this.ensurePowerGroundTextures();
+    this.events.once("shutdown", () => this.releaseActivePowerSfx());
     this.targetingQaMode = this.isTargetingQaPath();
     this.navigationQaMode = this.isNavigationQaPath() || this.targetingQaMode;
     if (this.androidPerf.enabled) {
@@ -774,10 +852,19 @@ export class Game extends Scene {
     this.createStrongholds();
     this.applyLevelCastleHp();
     this.startNavigationQa();
-    this.createSidePanel("left", true);
-    this.createSidePanel("right", false);
+    // Online multiplayer: each player controls their own side panel.
+    // Player 1 (left):  left panel interactive,  right panel = read-only enemy view
+    // Player 2 (right): right panel interactive, left panel  = read-only enemy view
+    // Offline: always left interactive, right non-interactive (AI)
+    const leftInteractive  = !this.isOnline || this.localPlayerSide === "left";
+    const rightInteractive = this.isOnline  && this.localPlayerSide === "right";
+    this.createSidePanel("left",  leftInteractive);
+    this.createSidePanel("right", rightInteractive);
     this.createTopHud();
+    if (this.isOnline) this.createOnlineSideIdentity();
+    if (this.isOnline && !this.onlineUiQa) this.createOnlineReadyOverlay();
     if (this.isEnemyPowerQaPath()) this.startEnemyPowerQa();
+    this.startPowerFxQa();
     this.setupBackgroundPause();
     this.createEditorPreviewExit();
     if (!this.androidPerf.enabled || this.androidPerf.realSystems) {
@@ -785,7 +872,9 @@ export class Game extends Scene {
     }
     this.createSpawnGuide();
     this.enableDeploymentInput();
+    if (this.onlineUiQa) this.setupOnlineUiQa();
     if (
+      !this.isOnline &&
       !this.balanceQaMode &&
       !this.economyQaMode &&
       !this.editorPreview &&
@@ -796,7 +885,7 @@ export class Game extends Scene {
       this.createBattleBriefing();
     }
 
-    if (!this.androidPerf.enabled || this.androidPerf.realSystems) {
+    if (!this.isOnline && (!this.androidPerf.enabled || this.androidPerf.realSystems)) {
       this.time.addEvent({
         delay: ECONOMY_TICK_MS,
         loop: true,
@@ -804,7 +893,7 @@ export class Game extends Scene {
       });
     }
 
-    if (!this.navigationQaMode && (!this.androidPerf.enabled || this.androidPerf.realSystems)) {
+    if (!this.isOnline && !this.navigationQaMode && (!this.androidPerf.enabled || this.androidPerf.realSystems)) {
       this.time.addEvent({
         delay: ENEMY_AI_POLL_MS,
         loop: true,
@@ -826,10 +915,306 @@ export class Game extends Scene {
 
     this.setupEconomyQaMode();
     if (this.androidPerfProfiling) this.startAndroidPerfMonitor();
+
+    if (this.isOnline && !this.onlineUiQa) {
+      this.setupNetworkListeners();
+    }
+  }
+
+  private setupNetworkListeners() {
+    const net = NetworkClient.getInstance();
+    this.onlineRuntime?.dispose();
+    this.onlineRuntime = new OnlineMatchRuntime(net, {
+      onSnapshot: (snapshot) => this.applyOnlineSnapshot(snapshot),
+      onGameEnd: (result) => this.finishOnlineMatch(result),
+      onCommandError: (error) => this.handleOnlineCommandError(error),
+      onPowerCast: (event) => this.renderOnlinePowerCast(event),
+      onGameStart: () => this.handleOnlineGameStart(),
+      onReadyState: (state) => this.handleOnlineReadyState(state),
+    });
+    this.sendOnlineClientReady();
+    this.events.once("shutdown", () => {
+      this.onlineRuntime?.dispose();
+      this.onlineRuntime = undefined;
+    });
+  }
+
+  private sendOnlineClientReady() {
+    if (!this.isOnline || this.onlineUiQa || this.onlineClientReadySent) return;
+    this.onlineClientReadySent = true;
+    NetworkClient.getInstance().sendReady();
+    this.statusText.setText("ARENA HAZIR. RAKIP BEKLENIYOR...");
+    this.updateOnlineReadyOverlay(true, false);
+    this.log("ONLINE", `client ready room=${this.roomId ?? "unknown"} side=${this.localPlayerSide}`);
+  }
+
+  private handleOnlineReadyState(state: OnlineReadyState) {
+    if (!this.isOnline || state.roomId !== this.roomId || this.onlineMatchStarted) return;
+    const ownReady = this.localPlayerSide === "left" ? state.leftReady : state.rightReady;
+    const opponentReady = this.localPlayerSide === "left" ? state.rightReady : state.leftReady;
+    this.updateOnlineReadyOverlay(ownReady, opponentReady);
+    if (ownReady && opponentReady) {
+      this.statusText.setText("IKI TARAF HAZIR. SAVAS BASLIYOR...");
+    } else if (ownReady) {
+      this.statusText.setText("ARENA HAZIR. RAKIP BEKLENIYOR...");
+    } else {
+      this.statusText.setText("ARENA YUKLENIYOR...");
+    }
+  }
+
+  private handleOnlineGameStart() {
+    if (!this.isOnline || this.onlineMatchStarted) return;
+    this.onlineMatchStarted = true;
+    this.onlineReadyOverlay?.destroy();
+    this.onlineReadyOverlay = undefined;
+    this.onlineReadyOwnText = undefined;
+    this.onlineReadyOpponentText = undefined;
+    this.statusText.setText("SAVAS BASLADI!");
+    NetworkClient.getInstance().requestResync();
+    this.flashWarning(this.localPlayerSide === "left" ? "YOU ARE LEFT" : "YOU ARE RIGHT");
+    this.log("ONLINE", `game start room=${this.roomId ?? "unknown"} side=${this.localPlayerSide}`);
+  }
+
+  private isOnlineWaitingForStart() {
+    return this.isOnline && !this.onlineUiQa && !this.onlineMatchStarted;
+  }
+
+  private createOnlineReadyOverlay() {
+    this.onlineReadyOverlay?.destroy();
+    const teamColor = this.localPlayerSide === "left" ? 0x36baf2 : 0xe85a4f;
+    const shade = this.add.rectangle(640, 360, 700, 192, 0x07101a, 0.74)
+      .setStrokeStyle(4, teamColor, 0.94);
+    const title = this.add.text(640, 302, "ARENA HAZIRLANIYOR", {
+      fontFamily: "Arial Black",
+      fontSize: 28,
+      color: "#fff2c0",
+      stroke: "#101010",
+      strokeThickness: 6,
+    }).setOrigin(0.5);
+    const subtitle = this.add.text(640, 340, "İki oyuncunun haritası tamamen yüklenene kadar beklenir.", {
+      fontFamily: "Arial Black",
+      fontSize: 15,
+      color: "#ffffff",
+      stroke: "#101010",
+      strokeThickness: 4,
+    }).setOrigin(0.5);
+    this.onlineReadyOwnText = this.add.text(640, 390, "SEN: HAZIRLANIYOR", {
+      fontFamily: "Arial Black",
+      fontSize: 18,
+      color: "#ffe38a",
+      stroke: "#101010",
+      strokeThickness: 4,
+    }).setOrigin(0.5);
+    this.onlineReadyOpponentText = this.add.text(640, 425, "RAKİP: HAZIRLANIYOR", {
+      fontFamily: "Arial Black",
+      fontSize: 18,
+      color: "#ffe38a",
+      stroke: "#101010",
+      strokeThickness: 4,
+    }).setOrigin(0.5);
+    this.onlineReadyOverlay = this.add.container(0, 0, [
+      shade,
+      title,
+      subtitle,
+      this.onlineReadyOwnText,
+      this.onlineReadyOpponentText,
+    ]).setDepth(1800);
+  }
+
+  private updateOnlineReadyOverlay(ownReady: boolean, opponentReady: boolean) {
+    if (!this.onlineReadyOverlay) return;
+    this.onlineReadyOwnText?.setText(`SEN: ${ownReady ? "HAZIR" : "HAZIRLANIYOR"}`)
+      .setColor(ownReady ? "#6dff9b" : "#ffe38a");
+    this.onlineReadyOpponentText?.setText(`RAKİP: ${opponentReady ? "HAZIR" : "HAZIRLANIYOR"}`)
+      .setColor(opponentReady ? "#6dff9b" : "#ffe38a");
+  }
+
+  private setupOnlineUiQa() {
+    const requestedPower = new URLSearchParams(window.location.search).get("powerQaState");
+    if (this.androidPerf.syntheticPopulation) {
+      const types: UnitType[] = ["swordsman", "archer", "horseman"];
+      for (const team of ["player", "enemy"] as const) {
+        const zone = this.homeDeployZoneForTeam(team);
+        for (let index = 0; index < 30; index += 1) {
+          const y = zone.minY + 24 + (index % 10) * Math.max(1, (zone.maxY - zone.minY - 48) / 9);
+          const x = zone.x + (team === "player" ? 1 : -1) * Math.floor(index / 10) * 16;
+          this.spawnUnit(team, types[index % types.length], y, x, {
+            forceBaseLevel: true,
+            goldAlreadySpent: true,
+          });
+        }
+      }
+    }
+    if (requestedPower === "missile" || requestedPower === "ice") {
+      this.time.delayedCall(260, () => this.selectPower(requestedPower));
+    }
+    (window as typeof window & { __CASTLE_ONLINE_UI_QA__?: Record<string, unknown> })
+      .__CASTLE_ONLINE_UI_QA__ = {
+        side: this.localPlayerSide,
+        power: requestedPower,
+        syntheticUnits: this.units.length,
+      };
+    this.log("ONLINE_UI_QA", `side=${this.localPlayerSide} power=${requestedPower ?? "none"} units=${this.units.length}`);
+  }
+
+  private applyOnlineSnapshot(snapshot: OnlineMatchSnapshot) {
+    if (snapshot.roomId !== this.roomId || snapshot.seq <= this.onlineLastSnapshotSequence) return;
+    this.onlineLastSnapshotSequence = snapshot.seq;
+    this.elapsedMs = snapshot.elapsedMs;
+    this.onlineMatchDurationMs = snapshot.durationMs;
+    this.gold = snapshot.left.gold;
+    this.enemyGold = snapshot.right.gold;
+    this.playerCastle.maxHp = snapshot.left.castleMaxHp;
+    this.playerCastle.hp = snapshot.left.castleHp;
+    this.enemyCastle.maxHp = snapshot.right.castleMaxHp;
+    this.enemyCastle.hp = snapshot.right.castleHp;
+    this.syncOnlineResources(snapshot.resources ?? []);
+    const localSnapshot = this.localPlayerSide === "left" ? snapshot.left : snapshot.right;
+    this.missileReadyAt = localSnapshot.powerReadyAt.missile;
+    this.iceReadyAt = localSnapshot.powerReadyAt.ice;
+
+    const liveIds = new Set(snapshot.units.map((unit) => unit.id));
+    for (const existing of this.units) {
+      if (liveIds.has(existing.id)) continue;
+      existing.container.destroy();
+      this.unitById.delete(existing.id);
+    }
+    this.units = this.units.filter((unit) => liveIds.has(unit.id));
+
+    for (const authoritative of snapshot.units) {
+      const type = authoritative.type as UnitType;
+      if (!UNIT_CONFIGS[type]) continue;
+      const team: Team = authoritative.side === "left" ? "player" : "enemy";
+      let unit = this.unitById.get(authoritative.id);
+      if (!unit) {
+        this.spawnUnit(team, type, authoritative.y, authoritative.x, {
+          goldAlreadySpent: true,
+          authoritativeId: authoritative.id,
+          authoritativeLevel: authoritative.level,
+        });
+        unit = this.unitById.get(authoritative.id);
+      }
+      if (!unit) continue;
+      const previousState = unit.state;
+      unit.onlineFromX = unit.x;
+      unit.onlineFromY = unit.y;
+      unit.onlineTargetX = authoritative.x;
+      unit.onlineTargetY = authoritative.y;
+      unit.onlineInterpolationAt = performance.now();
+      unit.hp = authoritative.hp;
+      unit.maxHp = authoritative.maxHp;
+      unit.facingDirection = authoritative.facing;
+      unit.iceSlowUntil = authoritative.iceUntilMs;
+      unit.state = this.onlineVisualState(authoritative.state);
+      const isAttacking = unit.state === "attackUnit" || unit.state === "attackCastle";
+      const enteredAttack = unit.state !== previousState && isAttacking;
+      const attackSoundDue = isAttacking && (
+        enteredAttack || this.elapsedMs - unit.lastAttackAt >= this.effectiveAttackCooldown(unit)
+      );
+      if (attackSoundDue) {
+        unit.lastAttackAt = this.elapsedMs;
+        this.restartUnitAttack(unit);
+        if (unit.state === "attackCastle") this.playCastleImpactSfx(unit);
+        else if (isRangedUnit(unit.type)) this.playArrowShotSfx(unit);
+        else this.playMeleeAttackSfx(unit);
+      }
+      const isGathering = unit.state === "gather";
+      if (isGathering && (
+        previousState !== "gather" || this.elapsedMs - unit.lastAttackAt >= HARVEST_TICK_MS
+      )) {
+        unit.lastAttackAt = this.elapsedMs;
+        this.restartUnitAttack(unit);
+        this.playAxeHarvestSfx(unit);
+      }
+      this.syncUnitVisual(unit);
+    }
+    this.updateUi();
+  }
+
+  private onlineVisualState(state: OnlineUnitState): UnitState {
+    if (state === "attackingUnit") return "attackUnit";
+    if (state === "attackingCastle") return "attackCastle";
+    if (state === "gathering") return "gather";
+    if (state === "returning") return "returnResource";
+    if (state === "dead") return "move";
+    return "move";
+  }
+
+  private interpolateOnlineUnits(now: number) {
+    for (const unit of this.units) {
+      if (unit.onlineTargetX === undefined || unit.onlineTargetY === undefined) continue;
+      const progress = clamp((now - (unit.onlineInterpolationAt ?? now)) / 70, 0, 1);
+      const fromX = unit.onlineFromX ?? unit.x;
+      const fromY = unit.onlineFromY ?? unit.y;
+      unit.x = fromX + (unit.onlineTargetX - fromX) * progress;
+      unit.y = fromY + (unit.onlineTargetY - fromY) * progress;
+    }
+  }
+
+  private finishOnlineMatch(result: OnlineGameEnd) {
+    if (this.battleEnded || result.roomId !== this.roomId) return;
+    this.applyOnlineSnapshot(result.finalState);
+    this.finishBattle(result.winnerSide === this.localPlayerSide ? "victory" : "defeat");
+  }
+
+  private handleOnlineCommandError(error: OnlineCommandError) {
+    this.statusText.setText(error.message);
+    this.flashWarning(error.code === "NOT_ENOUGH_GOLD" ? "NO GOLD" : "ONLINE REJECTED");
+    this.log("ONLINE", `command rejected code=${error.code} command=${error.commandId ?? "unknown"}`);
+  }
+
+  private renderOnlinePowerCast(event: OnlinePowerCast) {
+    if (!this.isOnline) return;
+    if (event.power === "ice") {
+      this.playPowerSfx("online-ice-blast-sfx", 0.46);
+      this.showPowerTelegraph("ice", event.x, event.y, ICE_BLAST_RADIUS, 360);
+      this.showIceImpact(event.x, event.y, ICE_BLAST_RADIUS);
+      this.flashWarning("ICE BLAST");
+      return;
+    }
+
+    const duration = Math.max(1, event.impactAtMs - event.castAtMs);
+    this.showPowerTelegraph("missile", event.x, event.y, MISSILE_RADIUS, duration);
+    const startY = -40;
+    const missile = this.add.rectangle(event.x - 72, startY, 56, 12, 0xbb2c24)
+      .setStrokeStyle(3, 0xffffff)
+      .setRotation(0.75)
+      .setDepth(1300);
+    const smoke = this.add.image(event.x - 104, startY - 28, "effect_smoke_puff")
+      .setDepth(1299)
+      .setScale(1.125);
+    this.tweens.add({
+      targets: [missile, smoke],
+      x: event.x,
+      y: event.y,
+      duration,
+      ease: "Quad.In",
+      onComplete: () => {
+        missile.destroy();
+        smoke.destroy();
+        this.playPowerSfx("online-missile-impact-sfx", 0.56);
+        this.showMissileImpact(event.x, event.y);
+      },
+    });
   }
 
   update(_time: number, delta: number) {
     if (this.battleEnded || this.isPaused) {
+      return;
+    }
+
+    if (this.isOnlineWaitingForStart()) {
+      this.updateMissileAim();
+      if (this.androidPerfProfiling) this.androidPerfMonitor?.recordFrame(delta, this.elapsedMs);
+      return;
+    }
+
+    if (this.isOnline) {
+      if (this.onlineUiQa) this.elapsedMs += Math.min(delta, 50);
+      this.interpolateOnlineUnits(performance.now());
+      for (const unit of this.units) this.syncUnitVisual(unit);
+      this.updateMissileAim();
+      if (this.androidPerfProfiling) this.androidPerfMonitor?.recordFrame(delta, this.elapsedMs);
       return;
     }
 
@@ -914,6 +1299,7 @@ export class Game extends Scene {
     this.androidPerfUnitUpdateMs += performance.now() - unitsStartedAt;
     this.cleanupUnits();
     if (
+      !this.isOnline &&
       !this.navigationQaMode &&
       (!this.androidPerf.enabled || this.androidPerf.realSystems) &&
       this.elapsedMs >= this.nextBattleDirectorUpdateAt
@@ -971,6 +1357,7 @@ export class Game extends Scene {
       level: this.androidPerf.level,
       seed: this.androidPerf.seed,
       profile: this.androidPerf.profile,
+      powerFxQa: this.androidPerf.powerFxQa,
       runtime: {
         scenes: this.scene.manager.scenes.map((scene) => ({
           key: scene.scene.key,
@@ -1032,6 +1419,8 @@ export class Game extends Scene {
     this.tiledNavigation = undefined;
     this.tiledPathfinder = undefined;
     this.tiledMapRender = undefined;
+    this.onlineGeometry = undefined;
+    this.onlineOpponentGeometry = undefined;
     this.units = [];
     this.unitById.clear();
     this.pathCache.clear();
@@ -1066,6 +1455,10 @@ export class Game extends Scene {
     this.waterAreas = [...terrainAreas, ...assetAreas];
     this.gold = this.levelRuntime.level.player.startGold;
     this.enemyGold = this.levelRuntime.level.enemy.startGold;
+    if (this.onlineUiQa) {
+      this.gold = 250;
+      this.enemyGold = 250;
+    }
     if (this.isSoldierMenuTestPath()) {
       this.gold = 200;
       this.enemyGold = 0;
@@ -1098,6 +1491,11 @@ export class Game extends Scene {
     this.unitId = 0;
     this.resourceNodeId = 0;
     this.elapsedMs = 0;
+    this.onlineLastSnapshotSequence = -1;
+    this.onlineMatchDurationMs = NetworkClient.getInstance().matchDurationMs ?? 0;
+    this.onlineClientReadySent = false;
+    this.onlineMatchStarted = this.onlineUiQa;
+    this.onlineLeaveDialogOpen = false;
     this.battleEnded = false;
     this.isPaused = false;
     this.pausedByBackground = false;
@@ -1114,7 +1512,7 @@ export class Game extends Scene {
       2;
     this.nextHeldDeployAt = 0;
     this.autoDeployLaneIndex = 0;
-    this.balanceQaMode = this.isBalanceQaPath();
+    this.balanceQaMode = !this.isOnline && this.isBalanceQaPath();
     this.balanceQaSpeed = this.balanceQaSpeedFromPath();
     this.balanceQaPlayerDecisionMs = this.balanceQaPlayerDecisionFromPath();
     this.balanceQaLoadout = referenceLoadoutForLevel(this.levelRuntime.level);
@@ -1392,6 +1790,37 @@ export class Game extends Scene {
     return import.meta.env.DEV && new URLSearchParams(window.location.search).has("powerQa");
   }
 
+  private powerFxQaMode() {
+    if (this.androidPerf.powerFxQa) return this.androidPerf.powerFxQa;
+    if (!import.meta.env.DEV) return undefined;
+    const mode = new URLSearchParams(window.location.search).get("powerFxQa");
+    return mode === "missile" || mode === "ice" || mode === "both" ? mode : undefined;
+  }
+
+  private startPowerFxQa() {
+    const mode = this.powerFxQaMode();
+    if (!mode) return;
+    const centerX = (WORLD_LEFT + WORLD_RIGHT) / 2;
+    const centerY = 360;
+    this.sound.mute = true;
+    this.log("POWER_FX_QA", `started mode=${mode}`);
+    const runCycle = () => {
+      if (mode === "missile" || mode === "both") {
+        this.showPowerTelegraph("missile", centerX - 72, centerY - 46, MISSILE_RADIUS, 1_050);
+        this.time.delayedCall(1_050, () => this.showMissileImpact(centerX - 72, centerY - 46));
+      }
+      if (mode === "ice" || mode === "both") {
+        const delay = mode === "both" ? 1_850 : 240;
+        this.time.delayedCall(delay, () => {
+          this.showPowerTelegraph("ice", centerX + 86, centerY + 54, ICE_BLAST_RADIUS, 420);
+          this.showIceImpact(centerX + 86, centerY + 54, ICE_BLAST_RADIUS);
+        });
+      }
+    };
+    runCycle();
+    this.time.addEvent({ delay: 4_200, loop: true, callback: runCycle });
+  }
+
   /** Deterministic local harness for the full enemy power lifecycle. Four
    * stationary combat units form an eligible castle-side cluster; Missile and
    * Ice must each telegraph, obey the shared lock and then cast. */
@@ -1611,7 +2040,7 @@ export class Game extends Scene {
       const acquiresCloseCrossing = this.findTargetUnit(crossingAttacker)?.id === crossing.id;
 
       const destination = this.levelRuntime.map.enemySpawnZone;
-      const castleDestinationX = this.enemyCastle.x - CASTLE_FRONT_OFFSET;
+      const castleDestinationX = this.castleApproachX(crossingAttacker, this.enemyCastle);
       const expectedLaneDestinationY = clamp(
         flowYAtX(this.levelRuntime.map, castleDestinationX, routePosition),
         destination.minY,
@@ -1770,6 +2199,19 @@ export class Game extends Scene {
     const tiledDefinition = getTiledBattleMapDefinition(this.levelRuntime.map.id);
     if (tiledDefinition) {
       this.tiledMapRender = renderTiledBattleMap(this, tiledDefinition);
+      this.levelRuntime = {
+        ...this.levelRuntime,
+        map: applyTiledGameplayObjects(this.levelRuntime.map, this.tiledMapRender.tilemap),
+      };
+      this.playerDeployZone = this.isOnline && this.localPlayerSide === "right"
+        ? this.levelRuntime.map.enemySpawnZone
+        : this.levelRuntime.map.deployZone;
+      this.onlineGeometry = this.isOnline
+        ? onlineSideGeometry(this.tiledMapRender.tilemap, this.localPlayerSide)
+        : undefined;
+      this.onlineOpponentGeometry = this.isOnline
+        ? onlineSideGeometry(this.tiledMapRender.tilemap, this.localPlayerSide === "left" ? "right" : "left")
+        : undefined;
       if (tiledDefinition.useTiledNavigation) {
         this.tiledNavigation = new TiledCollisionGrid(this.tiledMapRender.tilemap);
         this.tiledPathfinder = new TiledNavigation(this.tiledNavigation);
@@ -1817,7 +2259,7 @@ export class Game extends Scene {
       this.isSoldierMenuTestPath();
     const teamUnitIds: Record<Team, readonly UnitId[]> = {
       player: loadAllUnits ? ALL_UNIT_IDS : this.battleStartData.playerLoadout,
-      enemy: loadAllUnits ? ALL_UNIT_IDS : this.levelRuntime.enemyUnitIds,
+      enemy: loadAllUnits || this.isOnline ? (loadAllUnits ? ALL_UNIT_IDS : this.battleStartData.playerLoadout) : this.levelRuntime.enemyUnitIds,
     };
     for (const team of ["player", "enemy"] as Team[]) {
       for (const type of teamUnitIds[team]) {
@@ -1860,7 +2302,51 @@ export class Game extends Scene {
   }
 
   private createResourceNodes() {
+    if (this.isOnline) return;
     this.levelRuntime.map.resources.forEach((config) => this.createResourceNode(this.resolveTreeResourcePlacement(config)));
+  }
+
+  private syncOnlineResources(resources: OnlineMatchSnapshot["resources"]) {
+    const template = this.levelRuntime.map.resources.find((resource) => resource.type === "tree");
+    if (!template) return;
+    for (const resource of resources) {
+      let node = this.resourceNodes.find((candidate) => candidate.onlineResourceId === resource.id);
+      if (!node) {
+        this.createResourceNode({
+          ...template,
+          id: `online_${resource.side}_${resource.id}`,
+          x: resource.x,
+          y: resource.y,
+          amount: resource.maxAmount,
+        }, resource);
+        continue;
+      }
+      const moved = node.onlineRevision !== resource.revision || node.x !== resource.x || node.y !== resource.y;
+      const visualChanged = node.amount !== resource.amount ||
+        node.maxAmount !== resource.maxAmount ||
+        node.onlineSide !== resource.side;
+      node.amount = resource.amount;
+      node.maxAmount = resource.maxAmount;
+      node.onlineSide = resource.side;
+      if (visualChanged) this.updateResourceVisual(node);
+      if (!moved) continue;
+      node.x = resource.x;
+      node.y = resource.y;
+      node.onlineRevision = resource.revision;
+      this.tweens.killTweensOf(node.container);
+      node.container
+        .setPosition(resource.x, resource.y)
+        .setDepth(node.depthOffset + resource.y)
+        .setScale(0.35)
+        .setAlpha(0.35);
+      this.tweens.add({
+        targets: node.container,
+        scale: 1,
+        alpha: 1,
+        duration: 360,
+        ease: "Quad.Out",
+      });
+    }
   }
 
   /**
@@ -1922,7 +2408,10 @@ export class Game extends Scene {
     return { ...scaledConfig, x: replacement.x, y: replacement.y };
   }
 
-  private createResourceNode(config: ResourceNodeConfig) {
+  private createResourceNode(
+    config: ResourceNodeConfig,
+    onlineResource?: OnlineMatchSnapshot["resources"][number],
+  ) {
     const visual = createMapPropVisual(this, {
       ...config,
       x: 0,
@@ -1954,8 +2443,8 @@ export class Game extends Scene {
       id: this.resourceNodeId,
       x: config.x,
       y: config.y,
-      amount: config.amount,
-      maxAmount: config.amount,
+      amount: onlineResource?.amount ?? config.amount,
+      maxAmount: onlineResource?.maxAmount ?? config.amount,
       type: config.type,
       visual: config.visual,
       depthOffset: config.depth,
@@ -1965,6 +2454,9 @@ export class Game extends Scene {
       barFill,
       treeParts,
       barBack,
+      onlineResourceId: onlineResource?.id,
+      onlineRevision: onlineResource?.revision,
+      onlineSide: onlineResource?.side,
     };
 
     this.resourceNodeId += 1;
@@ -2031,16 +2523,60 @@ export class Game extends Scene {
       this.levelRuntime.map.anchors.playerCastle.x,
       this.levelRuntime.map.anchors.playerCastle.y,
       PLAYER_MAIN_STRUCTURE_HEIGHT,
+      this.referenceCastleFrontX("player"),
     );
     this.enemyCastle = this.createCastleStateWithHpBar(
       "enemy",
       this.levelRuntime.map.anchors.enemyCastle.x,
       this.levelRuntime.map.anchors.enemyCastle.y,
       ENEMY_MAIN_STRUCTURE_HEIGHT,
+      this.referenceCastleFrontX("enemy"),
     );
   }
 
+  private referenceCastleFrontX(team: Team) {
+    type CastleAnchorObject = {
+      x?: number;
+      width?: number;
+      type?: string;
+      class?: string;
+      properties?: Array<{ name: string; value: unknown }>;
+    };
+    const objects = this.tiledMapRender?.tilemap
+      .getObjectLayer("GAMEPLAY_ZONES")
+      ?.objects as CastleAnchorObject[] | undefined;
+    const anchor = (objects ?? []).find((object) => {
+      const properties = new Map(
+        object.properties?.map((property) => [property.name, property.value]) ?? [],
+      );
+      return (
+        (object.type === "CastleAnchor" || object.class === "CastleAnchor") &&
+        properties.get("team") === team
+      );
+    });
+    if (
+      typeof anchor?.x !== "number" ||
+      typeof anchor.width !== "number" ||
+      !Number.isFinite(anchor.x) ||
+      !Number.isFinite(anchor.width)
+    ) {
+      return undefined;
+    }
+
+    return team === "player"
+      ? anchor.x + anchor.width + CASTLE_CONTACT_CLEARANCE
+      : anchor.x - CASTLE_CONTACT_CLEARANCE;
+  }
+
   private applyLevelCastleHp() {
+    if (this.isOnline) {
+      this.playerCastle.maxHp = 1_000;
+      this.playerCastle.hp = 1_000;
+      this.enemyCastle.maxHp = 1_000;
+      this.enemyCastle.hp = 1_000;
+      this.log("MATH", "online castleHp left=1000 right=1000 authority=server");
+      return;
+    }
     this.playerCastle.maxHp = this.levelRuntime.level.player.castleHp;
     this.playerCastle.hp = this.playerCastle.maxHp;
     this.enemyCastle.maxHp = this.levelRuntime.level.enemy.castleHp;
@@ -2092,6 +2628,7 @@ export class Game extends Scene {
     x: number,
     y: number,
     displayHeight: number,
+    frontX = x,
   ): CastleState {
     const hpY = clamp(y - displayHeight - 10, 20, 700);
     this.add
@@ -2102,7 +2639,7 @@ export class Game extends Scene {
       .setOrigin(0, 0.5)
       .setDepth(FORTRESS_SIDE_DEPTH + 11);
 
-    return { team, hp: 1000, maxHp: 1000, x, y, hpFill };
+    return { team, hp: 1000, maxHp: 1000, x, y, frontX, hpFill };
   }
 
   private createTowerWall(
@@ -2245,7 +2782,7 @@ export class Game extends Scene {
           .rectangle(x - CASTLE_HP_BAR_WIDTH / 2, hpY, CASTLE_HP_BAR_WIDTH, 8, 0x4ed35e)
           .setOrigin(0, 0.5)
           .setDepth(y + 91);
-        return { team, hp: 1000, maxHp: 1000, x, y, hpFill };
+        return { team, hp: 1000, maxHp: 1000, x, y, frontX: x, hpFill };
       }
 
       return undefined;
@@ -2441,7 +2978,7 @@ export class Game extends Scene {
         .rectangle(x - CASTLE_HP_BAR_WIDTH / 2, hpY, CASTLE_HP_BAR_WIDTH, 8, 0x4ed35e)
         .setOrigin(0, 0.5)
         .setDepth(y + 91);
-      return { team, hp: 1000, maxHp: 1000, x, y, hpFill };
+      return { team, hp: 1000, maxHp: 1000, x, y, frontX: x, hpFill };
     }
 
     return undefined;
@@ -2453,7 +2990,7 @@ export class Game extends Scene {
       .rectangle(x, 360, 114, 720, 0x4b2d1c)
       .setStrokeStyle(4, 0x21140d);
     panel.setDepth(1000);
-    if (side === "left" && interactive) {
+    if (interactive) {
       panel.setInteractive({ useHandCursor: true });
       panel.on(
         "pointerdown",
@@ -2536,19 +3073,32 @@ export class Game extends Scene {
       this.goldText = goldText;
     } else {
       this.enemyGoldText = goldText;
-      this.add
-        .text(x, 72, t("game_enemy"), {
-          fontFamily: "Arial Black",
-          fontSize: 12,
-          color: "#ffffff",
-          stroke: "#2b1609",
-          strokeThickness: 4,
-        })
-        .setOrigin(0.5)
-        .setDepth(1004);
+      // Show 'ENEMY' label only when this panel belongs to the opponent
+      // (i.e. offline always, or online when local player is on the other side)
+      const isOpponentPanel = !this.isOnline || this.localPlayerSide === "left";
+      if (isOpponentPanel) {
+        this.add
+          .text(x, 72, t("game_enemy"), {
+            fontFamily: "Arial Black",
+            fontSize: 12,
+            color: "#ffffff",
+            stroke: "#2b1609",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(1004);
+      }
     }
 
-    const types = side === "left" ? this.playerUnitOrder() : this.enemyUnitOrder();
+    // Determine whose unit list this panel shows:
+    // - The interactive panel always shows the local player's loadout
+    // - The non-interactive (enemy view) panel shows the opponent's units
+    const isMyPanel =
+      (side === "left" && (this.localPlayerSide === "left" || !this.isOnline)) ||
+      (side === "right" && this.isOnline && this.localPlayerSide === "right");
+    const types = this.isOnline
+      ? this.playerUnitOrder()
+      : isMyPanel ? this.playerUnitOrder() : this.enemyUnitOrder();
     const startY = types.length >= 7 ? 96 : 118;
     const stepY = types.length >= 7 ? 58 : types.length >= 5 ? 72 : 102;
 
@@ -2640,7 +3190,9 @@ export class Game extends Scene {
       .sprite(
         x,
         y - 7,
-        this.unitAssetKey(side === "left" ? "player" : "enemy", type),
+        // interactive panels show "player" atlas for the local player's units;
+        // non-interactive enemy views show the "enemy" atlas
+        this.unitAssetKey(interactive ? "player" : "enemy", type),
         "idle_000",
       )
       .setDisplaySize(spriteSize, spriteSize)
@@ -2752,7 +3304,15 @@ export class Game extends Scene {
   }
 
   private createPowerButtons(x: number, side: Side) {
-    if (side !== "left") {
+    // Power buttons go on the player's OWN panel:
+    // - Offline: always left panel
+    // - Online Player 1 (left): left panel
+    // - Online Player 2 (right): right panel
+    const isMyPanel =
+      (side === "left" && (!this.isOnline || this.localPlayerSide === "left")) ||
+      (side === "right" && this.isOnline && this.localPlayerSide === "right");
+
+    if (!isMyPanel) {
       this.createEnemyPowerBadge(x, 632);
       return;
     }
@@ -2810,6 +3370,7 @@ export class Game extends Scene {
     );
     button.disableInteractive();
     this.removeSelectionButton = button;
+    this.removeSelectionLabel = label;
     this.removeSelectionVisible = false;
   }
 
@@ -2947,17 +3508,6 @@ export class Game extends Scene {
       .setOrigin(0.5)
       .setDepth(1200);
 
-    this.timerText = this.add
-      .text(526, 19, "", {
-        fontFamily: "Arial Black",
-        fontSize: 13,
-        color: "#ffffff",
-        stroke: "#1b1109",
-        strokeThickness: 4,
-      })
-      .setOrigin(1, 0)
-      .setDepth(1200);
-
     this.directorText = this.add
       .text(754, 19, "", {
         fontFamily: "Arial Black",
@@ -3014,6 +3564,78 @@ export class Game extends Scene {
     this.debugText.setVisible(debugEnabled);
     this.input.keyboard?.on("keydown-D", () => {
       this.debugText.setVisible(!this.debugText.visible);
+    });
+  }
+
+  private createOnlineSideIdentity() {
+    const isLeft = this.localPlayerSide === "left";
+    const panelX = isLeft ? 59 : 1221;
+    const teamColor = isLeft ? 0x1978bd : 0xb42d35;
+    const direction = isLeft ? ">" : "<";
+
+    const badgeBack = this.add
+      .rectangle(panelX, 72, 78, 25, teamColor, 0.98)
+      .setStrokeStyle(3, 0xffd86a, 0.96)
+      .setDepth(1100);
+    const badgeText = this.add
+      .text(panelX, 72, "YOU", {
+        fontFamily: "Arial Black",
+        fontSize: 13,
+        color: "#ffffff",
+        stroke: "#1b1109",
+        strokeThickness: 4,
+      })
+      .setOrigin(0.5)
+      .setDepth(1101);
+    badgeBack.setData("online-side", this.localPlayerSide);
+    badgeText.setData("online-side", this.localPlayerSide);
+
+    const panelFlash = this.add
+      .rectangle(panelX, 360, 108, 710, teamColor, 0.05)
+      .setStrokeStyle(5, 0xffdf7a, 0.95)
+      .setDepth(1090);
+    this.tweens.add({
+      targets: panelFlash,
+      alpha: 0,
+      duration: 1_050,
+      ease: "Sine.Out",
+      onComplete: () => panelFlash.destroy(),
+    });
+
+    const bannerBack = this.add
+      .rectangle(640, 154, 430, 82, 0x24170f, 0.96)
+      .setStrokeStyle(5, 0xffd86a, 0.96);
+    const bannerColor = this.add.rectangle(isLeft ? 468 : 812, 154, 78, 72, teamColor, 0.96);
+    const bannerText = this.add.text(640, 154, `${direction}  YOU ARE ${isLeft ? "LEFT" : "RIGHT"}  ${direction}`, {
+      fontFamily: "Arial Black",
+      fontSize: 27,
+      color: "#ffffff",
+      stroke: "#160c08",
+      strokeThickness: 6,
+    }).setOrigin(0.5);
+    const banner = this.add
+      .container(0, -24, [bannerBack, bannerColor, bannerText])
+      .setDepth(1500)
+      .setAlpha(0);
+    this.tweens.add({
+      targets: banner,
+      y: 0,
+      alpha: 1,
+      duration: 180,
+      ease: "Back.Out",
+      onComplete: () => {
+        this.time.delayedCall(900, () => {
+          if (!banner.active) return;
+          this.tweens.add({
+            targets: banner,
+            y: -18,
+            alpha: 0,
+            duration: 320,
+            ease: "Sine.In",
+            onComplete: () => banner.destroy(),
+          });
+        });
+      },
     });
   }
 
@@ -3183,6 +3805,10 @@ export class Game extends Scene {
 
   private togglePause() {
     if (this.battleEnded) return;
+    if (this.isOnline) {
+      this.openOnlineLeaveDialog();
+      return;
+    }
     if (this.isPaused) {
       this.destroyStoryOverlay();
       this.setGamePaused(false);
@@ -3211,13 +3837,93 @@ export class Game extends Scene {
     this.statusText.setText(t("game_resumed"));
   }
 
+  private getDeployClickBounds() {
+    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
+    if (this.isOnline && this.onlineGeometry) {
+      const guide = deploymentGuideBounds(this.onlineGeometry);
+      return {
+        zone,
+        leftX: guide.minX,
+        rightX: guide.maxX,
+        width: Math.max(1, guide.maxX - guide.minX),
+        centerX: (guide.minX + guide.maxX) / 2,
+        centerY: (guide.minY + guide.maxY) / 2,
+        height: Math.max(1, guide.maxY - guide.minY),
+        minY: guide.minY,
+        maxY: guide.maxY,
+      };
+    }
+    const isRightPlayer = this.isOnline && this.localPlayerSide === "right";
+    const limits = this.localDeployXLimits(zone);
+
+    // Keep the castle-side click area useful without letting the +X side span
+    // across the whole right edge of the world.
+    const leftX = isRightPlayer ? zone.x - 12 : 0;
+    const untrimmedRightX = isRightPlayer
+      ? Math.min(WORLD_RIGHT, limits.maxX + CASTLE_SIDE_DEPLOY_CLICK_EXTENSION_X)
+      : zone.x + 12;
+    const rightX = Math.max(leftX + 1, untrimmedRightX - DEPLOY_POSITIVE_X_REDUCTION);
+    const width = Math.max(1, rightX - leftX);
+    const centerX = (leftX + rightX) / 2;
+    const centerY = (zone.minY + zone.maxY) / 2;
+    const height = Math.max(1, zone.maxY - zone.minY);
+
+    return {
+      zone,
+      leftX,
+      rightX,
+      width,
+      centerX,
+      centerY,
+      height,
+      minY: zone.minY,
+      maxY: zone.maxY,
+    };
+  }
+
+  private localDeployXLimits(zone = this.playerDeployZone || this.levelRuntime.map.deployZone) {
+    if (this.isOnline && this.onlineGeometry) {
+      return { minX: this.onlineGeometry.deploy.minX, maxX: this.onlineGeometry.deploy.maxX };
+    }
+    const minX = zone.x - zone.width / 2;
+    const maxX = zone.x + zone.width / 2;
+    const positiveEdgeInset = this.isOnline && this.localPlayerSide === "right"
+      ? RIGHT_SIDE_DEPLOY_EDGE_INSET_X
+      : 0;
+
+    return {
+      minX,
+      maxX: Math.max(minX, maxX - positiveEdgeInset),
+    };
+  }
+
+  private homeCastleForTeam(team: Team) {
+    return team === "player" ? this.playerCastle : this.enemyCastle;
+  }
+
+  private opponentCastleForTeam(team: Team) {
+    return team === "player" ? this.enemyCastle : this.playerCastle;
+  }
+
+  private homeDeployZoneForTeam(team: Team) {
+    return team === "player"
+      ? this.levelRuntime.map.deployZone
+      : this.levelRuntime.map.enemySpawnZone;
+  }
+
+  private opponentDeployZoneForTeam(team: Team) {
+    return team === "player"
+      ? this.levelRuntime.map.enemySpawnZone
+      : this.levelRuntime.map.deployZone;
+  }
+
   private createSpawnGuide() {
     this.ensureDeploymentTexture();
-    const zone = this.levelRuntime.map.deployZone;
-    const centerY = (zone.minY + zone.maxY) / 2;
+    const bounds = this.getDeployClickBounds();
+    const { zone, centerY } = bounds;
     this.spawnStripe = this.add
-      .image(zone.x, centerY, DEPLOY_TEXTURE_KEY)
-      .setDisplaySize(zone.width, zone.maxY - zone.minY)
+      .image(bounds.centerX, centerY, DEPLOY_TEXTURE_KEY)
+      .setDisplaySize(bounds.width, bounds.height)
       .setDepth(12)
       .setAlpha(0.72)
       .setVisible(false);
@@ -3257,6 +3963,17 @@ export class Game extends Scene {
       .setAlpha(0.82)
       .setDepth(1224)
       .setVisible(false);
+    this.missileAimPercentText = this.add
+      .text(zone.x + PLAYER_MISSILE_MIN_RANGE, centerY - 42, "0%", {
+        fontFamily: "Arial Black",
+        fontSize: 15,
+        color: "#fff4c2",
+        stroke: "#24110b",
+        strokeThickness: 5,
+      })
+      .setOrigin(0.5)
+      .setDepth(1225)
+      .setVisible(false);
 
     const padBack = this.add.circle(0, 0, 28, 0x8e7656)
       .setStrokeStyle(4, 0x3a281b);
@@ -3293,36 +4010,36 @@ export class Game extends Scene {
       return;
     }
 
-    const zone = this.levelRuntime.map.deployZone;
-    const width = Math.round(zone.width);
-    const height = Math.round(zone.maxY - zone.minY);
-    const texture = this.textures.createCanvas(DEPLOY_TEXTURE_KEY, width, height);
+    const { width, height } = this.getDeployClickBounds();
+    const textureWidth = Math.max(1, Math.round(width));
+    const textureHeight = Math.max(1, Math.round(height));
+    const texture = this.textures.createCanvas(DEPLOY_TEXTURE_KEY, textureWidth, textureHeight);
 
     if (!texture) {
       const graphics = this.add.graphics();
       graphics.fillStyle(0x5ee5f4, 0.24);
-      graphics.fillRect(0, 0, width, height);
-      graphics.generateTexture(DEPLOY_TEXTURE_KEY, width, height);
+      graphics.fillRect(0, 0, textureWidth, textureHeight);
+      graphics.generateTexture(DEPLOY_TEXTURE_KEY, textureWidth, textureHeight);
       graphics.destroy();
       return;
     }
 
     const ctx = texture.getContext();
 
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, textureWidth, textureHeight);
     ctx.fillStyle = "rgba(94, 229, 244, 0.24)";
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, textureWidth, textureHeight);
     ctx.save();
-    ctx.translate(-height * 0.38, height * 0.12);
+    ctx.translate(-textureHeight * 0.38, textureHeight * 0.12);
     ctx.rotate(-Math.PI / 4);
     ctx.fillStyle = "rgba(255, 255, 255, 0.58)";
 
     for (
-      let x = -height;
-      x < height + width;
+      let x = -textureHeight;
+      x < textureHeight + textureWidth;
       x += 52
     ) {
-      ctx.fillRect(x, -width, 24, height * 2);
+      ctx.fillRect(x, -textureWidth, 24, textureHeight * 2);
     }
 
     ctx.restore();
@@ -3343,14 +4060,19 @@ export class Game extends Scene {
       }
 
       const world = this.pointerWorld(pointer);
+      const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
       this.heldDeployX = world.x;
       this.heldDeployY = clamp(
         world.y,
-        this.levelRuntime.map.deployZone.minY,
-        this.levelRuntime.map.deployZone.maxY,
+        zone.minY,
+        zone.maxY,
       );
 
       if (this.selectedUnit) {
+        const resolved = this.onlineGeometry
+          ? resolveDeploymentClick(this.onlineGeometry, world.x, world.y)
+          : undefined;
+        this.spawnMarker.x = resolved?.x ?? world.x;
         this.spawnMarker.y = this.heldDeployY;
         if (this.isPointInDeployZone(world.x, world.y)) {
           this.spawnMarker.setVisible(true);
@@ -3389,13 +4111,18 @@ export class Game extends Scene {
     if (this.battleEnded || this.isPaused) {
       return;
     }
+    if (this.isOnlineWaitingForStart()) {
+      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      return;
+    }
 
     const world = this.pointerWorld(pointer);
+    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
     this.heldDeployX = world.x;
     this.heldDeployY = clamp(
       world.y,
-      this.levelRuntime.map.deployZone.minY,
-      this.levelRuntime.map.deployZone.maxY,
+      zone.minY,
+      zone.maxY,
     );
 
     if (this.activePower) {
@@ -3430,6 +4157,10 @@ export class Game extends Scene {
     }
 
     this.spawnMarker.y = this.heldDeployY;
+    if (this.onlineGeometry) {
+      const resolved = resolveDeploymentClick(this.onlineGeometry, world.x, world.y);
+      if (resolved) this.spawnMarker.setPosition(resolved.x, resolved.y);
+    }
     this.spawnMarker.setVisible(true);
     this.log(
       "DEPLOY",
@@ -3449,13 +4180,18 @@ export class Game extends Scene {
   }
 
   private isPointInDeployZone(x: number, y: number) {
-    const zone = this.levelRuntime.map.deployZone;
+    if (this.isOnline && this.onlineGeometry) {
+      const resolved = resolveDeploymentClick(this.onlineGeometry, x, y);
+      return Boolean(resolved);
+    }
+    const { zone, leftX, rightX, minY, maxY } = this.getDeployClickBounds();
     const inside = (
-      Math.abs(x - zone.x) <= zone.width / 2 &&
-      y >= zone.minY &&
-      y <= zone.maxY
+      x >= leftX &&
+      x <= rightX &&
+      y >= minY &&
+      y <= maxY
     );
-    return inside && !this.tiledNavigation?.cellAtWorld(x, y).blocksDeploy;
+    return inside && !this.tiledNavigation?.cellAtWorld(zone.x, y).blocksDeploy;
   }
 
   private stopHeldDeployment() {
@@ -3468,6 +4204,10 @@ export class Game extends Scene {
     void pointer;
 
     if (this.battleEnded || this.isPaused) {
+      return;
+    }
+    if (this.isOnlineWaitingForStart()) {
+      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
       return;
     }
 
@@ -3487,7 +4227,7 @@ export class Game extends Scene {
   }
 
   private nextAutoDeployY(_type: UnitType) {
-    const zone = this.levelRuntime.map.deployZone;
+    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
     const lane = this.levelRuntime.map.lanes[
       this.autoDeployLaneIndex % this.levelRuntime.map.lanes.length
     ];
@@ -3529,7 +4269,7 @@ export class Game extends Scene {
     if (this.missileAimPointerId !== undefined) return;
 
     this.missileAimPointerId = pointer.id;
-    this.missileAimStartedAt = this.elapsedMs;
+    this.missileAimStartedAt = this.missileAimClockMs();
     this.missileAimY = clamp(y, 72, 648);
     this.statusText.setText("BOMBAYI TUT: menzil dolar, birakinca duser.");
     this.updateMissileAim();
@@ -3553,24 +4293,34 @@ export class Game extends Scene {
     this.missileAimGuide?.setVisible(false);
     this.missileAimFill?.setVisible(false);
     this.missileAimReticle?.setVisible(false);
+    this.missileAimPercentText?.setVisible(false);
+  }
+
+  private missileAimClockMs() {
+    return this.isOnline ? performance.now() : this.elapsedMs;
   }
 
   private currentMissileAimTarget() {
-    const zone = this.levelRuntime.map.deployZone;
-    const startX = zone.x + PLAYER_MISSILE_MIN_RANGE;
-    const maxX = this.enemyCastle.x - CASTLE_FRONT_OFFSET;
+    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
+    const direction = this.isOnline && this.localPlayerSide === "right" ? -1 : 1;
+    const startX = this.onlineGeometry
+      ? deployHomeEdge(this.onlineGeometry) + direction * PLAYER_MISSILE_MIN_RANGE
+      : zone.x + direction * PLAYER_MISSILE_MIN_RANGE;
+    const endX = this.onlineOpponentGeometry
+      ? (this.localPlayerSide === "left" ? this.onlineOpponentGeometry.castle.minX : this.onlineOpponentGeometry.castle.maxX)
+      : this.enemyCastle.frontX;
     const charge = this.missileAimPointerId === undefined
       ? 0
-      : clamp((this.elapsedMs - this.missileAimStartedAt) / PLAYER_MISSILE_CHARGE_MS, 0, 1);
+      : clamp((this.missileAimClockMs() - this.missileAimStartedAt) / PLAYER_MISSILE_CHARGE_MS, 0, 1);
     return {
-      x: clamp(startX + (maxX - startX) * charge, startX, maxX),
+      x: startX + (endX - startX) * charge,
       y: this.missileAimY,
       charge,
     };
   }
 
   private updateMissileAim() {
-    if (!this.missileAimPad || !this.missileAimGuide || !this.missileAimFill || !this.missileAimReticle) return;
+    if (!this.missileAimPad || !this.missileAimGuide || !this.missileAimFill || !this.missileAimReticle || !this.missileAimPercentText) return;
 
     const visible = this.activePower === "missile";
     if (
@@ -3578,7 +4328,8 @@ export class Game extends Scene {
       !this.missileAimPad.visible &&
       !this.missileAimGuide.visible &&
       !this.missileAimFill.visible &&
-      !this.missileAimReticle.visible
+      !this.missileAimReticle.visible &&
+      !this.missileAimPercentText.visible
     ) {
       return;
     }
@@ -3587,30 +4338,47 @@ export class Game extends Scene {
       return;
     }
 
-    const zone = this.levelRuntime.map.deployZone;
+    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
     const centerY = this.missileAimPointerId === undefined
       ? (zone.minY + zone.maxY) / 2
       : this.missileAimY;
-    const startX = zone.x + PLAYER_MISSILE_MIN_RANGE;
-    const maxX = this.enemyCastle.x - CASTLE_FRONT_OFFSET;
+    const direction = this.isOnline && this.localPlayerSide === "right" ? -1 : 1;
+    const startX = this.onlineGeometry
+      ? deployHomeEdge(this.onlineGeometry) + direction * PLAYER_MISSILE_MIN_RANGE
+      : zone.x + direction * PLAYER_MISSILE_MIN_RANGE;
+    const endX = this.onlineOpponentGeometry
+      ? (this.localPlayerSide === "left" ? this.onlineOpponentGeometry.castle.minX : this.onlineOpponentGeometry.castle.maxX)
+      : this.enemyCastle.frontX;
     const target = this.currentMissileAimTarget();
 
-    this.missileAimPad.setVisible(visible && this.missileAimPointerId === undefined);
+    this.missileAimPad
+      .setVisible(visible && this.missileAimPointerId === undefined)
+      .setPosition(startX, centerY);
     this.missileAimGuide
       .setVisible(visible)
       .setPosition(startX, centerY)
-      .setDisplaySize(maxX - startX, 6);
+      .setOrigin(direction === 1 ? 0 : 1, 0.5)
+      .setDisplaySize(Math.abs(endX - startX), 6);
     this.missileAimFill
       .setVisible(visible)
       .setPosition(startX, centerY)
-      .setDisplaySize(Math.max(1, (maxX - startX) * target.charge), 6);
+      .setOrigin(direction === 1 ? 0 : 1, 0.5)
+      .setDisplaySize(Math.max(1, Math.abs(endX - startX) * target.charge), 6);
     this.missileAimReticle
       .setVisible(visible)
       .setPosition(target.x, target.y)
       .setAlpha(this.missileAimPointerId === undefined ? 0.58 : 0.92);
+    this.missileAimPercentText
+      .setVisible(visible)
+      .setPosition(target.x, target.y - 42)
+      .setText(this.missileAimPointerId === undefined ? "HOLD" : `${Math.round(target.charge * 100)}%`);
   }
 
   private selectUnit(type: UnitType) {
+    if (this.isOnlineWaitingForStart()) {
+      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      return;
+    }
     this.cancelMissileAim();
     this.activePower = undefined;
     this.selectedUnit = type;
@@ -3629,6 +4397,7 @@ export class Game extends Scene {
 
   private cancelUnitSelection(source: string) {
     const cancelledType = this.selectedUnit;
+    const cancelledPower = this.activePower;
     const cancelledCount = this.pendingUnitCount();
     const hadSelection = cancelledCount > 0 || !!cancelledType || !!this.activePower;
 
@@ -3646,7 +4415,9 @@ export class Game extends Scene {
     this.statusText.setText(
       cancelledCount > 0
         ? `Asker secimi iptal edildi. ${cancelledCount} birimin altini iade edildi.`
-        : "Asker secimi iptal edildi.",
+        : cancelledPower
+          ? `${cancelledPower === "missile" ? "MISSILE" : "ICE"} secimi iptal edildi.`
+          : "Asker secimi iptal edildi.",
     );
     this.log(
       "UI",
@@ -3656,7 +4427,7 @@ export class Game extends Scene {
   }
 
   private setupBackgroundPause() {
-    if (this.balanceQaMode) return;
+    if (this.balanceQaMode || this.isOnline) return;
     this.backgroundPauseHandler?.();
     const syncBackgroundPause = () => {
       // Android game overlays (notably Realme/OPlus GameSpace) can take window
@@ -3757,6 +4528,84 @@ export class Game extends Scene {
     closeBack.on("pointerdown", close);
     closeText.on("pointerdown", close);
     this.log("PAUSE", "story menu opened");
+  }
+
+  private openOnlineLeaveDialog() {
+    if (this.onlineLeaveDialogOpen || this.battleEnded) return;
+    this.onlineLeaveDialogOpen = true;
+    this.cancelUnitSelection("online-pause");
+    this.statusText.setText("ONLINE MAC DEVAM EDIYOR.");
+
+    const shade = this.add.rectangle(640, 360, 1280, 720, 0x07101a, 0.56)
+      .setDepth(2300)
+      .setInteractive();
+    const panel = this.add.rectangle(640, 360, 600, 300, 0x24170f, 0.96)
+      .setStrokeStyle(5, this.localPlayerSide === "left" ? 0x3bc8ff : 0xff6252)
+      .setDepth(2301);
+    const title = this.add.text(640, 276, "LEAVE ONLINE MATCH?", {
+      fontFamily: "Arial Black",
+      fontSize: 28,
+      color: "#fff2c0",
+      stroke: "#000000",
+      strokeThickness: 6,
+    }).setOrigin(0.5).setDepth(2302);
+    const body = this.add.text(640, 335, "Ayrilirsan rakibin kazanir.", {
+      fontFamily: "Arial Black",
+      fontSize: 18,
+      color: "#ffffff",
+      stroke: "#000000",
+      strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(2302);
+
+    generateRectTexture(this, "online_leave_stay_btn", 220, 66, 0x345f2d, 1, 5, 0xffd45f);
+    generateRectTexture(this, "online_leave_quit_btn", 250, 66, 0xa42820, 1, 5, 0xffd45f);
+    const stayBack = this.add.image(510, 438, "online_leave_stay_btn").setDepth(2302).setInteractive({ useHandCursor: true });
+    const stayText = this.add.text(510, 437, "STAY", {
+      fontFamily: "Arial Black",
+      fontSize: 23,
+      color: "#ffffff",
+      stroke: "#000000",
+      strokeThickness: 5,
+    }).setOrigin(0.5).setDepth(2303).setInteractive({ useHandCursor: true });
+    const leaveBack = this.add.image(770, 438, "online_leave_quit_btn").setDepth(2302).setInteractive({ useHandCursor: true });
+    const leaveText = this.add.text(770, 437, "LEAVE MATCH", {
+      fontFamily: "Arial Black",
+      fontSize: 22,
+      color: "#ffffff",
+      stroke: "#000000",
+      strokeThickness: 5,
+    }).setOrigin(0.5).setDepth(2303).setInteractive({ useHandCursor: true });
+
+    const objects: Phaser.GameObjects.GameObject[] = [shade, panel, title, body, stayBack, stayText, leaveBack, leaveText];
+    const close = () => {
+      for (const object of objects) object.destroy();
+      this.onlineLeaveDialogOpen = false;
+      this.statusText.setText(this.onlineMatchStarted ? "GAME RESUMED." : "RAKIP ARENASI BEKLENIYOR...");
+      this.log("PAUSE", "online leave dialog closed");
+    };
+    const leave = () => {
+      for (const object of objects) {
+        if ("disableInteractive" in object && typeof object.disableInteractive === "function") {
+          object.disableInteractive();
+        }
+      }
+      this.onlineLeaveDialogOpen = false;
+      this.battleEnded = true;
+      stopSceneMusic(this, "battle-music");
+      NetworkClient.getInstance().disconnect();
+      this.scene.start("SceneTransition", {
+        target: "MainMenu",
+        targetData: { skipSplash: true },
+        release: "battle",
+      });
+      this.log("PAUSE", "online match left by player");
+    };
+
+    stayBack.on("pointerdown", close);
+    stayText.on("pointerdown", close);
+    leaveBack.on("pointerdown", leave);
+    leaveText.on("pointerdown", leave);
+    this.log("PAUSE", "online leave dialog opened");
   }
 
   private createStoryOverlay() {
@@ -3960,7 +4809,7 @@ export class Game extends Scene {
   }
 
   private tickEnemyEconomyAi() {
-    if (this.battleEnded || this.isPaused || this.economyQaMode || this.navigationQaMode) return;
+    if (this.isOnline || this.battleEnded || this.isPaused || this.economyQaMode || this.navigationQaMode) return;
     const workerCount = this.activeWorkerCount("enemy");
     const target = this.enemyWorkerTarget();
     const workerReserve = this.enemyWorkerGoldReserve();
@@ -4055,6 +4904,7 @@ export class Game extends Scene {
 
   private tickEnemyPowerAi() {
     if (
+      this.isOnline ||
       this.battleEnded ||
       this.isPaused ||
       this.enemyPowerPending ||
@@ -4312,10 +5162,7 @@ export class Game extends Scene {
     this.enemyPowerCastCount = context.castIndex;
     this.enemyPowerCastCounts[power] = context.powerCastIndex;
     const radius = power === "missile" ? MISSILE_RADIUS : ICE_BLAST_RADIUS;
-    const color = power === "missile" ? 0xff4438 : 0x70d8ff;
-    const marker = this.add.image(x, y, "effect_runic_circle").setTint(color).setDepth(1235);
-    marker.setScale(radius / 48);
-    this.tweens.add({ targets: marker, alpha: { from: 0.2, to: 0.68 }, duration: 150, yoyo: true, repeat: 3 });
+    const marker = this.showPowerTelegraph(power, x, y, radius, powers.telegraphMs);
     this.playSfx("select-sfx", 0.62);
     this.flashWarning(power === "missile" ? "DUSMAN MISSILE!" : "DUSMAN ICE!");
     this.log(
@@ -4338,7 +5185,7 @@ export class Game extends Scene {
       targetPolicyViolation: context.targetPolicyViolation,
     });
     this.time.delayedCall(powers.telegraphMs, () => {
-      marker.destroy();
+      if (marker?.active) marker.destroy();
       this.enemyPowerPending = false;
       if (this.battleEnded) return;
       if (power === "missile") {
@@ -4853,6 +5700,61 @@ export class Game extends Scene {
       .join(" · ");
   }
 
+  /**
+   * Returns the Team this client controls in the current match.
+   * - Offline / Online Player 1 (left): "player"
+   * - Online Player 2 (right):          "enemy"
+   * All worker/combat AI logic is already side-aware via team, so this is the
+   * only place we need to branch on localPlayerSide for UI/economy operations.
+   */
+  private localTeam(): Team {
+    return this.isOnline && this.localPlayerSide === "right" ? "enemy" : "player";
+  }
+
+  /**
+   * Returns the Side of the panel this client controls.
+   * - Offline / Online Player 1: "left"
+   * - Online Player 2:           "right"
+   */
+  private localPanelSide(): Side {
+    return this.isOnline && this.localPlayerSide === "right" ? "right" : "left";
+  }
+
+  /** Returns the gold pool for the local player. */
+  private localGold(): number {
+    return this.localTeam() === "player" ? this.gold : this.enemyGold;
+  }
+
+  private pendingGoldCost() {
+    return this.pendingDeployEntries().reduce(
+      (total, [type, count]) => total + UNIT_CONFIGS[type].cost * count,
+      0,
+    );
+  }
+
+  private availableLocalGold() {
+    return this.localGold() - (this.isOnline ? this.pendingGoldCost() : 0);
+  }
+
+  /** Deducts gold from the correct local gold pool. */
+  private spendLocalGold(amount: number) {
+    if (this.localTeam() === "player") {
+      this.gold -= amount;
+    } else {
+      this.enemyGold -= amount;
+    }
+  }
+
+  /** Refunds gold to the correct local gold pool. */
+  private refundLocalGold(amount: number) {
+    if (this.localTeam() === "player") {
+      this.gold += amount;
+    } else {
+      this.enemyGold += amount;
+    }
+  }
+
+
   private queueDeployUnit(type: UnitType) {
     if (this.battleEnded || this.isPaused) {
       return false;
@@ -4863,7 +5765,8 @@ export class Game extends Scene {
     const config = UNIT_CONFIGS[type];
 
     if (isWorkerUnit(type)) {
-      const usedWorkerSlots = this.activeWorkerCount("player") + this.pendingWorkerCount();
+      const myTeam = this.localTeam();
+      const usedWorkerSlots = this.activeWorkerCount(myTeam) + this.pendingWorkerCount();
 
       if (usedWorkerSlots >= this.currentWorkerCap()) {
         this.statusText.setText(t("game_max_out_worker"));
@@ -4871,8 +5774,9 @@ export class Game extends Scene {
         this.log("UI", `Queue blocked by worker cap for ${type}`);
         return false;
       }
-    } else {
-      const usedCombatSlots = this.activeCombatUnitCount("player") + this.pendingCombatCount();
+    } else if (!this.isOnline) {
+      const myTeam = this.localTeam();
+      const usedCombatSlots = this.activeCombatUnitCount(myTeam) + this.pendingCombatCount();
 
       if (usedCombatSlots >= COMBAT_UNIT_CAP) {
         this.statusText.setText(t("game_max_out_army"));
@@ -4882,26 +5786,28 @@ export class Game extends Scene {
       }
     }
 
-    if (this.gold < config.cost) {
+    if (this.availableLocalGold() < config.cost) {
       this.statusText.setText(t("game_not_enough_gold"));
       this.flashWarning("NO GOLD");
       this.log("UI", `Queue blocked by gold for ${type}`);
       return false;
     }
 
-    this.gold -= config.cost;
-    this.balanceTelemetry.recordEconomyEvent({
-      second: Math.round(this.elapsedMs / 1000),
-      team: "player",
-      type: "queue",
-      amount: -config.cost,
-      bank: this.gold,
-      detail: type,
-    });
+    if (!this.isOnline) {
+      this.spendLocalGold(config.cost);
+      this.balanceTelemetry.recordEconomyEvent({
+        second: Math.round(this.elapsedMs / 1000),
+        team: this.localTeam(),
+        type: "queue",
+        amount: -config.cost,
+        bank: this.localGold(),
+        detail: type,
+      });
+    }
     this.pendingDeployCounts[type] = this.queuedUnitCount(type) + 1;
     this.spawnStripe.setVisible(true);
     this.spawnMarker.setVisible(true);
-    this.flashUnitButton("left", type);
+    this.flashUnitButton(this.localPanelSide(), type);
     this.log("DEPLOY", `Queued ${type} count=${this.queuedUnitCount(type)} total=${this.pendingUnitCount()}`);
     return true;
   }
@@ -4916,13 +5822,18 @@ export class Game extends Scene {
       (total, [type, count]) => total + count * UNIT_CONFIGS[type].cost,
       0,
     );
-    this.gold += refund;
+    if (this.isOnline) {
+      this.log("DEPLOY", `Cancelled pending ${this.pendingDeploySummary()} without local economy mutation`);
+      this.pendingDeployCounts = {};
+      return;
+    }
+    this.refundLocalGold(refund);
     this.balanceTelemetry.recordEconomyEvent({
       second: Math.round(this.elapsedMs / 1000),
-      team: "player",
+      team: this.localTeam(),
       type: "refund",
       amount: refund,
-      bank: this.gold,
+      bank: this.localGold(),
       detail: "cancelled_queue",
     });
     this.log(
@@ -4943,16 +5854,19 @@ export class Game extends Scene {
       return 0;
     }
 
-    const zone = this.levelRuntime.map.deployZone;
-    const deployX = clamp(
-      x,
-      zone.x - zone.width / 2 + 18,
-      zone.x + zone.width / 2 - 18,
-    );
-    const deployY = clamp(y, zone.minY, zone.maxY);
+    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
+    const xLimits = this.localDeployXLimits(zone);
+    const resolved = this.onlineGeometry
+      ? resolveDeploymentClick(this.onlineGeometry, x, y)
+      : undefined;
+    if (this.isOnline && !resolved) return 0;
+    const deployX = resolved?.x ?? clamp(x, xLimits.minX, xLimits.maxX);
+    const deployY = resolved?.y ?? clamp(y, zone.minY, zone.maxY);
 
-    let workerSlots = Math.max(0, this.currentWorkerCap() - this.activeWorkerCount("player"));
-    let combatSlots = Math.max(0, COMBAT_UNIT_CAP - this.activeCombatUnitCount("player"));
+    let workerSlots = Math.max(0, this.currentWorkerCap() - this.activeWorkerCount(this.localTeam()));
+    let combatSlots = this.isOnline
+      ? this.pendingCombatCount()
+      : Math.max(0, COMBAT_UNIT_CAP - this.activeCombatUnitCount(this.localTeam()));
     let batchCount = 0;
     let formationIndex = 0;
     let refund = 0;
@@ -4966,17 +5880,26 @@ export class Game extends Scene {
       for (let index = 0; index < deployCount; index += 1) {
         const offset = this.batchFormationOffset(formationIndex, type);
         formationIndex += 1;
-        this.spawnUnit(
-          "player",
-          type,
-          clamp(deployY + offset.y, zone.minY, zone.maxY),
-          clamp(
-            deployX + offset.x,
-            zone.x - zone.width / 2 + 10,
-            zone.x + zone.width / 2 - 10,
-          ),
-          { goldAlreadySpent: true },
+
+        // P2 deploys to enemy deploy zone instead of player deploy zone
+        const finalX = clamp(
+          deployX + (this.onlineGeometry ? formationWorldOffset(this.onlineGeometry, offset.x) : offset.x),
+          xLimits.minX,
+          xLimits.maxX
         );
+        const finalY = clamp(deployY + offset.y, zone.minY, zone.maxY);
+
+        if (this.isOnline) {
+          this.onlineRuntime?.spawn(type, 1, finalX, finalY);
+        } else {
+          this.spawnUnit(
+            this.localTeam(),
+            type,
+            finalY,
+            finalX,
+            { goldAlreadySpent: true },
+          );
+        }
       }
 
       batchCount += deployCount;
@@ -4984,14 +5907,14 @@ export class Game extends Scene {
       else combatSlots -= deployCount;
     }
 
-    if (refund > 0) {
-      this.gold += refund;
+    if (refund > 0 && !this.isOnline) {
+      this.refundLocalGold(refund);
       this.balanceTelemetry.recordEconomyEvent({
         second: Math.round(this.elapsedMs / 1000),
-        team: "player",
+        team: this.localTeam(),
         type: "refund",
         amount: refund,
-        bank: this.gold,
+        bank: this.localGold(),
         detail: "deployment_cap",
       });
     }
@@ -5007,7 +5930,7 @@ export class Game extends Scene {
     this.selectedUnit = undefined;
     this.spawnStripe.setVisible(false);
     this.spawnMarker.setVisible(false);
-    for (const [type] of entries) this.flashUnitButton("left", type);
+    for (const [type] of entries) this.flashUnitButton(this.localPanelSide(), type);
     return batchCount;
   }
 
@@ -5030,7 +5953,7 @@ export class Game extends Scene {
 
     const config = UNIT_CONFIGS[type];
     const button = this.unitButtons.find(
-      (candidate) => candidate.side === "left" && candidate.type === type,
+      (candidate) => candidate.side === this.localPanelSide() && candidate.type === type,
     );
     const readyAt = button?.readyAt ?? 0;
 
@@ -5042,21 +5965,21 @@ export class Game extends Scene {
       return false;
     }
 
-    if (isWorkerUnit(type) && this.activeWorkerCount("player") >= this.currentWorkerCap()) {
+    if (isWorkerUnit(type) && this.activeWorkerCount(this.localTeam()) >= this.currentWorkerCap()) {
       this.statusText.setText(t("game_max_out_worker"));
       this.flashWarning("MAXED OUT");
       this.log("UI", "Worker cap reached");
       return false;
     }
 
-    if (!isWorkerUnit(type) && this.activeCombatUnitCount("player") >= COMBAT_UNIT_CAP) {
+    if (!this.isOnline && !isWorkerUnit(type) && this.activeCombatUnitCount(this.localTeam()) >= COMBAT_UNIT_CAP) {
       this.statusText.setText(t("game_max_out_army"));
       this.flashWarning("MAX OUT");
       this.log("UI", "Combat unit cap reached");
       return false;
     }
 
-    if (this.gold < config.cost) {
+    if (this.localGold() < config.cost) {
       this.statusText.setText(t("game_not_enough_gold"));
       this.log("UI", `Not enough gold for ${type}`);
       this.tweens.add({
@@ -5068,13 +5991,19 @@ export class Game extends Scene {
       return false;
     }
 
-    this.gold -= config.cost;
+    this.spendLocalGold(config.cost);
     if (button && UNIT_DEPLOY_COOLDOWN_MS[type] > 0) {
       button.readyAt = this.elapsedMs + UNIT_DEPLOY_COOLDOWN_MS[type];
     }
 
     const deployY = this.playerDeployFormationY(type, y);
-    this.spawnUnit("player", type, deployY);
+
+    if (this.isOnline) {
+      const zone = this.playerDeployZone;
+      this.onlineRuntime?.spawn(type, 1, zone.x, deployY);
+    } else {
+      this.spawnUnit(this.localTeam(), type, deployY);
+    }
     this.statusText.setText(
       `${config.label} yerlestirildi. Para/slot yettikce tekrar dokun veya basili tut.`,
     );
@@ -5082,8 +6011,8 @@ export class Game extends Scene {
   }
 
   private playerDeployFormationY(type: UnitType, y: number) {
-    const zone = this.levelRuntime.map.deployZone;
-    const nextSpawnIndex = this.spawnCounts.player[type] + 1;
+    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
+    const nextSpawnIndex = this.spawnCounts[this.localTeam()][type] + 1;
     const offsets = [0, -12, 12, -24, 24, -36, 36];
     return clamp(
       y + offsets[(nextSpawnIndex - 1) % offsets.length],
@@ -5097,13 +6026,20 @@ export class Game extends Scene {
     type: UnitType,
     y: number,
     xOverride?: number,
-    options?: { reserveWaveId?: string; forceBaseLevel?: boolean; goldAlreadySpent?: boolean },
+    options?: {
+      reserveWaveId?: string;
+      forceBaseLevel?: boolean;
+      goldAlreadySpent?: boolean;
+      authoritativeId?: number;
+      authoritativeLevel?: number;
+    },
   ) {
     const config = UNIT_CONFIGS[type];
     const spawnIndex = this.spawnCounts[team][type] + 1;
     this.spawnCounts[team][type] = spawnIndex;
 
-    const level = !options?.forceBaseLevel && spawnIndex % LEVEL_UP_EVERY === 0 ? 2 : 1;
+    const level = options?.authoritativeLevel ??
+      (!options?.forceBaseLevel && spawnIndex % LEVEL_UP_EVERY === 0 ? 2 : 1);
     const levelBoost = level > 1 ? 1.25 : 1;
     const runtimeStats = applyUnitRuntimeStats(
       config,
@@ -5111,17 +6047,14 @@ export class Game extends Scene {
       this.levelRuntime.map,
       team,
     );
-    const spawnZone =
-      team === "player"
-        ? this.levelRuntime.map.deployZone
-        : this.levelRuntime.map.enemySpawnZone;
+    const spawnZone = this.homeDeployZoneForTeam(team);
     let x = xOverride ?? spawnZone.x;
     const safeSpawn = this.tiledNavigation?.nearestWalkableWorld(
       x,
       y,
       this.navigationProfileForType(type),
     );
-    if (safeSpawn && !this.tiledNavigation?.isWorldWalkableFor(x, y, this.navigationProfileForType(type))) {
+    if (!this.isOnline && safeSpawn && !this.tiledNavigation?.isWorldWalkableFor(x, y, this.navigationProfileForType(type))) {
       x = safeSpawn.x;
       y = safeSpawn.y;
     }
@@ -5171,7 +6104,7 @@ export class Game extends Scene {
     container.setScale(level > 1 ? 1.08 : 1);
 
     const unit: BattleUnit = {
-      id: this.unitId,
+      id: options?.authoritativeId ?? this.unitId,
       team,
       type,
       state: isWorkerUnit(type) ? "seekResource" : "move",
@@ -5202,10 +6135,7 @@ export class Game extends Scene {
       routeWaveAmplitude: 2 + this.mapRandom() * 4,
       routePhase: this.mapRandom() * Math.PI * 2,
       carryWood: 0,
-      homeX:
-        team === "player"
-          ? this.levelRuntime.map.anchors.playerCastle.x
-          : this.levelRuntime.map.anchors.enemyCastle.x,
+      homeX: this.workerHomeX(team),
       isInsideCastle: false,
       nextHorseRunSfxAt: isCavalryUnit(type) ? this.elapsedMs + 380 : undefined,
       reserveWaveId: options?.reserveWaveId,
@@ -5247,7 +6177,7 @@ export class Game extends Scene {
     );
     this.playSfx("spawn-sfx", team === "player" ? 0.35 : 0.14);
     this.playUnitSpawnSfx(team, type);
-    this.unitId += 1;
+    this.unitId = Math.max(this.unitId + 1, unit.id + 1);
     return unit;
   }
 
@@ -5279,12 +6209,8 @@ export class Game extends Scene {
       }
 
       const targetUnit = this.findTargetUnit(unit);
-      const targetCastle =
-        unit.team === "player" ? this.enemyCastle : this.playerCastle;
-      const castleDistance = Math.max(
-        0,
-        Math.abs(targetCastle.x - unit.x) - CASTLE_FRONT_OFFSET,
-      );
+      const targetCastle = this.opponentCastleForTeam(unit.team);
+      const castleDistance = Math.abs(targetCastle.frontX - unit.x);
 
       if (targetUnit) {
         if (this.distanceBetween(unit, targetUnit) <= unit.range) {
@@ -5295,7 +6221,7 @@ export class Game extends Scene {
           this.chaseTarget(unit, targetUnit, delta);
           this.updateHorseMovementSfx(unit);
         }
-      } else if (castleDistance <= this.castleAttackRange(unit)) {
+      } else if (castleDistance <= CASTLE_CONTACT_TOLERANCE) {
         const enteringCastleContact = unit.state !== "attackCastle";
         unit.targetId = undefined;
         unit.state = "attackCastle";
@@ -5303,7 +6229,7 @@ export class Game extends Scene {
           unit.castleContactLogged = true;
           this.log(
             "CASTLE_CONTACT",
-            `${unit.team} ${unit.type}#${unit.id} unit=(${Math.round(unit.x)},${Math.round(unit.y)}) castle=(${Math.round(targetCastle.x)},${Math.round(targetCastle.y)}) centerDx=${Math.round(Math.abs(targetCastle.x - unit.x))} front=${CASTLE_FRONT_OFFSET} attackRange=${this.castleAttackRange(unit)}`,
+            `${unit.team} ${unit.type}#${unit.id} unit=(${Math.round(unit.x)},${Math.round(unit.y)}) castle=(${Math.round(targetCastle.x)},${Math.round(targetCastle.y)}) contactX=${Math.round(targetCastle.frontX)} contactDx=${castleDistance.toFixed(1)}`,
           );
         }
         this.attackCastle(unit, targetCastle);
@@ -5432,7 +6358,7 @@ export class Game extends Scene {
 
     if (unit.state === "returnResource") {
       const arrivedHome =
-        ((unit.homeX - unit.x) * (unit.homeX - unit.x) + (0) * (0)) <= (WORKER_HOME_REACH) * (WORKER_HOME_REACH) ||
+        Math.abs(unit.homeX - unit.x) <= WORKER_HOME_REACH ||
         this.moveTowards(unit, unit.homeX, unit.y, delta);
 
       if (arrivedHome) {
@@ -5754,7 +6680,8 @@ export class Game extends Scene {
     // they communicate no changing information. Reveal the bar only after a
     // worker has harvested the node; this keeps intact trees in one texture
     // batch and removes persistent overdraw from the normal battle view.
-    const showBar = alive && node.amount < node.maxAmount;
+    const ownsOnlineResource = !this.isOnline || node.onlineSide === this.localPlayerSide;
+    const showBar = alive && node.amount < node.maxAmount && ownsOnlineResource;
     node.barBack.setVisible(showBar);
     node.barFill.setVisible(showBar);
     const ratio = clamp(node.amount / node.maxAmount, 0, 1);
@@ -5977,24 +6904,26 @@ export class Game extends Scene {
     const direction = unit.team === "player" ? 1 : -1;
     unit.facingDirection = direction;
     if (this.tiledNavigation) {
-      const targetCastle = unit.team === "player" ? this.enemyCastle : this.playerCastle;
-      const direction = this.advanceDirection(unit);
-      const destinationX = targetCastle.x - direction * CASTLE_FRONT_OFFSET;
-      const destinationZone = unit.team === "player"
-        ? this.levelRuntime.map.enemySpawnZone
-        : this.levelRuntime.map.deployZone;
+      const targetCastle = this.opponentCastleForTeam(unit.team);
+      const destinationX = this.castleApproachX(unit, targetCastle);
+      const destinationZone = this.opponentDeployZoneForTeam(unit.team);
       const destinationY = clamp(
         flowYAtX(this.levelRuntime.map, destinationX, unit.routePosition),
         destinationZone.minY,
         destinationZone.maxY,
       );
+      if (this.finishCastleApproachIfClose(unit, destinationX)) return;
       // A single destination on the far side of the map gives A* enough
       // context to select a bridge. Short look-ahead goals can land inside a
       // river and leave a unit waiting at its bank.
       this.moveWithTiledPath(unit, destinationX, destinationY, delta);
       return;
     }
-    const nextX = unit.x + direction * unit.speed * (delta / 1000);
+    const destinationX = this.castleApproachX(unit, this.opponentCastleForTeam(unit.team));
+    const steppedX = unit.x + direction * unit.speed * (delta / 1000);
+    const nextX = direction > 0
+      ? Math.min(steppedX, destinationX)
+      : Math.max(steppedX, destinationX);
     const laneY =
       flowYAtX(this.levelRuntime.map, nextX, unit.routePosition) +
       Math.sin(nextX / 118 + unit.routePhase) * unit.routeWaveAmplitude;
@@ -6161,6 +7090,18 @@ export class Game extends Scene {
       if (dx * dx + dy * dy >= 64) break;
       unit.navPath.shift();
     }
+    if (!unit.navPath?.length) {
+      const dx = targetX - unit.x;
+      const dy = targetY - unit.y;
+      const distanceSquared = dx * dx + dy * dy;
+      if (
+        distanceSquared >= 1 &&
+        distanceSquared <= 1_600 &&
+        this.isSafeTiledSegment(unit, targetX, targetY)
+      ) {
+        return { x: targetX, y: targetY };
+      }
+    }
     return unit.navPath?.[0];
   }
 
@@ -6174,10 +7115,42 @@ export class Game extends Scene {
 
   private moveWithTiledPath(unit: BattleUnit, targetX: number, targetY: number, delta: number) {
     const waypoint = this.nextTiledWaypoint(unit, targetX, targetY);
-    if (!waypoint) return this.tiledNavigation?.isBlocked(targetX, targetY) ?? false;
+    if (!waypoint) {
+      const dx = targetX - unit.x;
+      const dy = targetY - unit.y;
+      if (dx * dx + dy * dy <= 16 && this.isSafeTiledSegment(unit, targetX, targetY)) {
+        unit.x = targetX;
+        unit.y = targetY;
+        return true;
+      }
+      return this.tiledNavigation?.isBlocked(targetX, targetY) ?? false;
+    }
     const moved = this.moveTiledStepWithSlide(unit, waypoint.x, waypoint.y, delta);
     this.trackNavigationProgress(unit, moved);
     return moved;
+  }
+
+  private finishCastleApproachIfClose(unit: BattleUnit, destinationX: number) {
+    if (!this.tiledNavigation) return false;
+    const dx = destinationX - unit.x;
+    const forwardDistance = dx * this.advanceDirection(unit);
+    if (
+      Math.abs(dx) <= CASTLE_CONTACT_TOLERANCE ||
+      (forwardDistance >= 0 && forwardDistance <= CASTLE_APPROACH_FINAL_X_WINDOW)
+    ) {
+      if (!this.isSafeTiledSegment(unit, destinationX, unit.y)) return false;
+      unit.x = destinationX;
+      unit.navPath = undefined;
+      unit.navGoalCell = undefined;
+      unit.navGoalX = undefined;
+      unit.navGoalY = undefined;
+      unit.navNextPlanAt = this.elapsedMs + 180;
+      unit.navProgressX = unit.x;
+      unit.navProgressY = unit.y;
+      unit.navProgressAt = this.elapsedMs;
+      return true;
+    }
+    return false;
   }
 
   /** Swept movement with axis/tangent fallback. This is the grid equivalent of
@@ -6399,8 +7372,8 @@ export class Game extends Scene {
       this.log("NAV_QA", `${unit.type}#${unit.id} crossed bridge cell=${cell.column},${cell.row}`);
     }
     const reachedOpponentCastle = unit.team === "player"
-      ? unit.x >= this.enemyCastle.x - CASTLE_FRONT_OFFSET
-      : unit.x <= this.playerCastle.x + CASTLE_FRONT_OFFSET;
+      ? unit.x >= this.castleApproachX(unit, this.enemyCastle)
+      : unit.x <= this.castleApproachX(unit, this.playerCastle);
     if ((unit.state === "attackCastle" || reachedOpponentCastle) && !unit.navQaReachedEnemy) {
       unit.navQaReachedEnemy = true;
       this.log("NAV_QA", `PASS ${unit.type}#${unit.id} reached opponent castle boundary x=${Math.round(unit.x)} y=${Math.round(unit.y)} state=${unit.state}`);
@@ -6548,7 +7521,10 @@ export class Game extends Scene {
   }
 
   private attackCastle(attacker: BattleUnit, castle: CastleState) {
-    this.facePosition(attacker, castle.x);
+    // Castle sides are fixed in shared world space. Lock the attacker toward
+    // the fortress every frame so a previous unit target cannot leave it
+    // attacking with its back turned.
+    attacker.facingDirection = castle.team === "player" ? -1 : 1;
     // Navigation QA treats castle contact as the finish line. Keeping the
     // structure intact lets every stress unit complete the same corridor run.
     if (this.navigationQaMode) return;
@@ -6599,24 +7575,19 @@ export class Game extends Scene {
     );
   }
 
-  private castleAttackRange(unit: BattleUnit) {
-    if (isRangedUnit(unit.type)) {
-      return unit.type === "archer"
-        ? Math.min(unit.range, ARCHER_CASTLE_RANGE)
-        : unit.range;
-    }
-    // Unit-vs-unit ranges include both character silhouettes. A castle anchor
-    // is already on its facade, so melee needs a tighter hand/weapon contact.
-    return Math.min(unit.range, unit.type === "long_spearman" ? 34 : 28);
+  private castleApproachX(unit: BattleUnit, castle: CastleState) {
+    void unit;
+    return castle.frontX;
+  }
+
+  private workerHomeX(team: Team) {
+    const castle = this.homeCastleForTeam(team);
+    return castle.frontX + (team === "player" ? 4 : -4);
   }
 
   private castleFrontImpact(attacker: BattleUnit, castle: CastleState) {
-    const direction = this.advanceDirection(attacker);
-
     return {
-      x: castle.x - direction * CASTLE_FRONT_OFFSET,
-      // The fortress side spans every lane. Shoot straight into the wall section
-      // in front of the ranged unit instead of diagonally at the castle anchor.
+      x: castle.frontX,
       y: clamp(attacker.y - 18, SPAWN_MIN_Y - 18, SPAWN_MAX_Y - 18),
     };
   }
@@ -7160,17 +8131,16 @@ export class Game extends Scene {
   private updateUi() {
     this.setTextIfChanged(this.goldText, `${Math.floor(this.gold)}`);
     this.setTextIfChanged(this.enemyGoldText, `${Math.floor(this.enemyGold)}`);
-    const elapsedSeconds = Math.floor(this.elapsedMs / 1000);
-    const targetSeconds = this.levelRuntime.level.duration.targetSeconds;
-    this.setTextIfChanged(this.timerText,
-      `${Math.floor(elapsedSeconds / 60)}:${String(elapsedSeconds % 60).padStart(2, "0")} / ${Math.floor(targetSeconds / 60)}:${String(targetSeconds % 60).padStart(2, "0")}`,
-    );
-    const seal = this.battleDirector.isCastleSealHolding(this.enemyCastle.hp, this.enemyCastle.maxHp)
-      ? " · MUHUR AKTIF"
-      : "";
-    this.setTextIfChanged(this.directorText,
-      `${this.battleDirector.phaseLabel} · REZERV ${this.battleDirector.reserveRemaining}${seal}${this.battleDirector.isFinalSiege ? " · SON KUSATMA" : ""}`,
-    );
+    if (this.isOnline) {
+      this.setTextIfChanged(this.directorText, "ONLINE · SERVER");
+    } else {
+      const seal = this.battleDirector.isCastleSealHolding(this.enemyCastle.hp, this.enemyCastle.maxHp)
+        ? " · MUHUR AKTIF"
+        : "";
+      this.setTextIfChanged(this.directorText,
+        `${this.battleDirector.phaseLabel} · REZERV ${this.battleDirector.reserveRemaining}${seal}${this.battleDirector.isFinalSiege ? " · SON KUSATMA" : ""}`,
+      );
+    }
     this.playerCastle.hpFill.width =
       CASTLE_HP_BAR_WIDTH * clamp(this.playerCastle.hp / this.playerCastle.maxHp, 0, 1);
     this.enemyCastle.hpFill.width =
@@ -7184,29 +8154,31 @@ export class Game extends Scene {
     );
 
     for (const button of this.unitButtons) {
-      const isPlayerButton = button.side === "left";
-      const bank = isPlayerButton ? this.gold : this.enemyGold;
+      const isLocalButton = button.side === this.localPanelSide();
+      const bank = button.side === "left" ? this.gold : this.enemyGold;
+      const spendableBank = isLocalButton && this.isOnline ? this.availableLocalGold() : bank;
       const remainingCooldownMs = Math.max(0, button.readyAt - this.elapsedMs);
       const cooldownTotal = UNIT_DEPLOY_COOLDOWN_MS[button.type];
       const coolingDown =
-        isPlayerButton &&
+        isLocalButton &&
         remainingCooldownMs > 0 &&
         cooldownTotal >= DEPLOY_COOLDOWN_UI_THRESHOLD_MS;
-      const selected = isPlayerButton && this.selectedUnit === button.type;
+      const selected = isLocalButton && this.selectedUnit === button.type;
       const pulsing = button.pulseUntil > this.elapsedMs;
-      const queuedForButton = isPlayerButton ? this.queuedUnitCount(button.type) : 0;
+      const queuedForButton = isLocalButton ? this.queuedUnitCount(button.type) : 0;
       const workerMaxed =
         isWorkerUnit(button.type) &&
         this.activeWorkerCount(button.side === "left" ? "player" : "enemy") +
-          (isPlayerButton ? this.pendingWorkerCount() : 0) >=
+          (isLocalButton ? this.pendingWorkerCount() : 0) >=
           this.currentWorkerCap();
       const armyFull =
+        !this.isOnline &&
         !isWorkerUnit(button.type) &&
         this.activeCombatUnitCount(button.side === "left" ? "player" : "enemy") +
-          (isPlayerButton ? this.pendingCombatCount() : 0) >=
+          (isLocalButton ? this.pendingCombatCount() : 0) >=
           COMBAT_UNIT_CAP;
       const alpha =
-        bank >= UNIT_CONFIGS[button.type].cost && !workerMaxed && !armyFull
+        spendableBank >= UNIT_CONFIGS[button.type].cost && !workerMaxed && !armyFull
           ? coolingDown
             ? 0.72
             : 1
@@ -7257,7 +8229,8 @@ export class Game extends Scene {
 
     this.updatePendingBatchHud();
     this.updatePowerUi();
-    const canRemoveSelection = this.pendingUnitCount() > 0 || !!this.selectedUnit;
+    const canRemoveSelection = this.pendingUnitCount() > 0 || !!this.selectedUnit || (this.isOnline && !!this.activePower);
+    this.removeSelectionLabel?.setText(this.isOnline && this.activePower ? "CANCEL" : t("game_remove"));
     this.setRemoveSelectionVisible(canRemoveSelection);
   }
 
@@ -7315,7 +8288,7 @@ export class Game extends Scene {
   }
 
   private currentWorkerCap() {
-    return this.levelRuntime.level.economy.maxWorkers;
+    return this.isOnline ? 2 : this.levelRuntime.level.economy.maxWorkers;
   }
 
   private activeWorkerCount(team: Team) {
@@ -7337,14 +8310,17 @@ export class Game extends Scene {
   }
 
   private playerPowerUnlocked(power: PowerType) {
-    return this.levelRuntime.level.order >= this.playerPowerUnlockLevel(power);
+    return this.isOnline || this.levelRuntime.level.order >= this.playerPowerUnlockLevel(power);
   }
 
   private selectPower(power: PowerType) {
     if (this.battleEnded || this.isPaused) {
       return;
     }
-
+    if (this.isOnlineWaitingForStart()) {
+      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      return;
+    }
     if (!this.playerPowerUnlocked(power)) {
       const unlockLevel = this.playerPowerUnlockLevel(power);
       this.statusText.setText(
@@ -7377,9 +8353,14 @@ export class Game extends Scene {
     );
     this.flashWarning(power === "missile" ? "MISSILE READY" : "ICE BLAST READY");
     this.updateMissileAim();
+    if (this.isOnline) this.updateUi();
   }
 
   private tryCastPower(power: PowerType, x: number, y: number) {
+    if (this.isOnlineWaitingForStart()) {
+      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      return;
+    }
     if (!this.playerPowerUnlocked(power)) {
       this.activePower = undefined;
       return;
@@ -7391,7 +8372,11 @@ export class Game extends Scene {
       return;
     }
 
-    if (power === "missile") {
+    if (this.isOnline) {
+      this.onlineRuntime?.usePower(power, x, y);
+      if (power === "missile") this.missileReadyAt = this.elapsedMs + MISSILE_COOLDOWN_MS;
+      else this.iceReadyAt = this.elapsedMs + ICE_BLAST_COOLDOWN_MS;
+    } else if (power === "missile") {
       this.castMissile("player", x, y);
       this.missileReadyAt = this.elapsedMs + MISSILE_COOLDOWN_MS;
     } else {
@@ -7401,6 +8386,8 @@ export class Game extends Scene {
 
     this.cancelMissileAim();
     this.activePower = undefined;
+    if (this.isOnline) this.spawnStripe.setVisible(false);
+    if (this.isOnline) this.updateUi();
     this.statusText.setText(t("game_power_used_hint"));
   }
 
@@ -7428,7 +8415,8 @@ export class Game extends Scene {
       onComplete: () => {
         missile.destroy();
         smoke.destroy();
-        this.createAreaImpact(x, y, MISSILE_RADIUS, 0xff6a2f);
+        this.playPowerSfx("online-missile-impact-sfx", 0.56);
+        this.showMissileImpact(x, y);
         const combatAffected = this.units.filter(
           (unit) =>
             unit.team !== sourceTeam &&
@@ -7464,7 +8452,8 @@ export class Game extends Scene {
     targetCount = 0,
     enemyContext?: EnemyPowerCastContext,
   ) {
-    this.createAreaImpact(x, y, ICE_BLAST_RADIUS, 0x7ddcff);
+    this.playPowerSfx("online-ice-blast-sfx", 0.46);
+    this.showIceImpact(x, y, ICE_BLAST_RADIUS);
     let affectedCount = 0;
 
     for (const unit of this.units) {
@@ -7539,16 +8528,256 @@ export class Game extends Scene {
 
   private createAreaImpact(x: number, y: number, radius: number, color: number) {
     const ring = this.add.image(x, y, "effect_runic_circle").setTint(color).setAlpha(0.6).setDepth(1240);
-    ring.setScale((radius * 0.22) / 48);
+    ring.setScale(radius / 48);
 
     this.tweens.add({
       targets: ring,
-      scale: 1.75,
+      scale: radius / 26,
       alpha: 0,
       duration: 420,
       ease: "Quad.Out",
       onComplete: () => ring.destroy(),
     });
+  }
+
+  private showPowerTelegraph(
+    power: PowerType,
+    x: number,
+    y: number,
+    radius: number,
+    delayMs: number,
+  ) {
+    if (this.battleEnded) return undefined;
+    const color = power === "missile" ? 0xff4a2d : 0x74ddff;
+    const marker = this.add.image(x, y, "effect_runic_circle")
+      .setTint(color)
+      .setAlpha(0.18)
+      .setScale(radius / 48)
+      .setDepth(1235);
+    const pulseMs = clamp(Math.round(delayMs / 4), 110, 280);
+    this.tweens.add({
+      targets: marker,
+      alpha: {
+        from: power === "missile" ? 0.18 : 0.24,
+        to: power === "missile" ? 0.7 : 0.62,
+      },
+      scale: { from: radius / 52, to: radius / 47 },
+      duration: pulseMs,
+      yoyo: true,
+      repeat: Math.max(1, Math.floor(delayMs / Math.max(1, pulseMs * 2))),
+      ease: "Sine.InOut",
+    });
+    if (delayMs > 0) {
+      this.time.delayedCall(delayMs + 80, () => {
+        if (marker.active) marker.destroy();
+      });
+    }
+    return marker;
+  }
+
+  private showMissileImpact(x: number, y: number) {
+    this.createAreaImpact(x, y, MISSILE_RADIUS, 0xff6a2f);
+    const scorch = this.add.image(x, y + 7, MISSILE_GROUND_TEXTURE)
+      .setDisplaySize(MISSILE_RADIUS * 2.15, MISSILE_RADIUS * 1.42)
+      .setAlpha(0.94)
+      .setRotation((Math.random() - 0.5) * 0.18)
+      .setDepth(932);
+    this.tweens.add({
+      targets: scorch,
+      alpha: 0,
+      delay: MISSILE_GROUND_MARK_MS - 1_600,
+      duration: 1_600,
+      ease: "Sine.In",
+      onComplete: () => scorch.destroy(),
+    });
+    if (!this.reservePowerFxBurst()) return;
+
+    for (let index = 0; index < POWER_FX_MISSILE_FRAGMENTS; index += 1) {
+      const angle = (Math.PI * 2 * index) / POWER_FX_MISSILE_FRAGMENTS + Math.random() * 0.34;
+      const distance = randomInt(Math.round(MISSILE_RADIUS * 0.42), Math.round(MISSILE_RADIUS * 1.08));
+      const debris = this.acquirePowerDebris()
+        .setPosition(x + Math.cos(angle) * 8, y + Math.sin(angle) * 4)
+        .setRotation(angle)
+        .setFillStyle(index % 3 === 0 ? 0x6c4a2d : index % 3 === 1 ? 0x9a6a3c : 0x2f251c, 0.96)
+        .setDisplaySize(randomInt(8, 16), randomInt(5, 10))
+        .setActive(true)
+        .setVisible(true)
+        .setAlpha(1)
+        .setDepth(1260);
+      this.tweens.add({
+        targets: debris,
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.sin(angle) * distance * 0.42 + randomInt(-12, 18),
+        rotation: debris.rotation + (Math.random() > 0.5 ? 1 : -1) * randomInt(8, 18) * 0.1,
+        alpha: 0,
+        duration: randomInt(420, 680),
+        ease: "Quad.Out",
+        onComplete: () => this.releasePowerDebris(debris),
+      });
+    }
+
+    this.time.delayedCall(720, () => {
+      this.activePowerFxBursts = Math.max(0, this.activePowerFxBursts - 1);
+    });
+  }
+
+  private showIceImpact(x: number, y: number, radius: number) {
+    this.createAreaImpact(x, y, radius, 0x7ddcff);
+    const frost = this.add.image(x, y, ICE_GROUND_TEXTURE)
+      .setDisplaySize(radius * 2.14, radius * 1.48)
+      .setAlpha(0.9)
+      .setRotation((Math.random() - 0.5) * 0.12)
+      .setDepth(933);
+    this.tweens.add({
+      targets: frost,
+      alpha: 0,
+      delay: Math.max(0, ICE_BLAST_DURATION_MS - 900),
+      duration: 900,
+      ease: "Sine.In",
+      onComplete: () => frost.destroy(),
+    });
+    if (!this.reservePowerFxBurst()) return;
+
+    for (let index = 0; index < POWER_FX_ICE_SHARDS; index += 1) {
+      const angle = (Math.PI * 2 * index) / POWER_FX_ICE_SHARDS + Math.random() * 0.26;
+      const distance = randomInt(Math.round(radius * 0.36), Math.round(radius * 1.05));
+      const shard = this.acquirePowerShard()
+        .setPosition(x + Math.cos(angle) * 9, y + Math.sin(angle) * 5)
+        .setTint(index % 3 === 0 ? 0xc7f7ff : index % 3 === 1 ? 0x7bdcff : 0xa368ff)
+        .setScale(randomInt(24, 38) / 100)
+        .setRotation(angle)
+        .setActive(true)
+        .setVisible(true)
+        .setAlpha(0.92)
+        .setDepth(1260);
+      this.tweens.add({
+        targets: shard,
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.sin(angle) * distance * 0.5 + randomInt(-10, 14),
+        scale: shard.scaleX * 0.55,
+        rotation: shard.rotation + (Math.random() > 0.5 ? 0.9 : -0.9),
+        alpha: 0,
+        duration: randomInt(420, 680),
+        ease: "Quad.Out",
+        onComplete: () => this.releasePowerShard(shard),
+      });
+    }
+
+    this.time.delayedCall(720, () => {
+      this.activePowerFxBursts = Math.max(0, this.activePowerFxBursts - 1);
+    });
+  }
+
+  private ensurePowerGroundTextures() {
+    if (this.textures.exists(MISSILE_GROUND_TEXTURE) && this.textures.exists(ICE_GROUND_TEXTURE)) return;
+    const graphics = this.make.graphics({ add: false });
+    const centerX = POWER_GROUND_TEXTURE_WIDTH / 2;
+    const centerY = POWER_GROUND_TEXTURE_HEIGHT / 2;
+    const polygon = (points: Array<[number, number]>, fill: number, alpha: number, stroke?: number, strokeAlpha = 1, strokeWidth = 1) => {
+      graphics.fillStyle(fill, alpha);
+      if (stroke !== undefined) graphics.lineStyle(strokeWidth, stroke, strokeAlpha);
+      graphics.beginPath();
+      graphics.moveTo(points[0][0], points[0][1]);
+      for (let index = 1; index < points.length; index += 1) graphics.lineTo(points[index][0], points[index][1]);
+      graphics.closePath();
+      graphics.fillPath();
+      if (stroke !== undefined) graphics.strokePath();
+    };
+
+    if (!this.textures.exists(MISSILE_GROUND_TEXTURE)) {
+      graphics.clear();
+      polygon([[17, 61], [31, 39], [58, 25], [88, 20], [119, 25], [153, 38], [176, 59], [163, 82], [133, 99], [96, 105], [57, 98], [27, 82]], 0x180d08, 0.34);
+      polygon([[24, 62], [40, 42], [66, 31], [97, 27], [130, 33], [161, 48], [169, 65], [148, 84], [119, 96], [83, 97], [49, 87]], 0x3a1e10, 0.92, 0xb35d28, 0.9, 4);
+      polygon([[43, 62], [56, 45], [83, 38], [112, 40], [142, 51], [151, 65], [133, 78], [108, 86], [77, 84], [53, 75]], 0x160c08, 0.98, 0x6f3218, 0.9, 3);
+      graphics.fillStyle(0x050302, 0.82);
+      graphics.fillEllipse(centerX, centerY + 2, 72, 31);
+      graphics.fillStyle(0xe36e24, 0.58);
+      for (const ember of [[58, 48, 5], [127, 48, 4], [139, 72, 4], [67, 81, 3], [103, 88, 3]] as Array<[number, number, number]>) {
+        graphics.fillCircle(ember[0], ember[1], ember[2]);
+      }
+      graphics.lineStyle(4, 0x2a140c, 0.96);
+      const cracks = [
+        [[52, 57], [31, 48], [17, 38]], [[58, 76], [38, 91], [22, 94]],
+        [[82, 84], [73, 105], [63, 116]], [[116, 82], [131, 102], [145, 108]],
+        [[138, 61], [161, 52], [181, 52]], [[118, 45], [132, 28], [144, 18]],
+      ] as Array<Array<[number, number]>>;
+      for (const crack of cracks) {
+        graphics.beginPath();
+        graphics.moveTo(crack[0][0], crack[0][1]);
+        for (let index = 1; index < crack.length; index += 1) graphics.lineTo(crack[index][0], crack[index][1]);
+        graphics.strokePath();
+      }
+      graphics.generateTexture(MISSILE_GROUND_TEXTURE, POWER_GROUND_TEXTURE_WIDTH, POWER_GROUND_TEXTURE_HEIGHT);
+    }
+
+    if (!this.textures.exists(ICE_GROUND_TEXTURE)) {
+      graphics.clear();
+      polygon([[13, 68], [29, 43], [55, 26], [87, 19], [121, 25], [157, 40], [181, 65], [160, 86], [128, 101], [88, 107], [49, 98], [24, 84]], 0x5265cf, 0.25, 0xb46cff, 0.78, 4);
+      const facets = [
+        { p: [[29, 62], [61, 34], [84, 61], [58, 77]], c: 0x79e5ff },
+        { p: [[61, 34], [101, 27], [84, 61]], c: 0xc8f8ff },
+        { p: [[101, 27], [145, 43], [116, 63], [84, 61]], c: 0x66bfff },
+        { p: [[145, 43], [169, 66], [132, 82], [116, 63]], c: 0x976fff },
+        { p: [[58, 77], [84, 61], [97, 99], [52, 91]], c: 0x4da8dc },
+        { p: [[84, 61], [116, 63], [132, 82], [97, 99]], c: 0x91eaff },
+      ] as Array<{ p: Array<[number, number]>; c: number }>;
+      for (const facet of facets) polygon(facet.p, facet.c, 0.58, 0xe0fbff, 0.7, 2);
+      graphics.lineStyle(3, 0xe9fdff, 0.92);
+      const veins = [
+        [[84, 61], [69, 49], [55, 45]], [[84, 61], [71, 72], [65, 85]],
+        [[84, 61], [99, 48], [103, 34]], [[116, 63], [129, 53], [145, 52]],
+        [[116, 63], [111, 79], [116, 92]],
+      ] as Array<Array<[number, number]>>;
+      for (const vein of veins) {
+        graphics.beginPath();
+        graphics.moveTo(vein[0][0], vein[0][1]);
+        for (let index = 1; index < vein.length; index += 1) graphics.lineTo(vein[index][0], vein[index][1]);
+        graphics.strokePath();
+      }
+      for (const crystal of [[38, 48, 9, 20], [151, 54, 8, 24], [126, 89, 7, 19], [64, 92, 6, 16]] as Array<[number, number, number, number]>) {
+        polygon([[crystal[0], crystal[1] - crystal[3]], [crystal[0] + crystal[2], crystal[1]], [crystal[0], crystal[1] + 4], [crystal[0] - crystal[2], crystal[1]]], 0xb8f6ff, 0.9, 0x815cff, 0.9, 2);
+      }
+      graphics.generateTexture(ICE_GROUND_TEXTURE, POWER_GROUND_TEXTURE_WIDTH, POWER_GROUND_TEXTURE_HEIGHT);
+    }
+    graphics.destroy();
+  }
+
+  private reservePowerFxBurst() {
+    if (this.activePowerFxBursts >= POWER_FX_MAX_ACTIVE_BURSTS) return false;
+    this.activePowerFxBursts += 1;
+    return true;
+  }
+
+  private acquirePowerShard() {
+    for (const shard of this.powerFxShardPool) {
+      if (!shard.active) {
+        this.tweens.killTweensOf(shard);
+        return shard;
+      }
+    }
+    const shard = this.add.image(0, 0, "effect_hit_spark").setActive(false).setVisible(false);
+    this.powerFxShardPool.push(shard);
+    return shard;
+  }
+
+  private releasePowerShard(shard: Phaser.GameObjects.Image) {
+    shard.setActive(false).setVisible(false).setAlpha(0).setScale(1).clearTint();
+  }
+
+  private acquirePowerDebris() {
+    for (const debris of this.powerFxDebrisPool) {
+      if (!debris.active) {
+        this.tweens.killTweensOf(debris);
+        return debris;
+      }
+    }
+    const debris = this.add.rectangle(0, 0, 8, 4, 0x6c4a2d, 1).setActive(false).setVisible(false);
+    this.powerFxDebrisPool.push(debris);
+    return debris;
+  }
+
+  private releasePowerDebris(debris: Phaser.GameObjects.Rectangle) {
+    debris.setActive(false).setVisible(false).setAlpha(0).setScale(1).setRotation(0);
   }
 
   private updatePowerUi() {
@@ -7851,6 +9080,9 @@ export class Game extends Scene {
     const masteryComplete = this.calculateMasteryComplete();
     const stars = result === "victory" ? this.calculateStars(masteryComplete) : 0;
     this.registry.set("battleResult", result);
+    this.registry.set("onlineBattle", this.isOnline);
+    this.registry.set("lastBattleMapId", this.levelRuntime.map.id);
+    this.registry.set("onlinePlayerSide", this.isOnline ? this.localPlayerSide : null);
     this.registry.set("lastLevelId", this.levelRuntime.level.id);
     this.registry.set("battleStars", stars);
     this.registry.set("masteryComplete", masteryComplete);
@@ -7858,15 +9090,16 @@ export class Game extends Scene {
     const unlockUnit = this.levelRuntime.level.rewards.unlockUnit;
     const isFirstMilestoneWin =
       result === "victory" &&
+      !this.isOnline &&
       !this.editorPreview &&
       !this.balanceQaMode &&
       Boolean(unlockUnit) &&
       !isLevelCompleted(this.levelRuntime.level.id);
     this.registry.set("newlyUnlockedUnitId", isFirstMilestoneWin ? unlockUnit : null);
-    if (result === "victory" && !this.editorPreview && !this.balanceQaMode) {
+    if (result === "victory" && !this.isOnline && !this.editorPreview && !this.balanceQaMode) {
       markLevelCompleted(this.levelRuntime.level.id, stars);
     }
-    if (!this.editorPreview && !this.balanceQaMode) {
+    if (!this.isOnline && !this.editorPreview && !this.balanceQaMode) {
       recordBattleAttemptResult(this.levelRuntime.level.id, result, {
         durationSeconds: this.elapsedMs / 1000,
         targetSeconds: this.levelRuntime.level.duration.targetSeconds,
@@ -8085,6 +9318,35 @@ export class Game extends Scene {
     } catch {
       this.log("AUDIO", `Skipped ${key}`);
     }
+  }
+
+  private playPowerSfx(key: string, volume: number) {
+    if (this.activePowerSfx.size >= POWER_SFX_MAX_ACTIVE || !this.cache.audio.exists(key)) return;
+    try {
+      const sound = this.sound.add(key, { volume });
+      let released = false;
+      const release = () => {
+        if (released) return;
+        released = true;
+        this.activePowerSfx.delete(sound);
+        sound.destroy();
+      };
+      this.activePowerSfx.add(sound);
+      sound.once("complete", release);
+      sound.once("stop", release);
+      if (!sound.play()) release();
+    } catch {
+      this.log("AUDIO", `Skipped ${key}`);
+    }
+  }
+
+  private releaseActivePowerSfx() {
+    for (const sound of [...this.activePowerSfx]) {
+      sound.removeAllListeners();
+      sound.stop();
+      sound.destroy();
+    }
+    this.activePowerSfx.clear();
   }
 
   private playMeleeAttackSfx(attacker: BattleUnit) {

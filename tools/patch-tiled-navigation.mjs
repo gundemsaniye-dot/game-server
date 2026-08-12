@@ -1,5 +1,8 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { requireTmjMutationApproval } from "./lib/require-tmj-mutation-approval.mjs";
+
+requireTmjMutationApproval("patch-tiled-navigation");
 
 const root = process.cwd();
 const mapsRoot = path.join(root, "art", "tiled", "maps");

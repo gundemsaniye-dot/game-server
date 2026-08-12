@@ -233,7 +233,7 @@
     {
       "id": "silent_forest_01_wood_2",
       "type": "tree",
-      "x": 420,
+      "x": 460,
       "y": 200,
       "amount": 12,
       "visual": {
@@ -247,7 +247,7 @@
     {
       "id": "silent_forest_01_wood_3",
       "type": "tree",
-      "x": 780,
+      "x": 800,
       "y": 200,
       "amount": 12,
       "visual": {
@@ -262,7 +262,7 @@
       "id": "silent_forest_01_wood_4",
       "type": "tree",
       "x": 460,
-      "y": 520,
+      "y": 500,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -275,8 +275,8 @@
     {
       "id": "silent_forest_01_wood_5",
       "type": "tree",
-      "x": 860,
-      "y": 560,
+      "x": 800,
+      "y": 500,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -296,10 +296,10 @@
         "assetKey": "map-prop-frozen_pass-snow-pine"
       },
       "x": 776,
-      "y": 525,
+      "y": 645,
       "scale": 0.23,
       "rotation": 0.07,
-      "depth": 531,
+      "depth": 651,
       "footprintRadius": 20,
       "blocksDeploy": false
     },

@@ -262,7 +262,7 @@
     {
       "id": "muddy_fields_02_wood_3",
       "type": "tree",
-      "x": 480,
+      "x": 460,
       "y": 500,
       "amount": 12,
       "visual": {
@@ -277,7 +277,7 @@
       "id": "muddy_fields_02_wood_4",
       "type": "tree",
       "x": 800,
-      "y": 520,
+      "y": 500,
       "amount": 12,
       "visual": {
         "source": "asset",
@@ -375,7 +375,7 @@
         "source": "asset",
         "assetKey": "map-prop-shared-pine-tree"
       },
-      "x": 715,
+      "x": 755,
       "y": 200,
       "scale": 0.35,
       "rotation": -0.06,

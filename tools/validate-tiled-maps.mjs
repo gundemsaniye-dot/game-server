@@ -14,11 +14,10 @@ const sourceMapsRoot = path.join(root, "art", "tiled", "maps");
 const legacyMapsRoot = path.join(root, "src", "game", "maps");
 const mapsRoot = path.join(root, "public", "assets", "tiled", "maps");
 const tilesetRoot = path.join(root, "public", "assets", "tiled", "tilesets");
-const requiredLayers = ["00_GROUND_BASE", "01_GROUND_TERRAIN", "02_GROUND_TRANSITIONS", "03_HAZARD_VISUALS", "04_ROADS", "05_BRIDGES", "06_DETAILS_BELOW", "07_DETAILS_ABOVE", "NAV_BLOCKED", "NAV_COST", "OBJECTS_BELOW", "OBJECTS_SORTED"];
+const requiredLayers = ["05_BRIDGES", "NAV_BLOCKED", "GAMEPLAY_ZONES"];
 const navigationMarkerGids = {
   "05_BRIDGES": new Set([577]),
   NAV_BLOCKED: new Set([578]),
-  NAV_COST: new Set([579, 580, 581]),
 };
 const errors = [];
 const json = async (file) => JSON.parse(await readFile(file, "utf8"));
@@ -90,12 +89,13 @@ for (const mapId of expected) {
     json(path.join(legacyMapsRoot, runtimeName)),
   ]);
   if (!source.tilesets.some((tileset) => tileset.source)) errors.push(`${mapId}: source must retain its external TSJ reference.`);
+  if (!source.layers.some((layer) => layer.name === "REFERENCE_ART_PREVIEW" && layer.type === "imagelayer")) {
+    errors.push(`${mapId}: source is missing REFERENCE_ART_PREVIEW.`);
+  }
   if (map.tilesets.some((tileset) => tileset.source)) errors.push(`${mapId}: runtime map contains an external TSJ source.`);
   if (map.width !== 32 || map.height !== 18 || map.tilewidth !== 40 || map.tileheight !== 40 || map.orientation !== "orthogonal" || map.infinite !== false) errors.push(`${mapId}: expected a finite 32x18 orthogonal 40px map.`);
   const layers = layerMap(map);
   requiredLayers.forEach((name) => { if (!layers.has(name)) errors.push(`${mapId}: missing ${name}.`); });
-  const base = layers.get("00_GROUND_BASE");
-  if (base?.data.length !== 576 || base.data.some((gid) => gid === 0)) errors.push(`${mapId}: 00_GROUND_BASE must fill all 576 tiles.`);
   const tileCount = (map.tilesets ?? []).reduce((total, tileset) => total + (tileset.tilecount ?? 0), 0);
   for (const layer of map.layers.filter((candidate) => candidate.type === "tilelayer")) {
     if (layer.data.length !== 576) errors.push(`${mapId}: ${layer.name} has invalid cell count.`);
@@ -114,6 +114,12 @@ for (const mapId of expected) {
   for (const objectLayer of map.layers.filter((candidate) => candidate.type === "objectgroup")) {
     for (const object of objectLayer.objects ?? []) if (object.x < 0 || object.y < 0 || object.x > 1280 || object.y > 720) errors.push(`${mapId}: ${objectLayer.name} object outside map.`);
   }
+  const gameplayObjects = layers.get("GAMEPLAY_ZONES")?.objects ?? [];
+  const gameplayTypes = gameplayObjects.map((object) => object.type || object.class || "");
+  if (gameplayObjects.length !== 4) errors.push(`${mapId}: GAMEPLAY_ZONES must contain exactly four objects.`);
+  if (gameplayTypes.filter((type) => type === "CastleAnchor").length !== 2) errors.push(`${mapId}: expected two CastleAnchor objects.`);
+  if (gameplayTypes.filter((type) => type === "DeployZone").length !== 1) errors.push(`${mapId}: expected one DeployZone object.`);
+  if (gameplayTypes.filter((type) => type === "SpawnZone").length !== 1) errors.push(`${mapId}: expected one SpawnZone object.`);
   const blocked = layers.get("NAV_BLOCKED");
   const bridges = layers.get("05_BRIDGES");
   const treeNavigation = navigationMask(map);

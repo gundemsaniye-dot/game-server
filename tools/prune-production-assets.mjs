@@ -15,12 +15,12 @@ const ACTIVE_UI_ASSETS = new Set([
   "assets/ui/splash/background.png",
   "assets/ui/splash/animation-soldier.png",
   "assets/ui/splash/tap-to-start-button.png",
-  "assets/ui/menu/start-v2/menu-background-clean-v3.png",
+  "assets/ui/menu/start-v2/menu-background-clean-v4.png",
   "assets/ui/menu/start-v2/menu-logo-layer-v2.png",
-  "assets/ui/menu/start-v2/menu-start-button-layer-v2.png",
-  "assets/ui/menu/start-v2/menu-upgrades-button-layer-v2.png",
-  "assets/ui/menu/start-v2/menu-settings-button-layer-v2.png",
-  "assets/ui/menu/start-v2/buttons/start-hover-v2.png",
+  "assets/ui/menu/start-v2/buttons/campaign-button-v1.png",
+  "assets/ui/menu/start-v2/buttons/online-pvp-button-v1.png",
+  "assets/ui/menu/start-v2/buttons/upgrades-base-compact-v1.png",
+  "assets/ui/menu/start-v2/buttons/settings-base-compact-v1.png",
   "assets/ui/menu/start-v2/buttons/upgrades-hover-v2.png",
   "assets/ui/menu/start-v2/buttons/settings-hover-v2.png",
 ]);
@@ -36,7 +36,6 @@ const ACTIVE_STRUCTURE_ASSETS = new Set([
 
 const REQUIRED_EXACT_ASSETS = [
   "index.html",
-  "style.css",
   "favicon.png",
   "assets/logo.png",
   "assets/data/campaign-story.json",
@@ -48,7 +47,6 @@ const REQUIRED_EXACT_ASSETS = [
   "assets/maps/runtime-resources/map-prop-shared-pine-tree.png",
   "assets/tiled/tilesets/navigation-bridge.png",
   "assets/tiled/tilesets/navigation-blocked.png",
-  "assets/tiled/tilesets/navigation-cost.png",
   ...ACTIVE_UI_ASSETS,
   ...ACTIVE_STRUCTURE_ASSETS,
 ];

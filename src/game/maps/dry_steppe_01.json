@@ -266,11 +266,11 @@
         "source": "asset",
         "assetKey": "map-prop-shared-pine-tree"
       },
-      "x": 429,
-      "y": 79,
+      "x": 549,
+      "y": 159,
       "scale": 0.37,
       "rotation": 0.08,
-      "depth": 85,
+      "depth": 165,
       "footprintRadius": 20,
       "blocksDeploy": false
     },
