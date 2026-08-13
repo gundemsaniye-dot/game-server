@@ -13,6 +13,9 @@ import {
 export class NetworkClient extends Events.EventEmitter {
   private static instance: NetworkClient;
   private ws: WebSocket | null = null;
+  // Every socket gets a generation. A late close/error from an older socket
+  // must never reset the state of a newer matchmaking attempt.
+  private socketGeneration = 0;
   public isConnected: boolean = false;
   public roomId: string | null = null;
   public playerId: string | null = null;
@@ -70,22 +73,31 @@ export class NetworkClient extends Events.EventEmitter {
         return;
       }
 
+      const previousSocket = this.ws;
+      if (previousSocket) {
+        this.ws = null;
+        previousSocket.close();
+      }
+      this.resetSessionState();
+      const generation = ++this.socketGeneration;
       const socket = new WebSocket(url);
       this.ws = socket;
+      let settled = false;
 
       socket.onopen = () => {
-        if (this.ws !== socket) {
+        if (this.ws !== socket || this.socketGeneration !== generation) {
           socket.close();
           return;
         }
         this.isConnected = true;
         this.sendMessage({ type: ClientMessages.HELLO });
         this.emit("connected");
+        settled = true;
         resolve();
       };
 
       socket.onmessage = (event) => {
-        if (this.ws !== socket) return;
+        if (this.ws !== socket || this.socketGeneration !== generation) return;
         try {
           const msg = JSON.parse(event.data) as NetworkMessage;
           this.handleMessage(msg);
@@ -95,22 +107,27 @@ export class NetworkClient extends Events.EventEmitter {
       };
 
       socket.onclose = () => {
-        if (this.ws !== socket) return;
+        if (this.ws !== socket || this.socketGeneration !== generation) return;
         this.ws = null;
         this.resetSessionState();
         this.emit("disconnected");
         console.log("Disconnected from server");
+        if (!settled) reject(new Error("WebSocket closed before connection"));
       };
 
       socket.onerror = (err) => {
-        if (this.ws !== socket) return;
+        if (this.ws !== socket || this.socketGeneration !== generation) return;
         console.error("WebSocket Error:", err);
-        reject(err);
+        if (!settled) {
+          settled = true;
+          reject(err);
+        }
       };
     });
   }
 
   public disconnect() {
+    this.socketGeneration += 1;
     const socket = this.ws;
     this.ws = null;
     this.resetSessionState();

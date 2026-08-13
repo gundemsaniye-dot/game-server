@@ -83,13 +83,16 @@ export function onlineSideGeometry(
     objectType(object) === deployType && properties(object).get("team") === team && properties(object).get("enabled") !== false
   );
   if (!castle || !deploy) return undefined;
-  return createSideGeometry(
+  const geometry = createSideGeometry(
     side,
     boundsFrom(deploy),
     boundsFrom(castle),
     { minX: 120, maxX: tilemap.widthInPixels - 120, minY: 52, maxY: tilemap.heightInPixels - 52 },
     side === "right" ? 35 : 0,
   );
+  const anchorX = properties(castle).get("anchorX");
+  if (finite(anchorX)) geometry.castleLineX = anchorX;
+  return geometry;
 }
 
 export function applyTiledGameplayObjects(

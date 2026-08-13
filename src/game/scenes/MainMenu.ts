@@ -67,6 +67,8 @@ export class MainMenu extends Scene {
   private transitionCurtain?: Phaser.GameObjects.Rectangle;
   private settingsVisuals: Phaser.GameObjects.GameObject[] = [];
   private settingsOpen = false;
+  private onlineAttemptId = 0;
+  private onlineAttemptCleanup?: () => void;
 
   constructor() {
     super("MainMenu");
@@ -309,6 +311,11 @@ export class MainMenu extends Scene {
   }
 
   private async startOnlineMatch() {
+    // A previous modal may still be awaiting connect() after a scene
+    // transition. Invalidate it before starting a new matchmaking attempt.
+    this.onlineAttemptCleanup?.();
+    this.onlineAttemptCleanup = undefined;
+    const attemptId = ++this.onlineAttemptId;
     const net = NetworkClient.getInstance();
 
     // Create dark backdrop
@@ -346,7 +353,10 @@ export class MainMenu extends Scene {
       padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setDepth(202).setInteractive({ useHandCursor: true });
 
+    let overlayClosed = false;
     const closeOverlay = () => {
+      if (overlayClosed) return;
+      overlayClosed = true;
       backdrop.destroy();
       modal.destroy();
       titleText.destroy();
@@ -354,44 +364,64 @@ export class MainMenu extends Scene {
       cancelBtn.destroy();
     };
 
+    const isCurrentAttempt = () => attemptId === this.onlineAttemptId;
+    const onMatchFound = () => {
+      if (!isCurrentAttempt()) return;
+      statusText.setText(t("game_online_found"));
+      statusText.setColor("#55ff88");
+    };
+    const onInitialState = () => {
+      if (!isCurrentAttempt()) return;
+      const authoritativeSide = net.playerSide;
+      const authoritativeRoomId = net.roomId;
+      if (!authoritativeSide || !authoritativeRoomId) {
+        statusText.setText(t("game_online_opponent_side_missing"));
+        statusText.setColor("#ff4444");
+        return;
+      }
+      cleanupAttempt();
+      statusText.setText(t("game_online_arena_loading"));
+      closeOverlay();
+      this.scene.start("Game", {
+        isOnline: true,
+        roomId: authoritativeRoomId,
+        side: authoritativeSide,
+        levelId: "level_001",
+        mapIndex: 0,
+        playerLoadout: ["peasant", "swordsman", "archer", "horseman"],
+        attemptSeed: net.matchSeed ?? undefined,
+      });
+    };
+    const cleanupAttempt = () => {
+      net.off("match_found", onMatchFound);
+      net.off("initial_state", onInitialState);
+      if (this.onlineAttemptCleanup === cleanupAttempt) {
+        this.onlineAttemptCleanup = undefined;
+      }
+    };
+    this.onlineAttemptCleanup = cleanupAttempt;
+    this.events.once("shutdown", cleanupAttempt);
+
     cancelBtn.on("pointerdown", () => {
+      if (!isCurrentAttempt()) return;
       this.sound.play("select-sfx", { volume: 0.32 });
+      ++this.onlineAttemptId;
+      cleanupAttempt();
       net.disconnect();
       closeOverlay();
     });
 
     try {
       await net.connect();
+      if (!isCurrentAttempt()) return;
       statusText.setText(t("game_online_searching"));
-
-      net.once("match_found", () => {
-        statusText.setText(t("game_online_found"));
-        statusText.setColor("#55ff88");
-      });
-
-      net.once("initial_state", () => {
-        const authoritativeSide = net.playerSide;
-        const authoritativeRoomId = net.roomId;
-        if (!authoritativeSide || !authoritativeRoomId) {
-          statusText.setText(t("game_online_opponent_side_missing"));
-          statusText.setColor("#ff4444");
-          return;
-        }
-        statusText.setText(t("game_online_arena_loading"));
-        closeOverlay();
-        this.scene.start("Game", {
-          isOnline: true,
-          roomId: authoritativeRoomId,
-          side: authoritativeSide,
-          levelId: "level_001",
-          mapIndex: 0,
-          playerLoadout: ["peasant", "swordsman", "archer", "horseman"],
-          attemptSeed: net.matchSeed ?? undefined,
-        });
-      });
-
+      net.on("match_found", onMatchFound);
+      net.on("initial_state", onInitialState);
       net.findMatch();
     } catch (err) {
+      if (!isCurrentAttempt()) return;
+      cleanupAttempt();
+      net.disconnect();
       statusText.setText(t("game_online_connect_failed"));
       statusText.setColor("#ff4444");
       setTimeout(() => closeOverlay(), 2500);

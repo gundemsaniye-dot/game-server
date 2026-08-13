@@ -10,7 +10,6 @@ import type {
   UsePowerCommand,
 } from "../../../shared/online/Protocol";
 import { CASTLE_CONTACT_TOLERANCE } from "../../../shared/online/CastleContact";
-import { worldToLocalX } from "../../../shared/online/SideGeometry";
 import { ONLINE_MAP_CONTRACT } from "./OnlineMapContract";
 import { ONLINE_MAP_NAVIGATION, type OnlinePathPoint } from "./OnlineMapNavigation";
 import { ONLINE_MATCH_CONFIG, ONLINE_UNIT_STATS, type OnlineUnitStats } from "./OnlineMatchConfig";
@@ -156,11 +155,16 @@ export class OnlineMatchSimulation {
     }
     if (command.power === "missile") {
       const geometry = ONLINE_MAP_CONTRACT.sides[side];
-      const targetLocalX = worldToLocalX(geometry, command.x);
       const opponent: OnlineSide = side === "left" ? "right" : "left";
-      const castleLocalX = worldToLocalX(geometry, this.castleFront(opponent));
-      if (targetLocalX < ONLINE_MATCH_CONFIG.powers.missile.minLocalX || targetLocalX > castleLocalX) {
-        return this.rejectPower(command.commandId, "INVALID_POWER_TARGET", "Missile target is outside its TMJ corridor.");
+      const opponentGeometry = ONLINE_MAP_CONTRACT.sides[opponent];
+      const homeTargetX = geometry.castleLineX ?? (side === "left" ? geometry.castle.maxX : geometry.castle.minX);
+      const opponentCastleEdge = opponentGeometry.castleLineX ?? (
+        opponent === "left" ? opponentGeometry.castle.maxX : opponentGeometry.castle.minX
+      );
+      const minTargetX = Math.min(homeTargetX, opponentCastleEdge);
+      const maxTargetX = Math.max(homeTargetX, opponentCastleEdge);
+      if (command.x < minTargetX || command.x > maxTargetX) {
+        return this.rejectPower(command.commandId, "INVALID_POWER_TARGET", "Missile target is outside the castle corridor.");
       }
     }
 
@@ -486,10 +490,11 @@ export class OnlineMatchSimulation {
   }
 
   private applyPowerImpact(event: OnlinePowerCast) {
-    const enemy: OnlineSide = event.side === "left" ? "right" : "left";
     const radius = ONLINE_MATCH_CONFIG.powers[event.power].radius;
     for (const unit of this.units.values()) {
-      if (unit.side !== enemy || unit.hp <= 0) continue;
+      // Online missile fire is an area weapon, not a team-filtered attack:
+      // both players' units can be caught in the blast.
+      if (unit.hp <= 0) continue;
       const distance = Math.hypot(unit.x - event.x, unit.y - event.y);
       if (distance > radius) continue;
       if (event.power === "missile") {

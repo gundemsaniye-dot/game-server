@@ -12,7 +12,6 @@ import type {
 } from "../network/NetworkProtocol";
 import {
   deploymentGuideBounds,
-  deployHomeEdge,
   formationWorldOffset,
   resolveDeploymentClick,
   type SideGeometry,
@@ -392,7 +391,10 @@ const MISSILE_COOLDOWN_MS = 35_000;
 const ICE_BLAST_COOLDOWN_MS = 45_000;
 const MISSILE_RADIUS = 67;
 const MISSILE_DAMAGE = 9_999;
-const PLAYER_MISSILE_MIN_RANGE = 92;
+// The missile may be aimed from the player's own castle edge so defenders can
+// be cleared when they reach the walls. Keep a small safety gap so the marker
+// remains just outside the castle artwork.
+const PLAYER_MISSILE_CASTLE_CLEARANCE = 24;
 const PLAYER_MISSILE_CHARGE_MS = 1_550;
 const ICE_BLAST_RADIUS = 72;
 const ICE_BLAST_DURATION_MS = 6_000;
@@ -3571,7 +3573,9 @@ export class Game extends Scene {
     const isLeft = this.localPlayerSide === "left";
     const panelX = isLeft ? 59 : 1221;
     const teamColor = isLeft ? 0x1978bd : 0xb42d35;
-    const direction = isLeft ? ">" : "<";
+    // The arrow points toward the opponent's castle. Keep this online-only:
+    // offline mode has no local-side identity banner.
+    const direction = isLeft ? "→" : "←";
 
     const badgeBack = this.add
       .rectangle(panelX, 72, 78, 25, teamColor, 0.98)
@@ -3606,7 +3610,9 @@ export class Game extends Scene {
       .rectangle(640, 154, 430, 82, 0x24170f, 0.96)
       .setStrokeStyle(5, 0xffd86a, 0.96);
     const bannerColor = this.add.rectangle(isLeft ? 468 : 812, 154, 78, 72, teamColor, 0.96);
-    const bannerText = this.add.text(640, 154, `${direction}  YOU ARE ${isLeft ? "LEFT" : "RIGHT"}  ${direction}`, {
+    const bannerText = this.add.text(640, 154, isLeft
+      ? `YOU ARE LEFT   YOU ${direction} OPPONENT`
+      : `OPPONENT ${direction} YOU   YOU ARE RIGHT`, {
       fontFamily: "Arial Black",
       fontSize: 27,
       color: "#ffffff",
@@ -3957,14 +3963,14 @@ export class Game extends Scene {
       .setDepth(1221)
       .setVisible(false);
     this.missileAimReticle = this.add
-      .image(zone.x + PLAYER_MISSILE_MIN_RANGE, centerY, "effect_runic_circle")
+      .image(this.missileHomeTargetX(this.isOnline && this.localPlayerSide === "right" ? -1 : 1, zone), centerY, "effect_runic_circle")
       .setTint(0xff6a2f)
       .setScale(0.48)
       .setAlpha(0.82)
       .setDepth(1224)
       .setVisible(false);
     this.missileAimPercentText = this.add
-      .text(zone.x + PLAYER_MISSILE_MIN_RANGE, centerY - 42, "0%", {
+      .text(this.missileHomeTargetX(this.isOnline && this.localPlayerSide === "right" ? -1 : 1, zone), centerY - 42, "0%", {
         fontFamily: "Arial Black",
         fontSize: 15,
         color: "#fff4c2",
@@ -4301,14 +4307,11 @@ export class Game extends Scene {
   }
 
   private currentMissileAimTarget() {
-    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
     const direction = this.isOnline && this.localPlayerSide === "right" ? -1 : 1;
-    const startX = this.onlineGeometry
-      ? deployHomeEdge(this.onlineGeometry) + direction * PLAYER_MISSILE_MIN_RANGE
-      : zone.x + direction * PLAYER_MISSILE_MIN_RANGE;
+    const startX = this.missileHomeTargetX(direction);
     const endX = this.onlineOpponentGeometry
-      ? (this.localPlayerSide === "left" ? this.onlineOpponentGeometry.castle.minX : this.onlineOpponentGeometry.castle.maxX)
-      : this.enemyCastle.frontX;
+      ? (this.onlineOpponentGeometry.castleLineX ?? (this.localPlayerSide === "left" ? this.onlineOpponentGeometry.castle.minX : this.onlineOpponentGeometry.castle.maxX))
+      : this.enemyCastle.x;
     const charge = this.missileAimPointerId === undefined
       ? 0
       : clamp((this.missileAimClockMs() - this.missileAimStartedAt) / PLAYER_MISSILE_CHARGE_MS, 0, 1);
@@ -4317,6 +4320,16 @@ export class Game extends Scene {
       y: this.missileAimY,
       charge,
     };
+  }
+
+  private missileHomeTargetX(direction: 1 | -1) {
+    if (this.onlineGeometry) {
+      return this.onlineGeometry.castleLineX ?? (
+        (this.localPlayerSide === "left" ? this.onlineGeometry.castle.maxX : this.onlineGeometry.castle.minX) +
+        direction * PLAYER_MISSILE_CASTLE_CLEARANCE
+      );
+    }
+    return this.playerCastle.x;
   }
 
   private updateMissileAim() {
@@ -4338,17 +4351,14 @@ export class Game extends Scene {
       return;
     }
 
-    const zone = this.playerDeployZone || this.levelRuntime.map.deployZone;
     const centerY = this.missileAimPointerId === undefined
-      ? (zone.minY + zone.maxY) / 2
+      ? ((this.playerDeployZone || this.levelRuntime.map.deployZone).minY + (this.playerDeployZone || this.levelRuntime.map.deployZone).maxY) / 2
       : this.missileAimY;
     const direction = this.isOnline && this.localPlayerSide === "right" ? -1 : 1;
-    const startX = this.onlineGeometry
-      ? deployHomeEdge(this.onlineGeometry) + direction * PLAYER_MISSILE_MIN_RANGE
-      : zone.x + direction * PLAYER_MISSILE_MIN_RANGE;
+    const startX = this.missileHomeTargetX(direction);
     const endX = this.onlineOpponentGeometry
-      ? (this.localPlayerSide === "left" ? this.onlineOpponentGeometry.castle.minX : this.onlineOpponentGeometry.castle.maxX)
-      : this.enemyCastle.frontX;
+      ? (this.onlineOpponentGeometry.castleLineX ?? (this.localPlayerSide === "left" ? this.onlineOpponentGeometry.castle.minX : this.onlineOpponentGeometry.castle.maxX))
+      : this.enemyCastle.x;
     const target = this.currentMissileAimTarget();
 
     this.missileAimPad

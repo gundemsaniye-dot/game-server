@@ -103,6 +103,8 @@ function loadOnlineMapContract(): OnlineMapContract {
   const rightDeploy = bounds(enemySpawn, "enemySpawn");
   const leftCastle = bounds(playerCastle, "playerCastle");
   const rightCastle = bounds(enemyCastle, "enemyCastle");
+  const leftCastleLineX = finite(Number(property(playerCastle.properties, "anchorX")), "playerCastle.anchorX");
+  const rightCastleLineX = finite(Number(property(enemyCastle.properties, "anchorX")), "enemyCastle.anchorX");
 
   return {
     mapId: String(property(map.properties, "mapId") ?? "frozen_pass_01"),
@@ -122,8 +124,8 @@ function loadOnlineMapContract(): OnlineMapContract {
       right: rightDeploy,
     },
     sides: {
-      left: createSideGeometry("left", leftDeploy, leftCastle, world, 0),
-      right: createSideGeometry("right", rightDeploy, rightCastle, world, 35),
+      left: { ...createSideGeometry("left", leftDeploy, leftCastle, world, 0), castleLineX: leftCastleLineX },
+      right: { ...createSideGeometry("right", rightDeploy, rightCastle, world, 35), castleLineX: rightCastleLineX },
     },
   };
 }

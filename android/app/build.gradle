@@ -10,8 +10,8 @@ android {
         applicationId "com.castlestormers.game"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "0.2.5"
+        versionCode 7
+        versionName "0.2.7"
         buildConfigField "boolean", "PERF_LOG_BRIDGE", "false"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -20,11 +20,23 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            def storeFileProp = findProperty('RELEASE_STORE_FILE')
+            if (storeFileProp != null && !storeFileProp.isEmpty()) {
+                storeFile file(storeFileProp)
+                storePassword findProperty('RELEASE_STORE_PASSWORD')
+                keyAlias findProperty('RELEASE_KEY_ALIAS')
+                keyPassword findProperty('RELEASE_KEY_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         debug {
             buildConfigField "boolean", "PERF_LOG_BRIDGE", "true"
         }
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

@@ -14,6 +14,8 @@ export interface SideGeometry {
   castle: AxisAlignedBounds;
   world: AxisAlignedBounds;
   outerCastleInset: number;
+  /** TMJ CastleAnchor anchorX used as the authoritative power line. */
+  castleLineX?: number;
 }
 
 export interface ResolvedDeployment {
