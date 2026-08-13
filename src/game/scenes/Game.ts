@@ -8283,7 +8283,7 @@ export class Game extends Scene {
     }
 
     this.pendingBatchText.setText(
-      `${this.pendingDeploySummary()}  →  TURKUAZ ALANA KOY`,
+      `${this.pendingDeploySummary()}  →  PLACE IN TURQUOISE AREA`,
     );
   }
 

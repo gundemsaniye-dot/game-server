@@ -195,7 +195,7 @@ export class MapEditor extends Scene {
     this.snapText = this.makeUi(
       this.add.text(0, 0, "", this.uiTextStyle(13)).setOrigin(0.5),
     );
-    x = this.toolbarButton(x, 64, "IZGARA", () => {
+    x = this.toolbarButton(x, 64, "GRID", () => {
       this.snapEnabled = !this.snapEnabled;
       this.updateToolbarState();
     }, this.snapText);
@@ -1143,7 +1143,7 @@ export class MapEditor extends Scene {
   }
 
   private updateToolbarState() {
-    this.snapText?.setText(`IZG ${this.snapEnabled ? GRID_SIZE : "KAP"}`);
+    this.snapText?.setText(`GRID ${this.snapEnabled ? GRID_SIZE : "OFF"}`);
     this.zoomText?.setText(`${Math.round(this.zoom * 100)}%`);
     this.flowText?.setText(this.flowEditEnabled ? "GUIDE ON" : "GUIDE OFF");
   }
