@@ -321,7 +321,7 @@ export class MainMenu extends Scene {
       .setStrokeStyle(4, 0x27d6f0)
       .setDepth(201);
 
-    const titleText = this.add.text(640, 250, "1V1 ONLINE EŞLEŞME", {
+    const titleText = this.add.text(640, 250, "1V1 ONLINE MATCHMAKING", {
       fontFamily: "Arial Black",
       fontSize: "26px",
       color: "#ffffff",
@@ -329,7 +329,7 @@ export class MainMenu extends Scene {
       strokeThickness: 5,
     }).setOrigin(0.5).setDepth(202);
 
-    const statusText = this.add.text(640, 340, "Sunucuya bağlanılıyor...", {
+    const statusText = this.add.text(640, 340, t("game_online_connecting"), {
       fontFamily: "Arial",
       fontSize: "20px",
       color: "#7ee7f8",
@@ -338,7 +338,7 @@ export class MainMenu extends Scene {
     }).setOrigin(0.5).setDepth(202);
 
     // Cancel Button
-    const cancelBtn = this.add.text(640, 440, "  İPTAL  ", {
+    const cancelBtn = this.add.text(640, 440, `  ${t("game_cancel")}  `, {
       fontFamily: "Arial Black",
       fontSize: "18px",
       color: "#ffffff",
@@ -362,10 +362,10 @@ export class MainMenu extends Scene {
 
     try {
       await net.connect();
-      statusText.setText("Rakip aranıyor...");
+      statusText.setText(t("game_online_searching"));
 
       net.once("match_found", () => {
-        statusText.setText("RAKİP BULUNDU! HAZIRLANILIYOR...");
+        statusText.setText(t("game_online_found"));
         statusText.setColor("#55ff88");
       });
 
@@ -373,11 +373,11 @@ export class MainMenu extends Scene {
         const authoritativeSide = net.playerSide;
         const authoritativeRoomId = net.roomId;
         if (!authoritativeSide || !authoritativeRoomId) {
-          statusText.setText("SUNUCU TARAF BİLGİSİ EKSİK");
+          statusText.setText(t("game_online_opponent_side_missing"));
           statusText.setColor("#ff4444");
           return;
         }
-        statusText.setText("ARENA YÜKLENİYOR...");
+        statusText.setText(t("game_online_arena_loading"));
         closeOverlay();
         this.scene.start("Game", {
           isOnline: true,
@@ -392,7 +392,7 @@ export class MainMenu extends Scene {
 
       net.findMatch();
     } catch (err) {
-      statusText.setText("Sunucuya bağlanılamadı!");
+      statusText.setText(t("game_online_connect_failed"));
       statusText.setColor("#ff4444");
       setTimeout(() => closeOverlay(), 2500);
     }

@@ -24,26 +24,25 @@ type LevelBlueprint = {
 type TacticalIdentity = LevelConfig["tactics"];
 
 const TACTICAL_IDENTITIES: readonly TacticalIdentity[] = [
-  { lesson: "Temel gelir ve kilicli uretimi", peakEvent: "Kucuk kilicli rezervi", strategies: ["Iki oduncuyla duzenli kilicli hatti kur.", "Uc oduncuyla gec ama guclu karma dalga cikar."] },
-  { lesson: "On hat arkasinda okcu kullanimi", peakEvent: "Iki koridorlu okcu ekrani", strategies: ["Kilicliyi on hatta, okcuyu geride tut.", "Atliyi yan koridordan dusman okcusuna gonder."] },
-  { lesson: "Oduncuyu suvari baskinindan koruma", peakEvent: "Ilk oduncu avi", strategies: ["Bir kilicliyi oduncu korumasi icin ayir.", "Rakip atlisini kendi atlinla uzakta karsila."] },
-  { lesson: "Karisik uclu deste", peakEvent: "Ilk iki asamali karsi saldiri", strategies: ["Uc karti farkli koridorlara dagit.", "Ilk dalgayi ucuz birlikle tutup ikinciye altin sakla."] },
-  { lesson: "Mizrakliya karsi kilicli ve okcu", peakEvent: "Mizrak duvari", strategies: ["Kilicliyla mizrakliyi bagla, okcuyla erit.", "Atliyi yalnizca arka hat avinda kullan."] },
-  { lesson: "Uc oduncunun yuksek gelir ve risk dengesi", peakEvent: "Orta agaca suvari baskini", strategies: ["Ucuncu oduncudan once savunma birimi cikar.", "Iki oduncuyla erken baski kurup orta agaci kapat."] },
-  { lesson: "Okcu ekranini suvariyle bozma", peakEvent: "Okcu ve mizrak karsi dalgasi", strategies: ["Atliyi mizrak koridorundan kacir.", "Okculari kilicli on hatla guvende tut."] },
-  { lesson: "Savunmaci rakibe karsi ekonomi bozma", peakEvent: "Biriktirilmis agir saldiri", strategies: ["Rakip oduncularini avlayip agir dalgayi geciktir.", "Altin biriktirip tek guclu karma savunma kur."] },
-  { lesson: "Muhafizin canini menzille eritme", peakEvent: "Ilk muhafiz duvari", strategies: ["Muhafizi okcu atesi altinda oyalayip koridor degistir.", "Ekonomi ustunluguyle iki dalgali menzil baskisi yap."] },
-  { lesson: "Muhafiz on hatti ve okcu arkasini ayirma", peakEvent: "Korumali okcu saldirisi", strategies: ["Atliyi okcu koridoruna, mizrakliyi atli koridoruna koy.", "Muhafizi ucuz kilicliyla oyalayip arka hatti dusur."] },
-  { lesson: "Agir birliklere karsi koridor degistirme", peakEvent: "Muhafiz ve mizrak kamasi", strategies: ["Atliyi mizraktan uzak koridorda kullan.", "Okcu hattiyla yavas agir birlikleri parcalara ayir."] },
-  { lesson: "Once oduncu savunmasi sonra saldiri", peakEvent: "Uzun tedarik kusatmasi", strategies: ["Ilk fazda odunculari koruyup ikinci fazda harca.", "Rakip teslimatlarini keserek kusatmanin butcesini dusur."] },
-  { lesson: "Bicakciyi suvariyle yakalama", peakEvent: "Ilk suikastci baskini", strategies: ["Atliyi bicakci koridoruna sakla.", "Odunculari farkli koridorlara dagitip kilicli perde kur."] },
-  { lesson: "Sahte koridor saldirisini okuma", peakEvent: "Bicakci ve suvari kiskaci", strategies: ["Mizrakliyi suvari gorunene kadar elde tut.", "Bicakci tarafina hizli atli karsi saldirisi yap."] },
-  { lesson: "Menzilli suikastci arkasina ulasma", peakEvent: "Muhafiz korumali capraz ates", strategies: ["Iki koridordan es zamanli baski kur.", "Muhafizi oyalayip atliyi bicakciya yonelt."] },
-  { lesson: "Suvari ve muhafizi farkli karsilarla durdurma", peakEvent: "Uc asamali zirhli ilerleme", strategies: ["Mizrakliyi suvariye, menzili muhafiza ayir.", "Rakip oduncusunu kesip pahali kombinasyonu boz."] },
-  { lesson: "Buyucuyu suvariyle tehdit edip mizraktan kacma", peakEvent: "Ilk buyu alani saldirisi", strategies: ["Atliyi buyucu koridoruna gec yerleştir.", "Birlikleri iki koridora bolerek alan hasarini azalt."] },
-  { lesson: "Alan hasarina karsi daginik duzen", peakEvent: "Kis yipratma kusatmasi", strategies: ["Uc savas kartini farkli koridorlarda kullan.", "Buyucu ve bicakciyi hizli atliyla sira sira avla."] },
-  { lesson: "Yaniltma saldirisini gercek rezervden ayirma", peakEvent: "Koridor degistiren infernal dalgalar", strategies: ["Rezerv uyarisi gelene kadar pahali karsiyi sakla.", "Sahte koridoru ucuz birlikle tutup digerine yuklen."] },
-  { lesson: "Ekonomi, karsi birlik ve koridor bilgisinin tamami", peakEvent: "Alti fazli final kusatmasi", strategies: ["Her faz icin farkli kart cevabini sakla.", "Rezerv muhru arasinda oduncu gelirini yeniden kur."] },
+  { lesson: "Build a steady economy and sword line", peakEvent: "Small sword reserve", strategies: ["Use two workers for a steady sword line.", "Use three workers for a late but powerful mixed wave."] },
+  { lesson: "Use archers behind the frontline", peakEvent: "Two-lane archer screen", strategies: ["Keep swords in front and archers behind.", "Send cavalry through a side lane against enemy archers."] },
+  { lesson: "Protect workers from cavalry raids", peakEvent: "First worker hunt", strategies: ["Keep one sword near your workers.", "Meet enemy cavalry with your own cavalry at a distance."] },
+  { lesson: "Build a balanced three-unit deck", peakEvent: "First two-stage counterattack", strategies: ["Spread three cards across different lanes.", "Hold the first wave cheaply and save gold for the second."] },
+  { lesson: "Counter spears with swords and archers", peakEvent: "Spear wall", strategies: ["Tie up spearmen with swords and finish them with archers.", "Use cavalry only to hunt the backline."] },
+  { lesson: "Balance three-worker income and risk", peakEvent: "Cavalry raid on the center tree", strategies: ["Deploy a defender before adding the third worker.", "Pressure early with two workers and secure the center tree."] },
+  { lesson: "Break an archer screen with cavalry", peakEvent: "Archer and spear counterwave", strategies: ["Keep cavalry away from spear lanes.", "Protect archers with a sword frontline."] },
+  { lesson: "Disrupt a defensive opponent's economy", peakEvent: "Stored heavy assault", strategies: ["Hunt enemy workers to delay the heavy wave.", "Save gold for one strong mixed defense."] },
+  { lesson: "Wear down guards with ranged fire", peakEvent: "First guard wall", strategies: ["Keep guards under archer fire while changing lanes.", "Use your economic lead for a two-wave ranged push."] },
+  { lesson: "Separate the guard frontline from archers", peakEvent: "Protected archer assault", strategies: ["Put cavalry in the archer lane and spears in the cavalry lane.", "Distract guards with cheap swords and take the backline."] },
+  { lesson: "Change lanes against heavy units", peakEvent: "Guard and spear wedge", strategies: ["Use cavalry in a lane away from spears.", "Split slow heavy units with an archer line."] },
+  { lesson: "Defend workers before attacking", peakEvent: "Long supply siege", strategies: ["Protect workers in phase one and spend them in phase two.", "Cut enemy deliveries to reduce the siege budget."] },
+  { lesson: "Catch knife throwers with cavalry", peakEvent: "First assassin raid", strategies: ["Hide cavalry in the knife thrower lane.", "Spread workers across lanes and build a sword screen."] },
+  { lesson: "Read a feinting lane attack", peakEvent: "Knife thrower and cavalry pincer", strategies: ["Hold spears until cavalry appears.", "Counterattack the knife thrower lane with fast cavalry."] },
+  { lesson: "Reach the ranged assassin backline", peakEvent: "Guarded crossfire", strategies: ["Apply pressure from two lanes at once.", "Distract guards and send cavalry to the knife throwers."] },
+  { lesson: "Stop cavalry and guards with different counters", peakEvent: "Three-stage armored advance", strategies: ["Use spears against cavalry and ranged units against guards.", "Cut enemy workers to break the expensive combination."] },
+  { lesson: "Threaten mages with cavalry and avoid spears", peakEvent: "First area spell assault", strategies: ["Place cavalry late in the mage lane.", "Split units across two lanes to reduce area damage."] },
+  { lesson: "Spread out against area damage", peakEvent: "Winter attrition siege", strategies: ["Use three combat cards in different lanes.", "Pick off mages and knife throwers with fast cavalry."] },
+  { lesson: "Master economy, counters, and lane control", peakEvent: "Six-phase final siege", strategies: ["Save a different card response for each phase.", "Rebuild worker income between reserve seals."] },
 ];
 
 const PHASE_KINDS_BY_COUNT: Record<number, DirectorPhaseKind[]> = {
@@ -152,11 +151,11 @@ function createDirectorPhases(blueprint: LevelBlueprint): DirectorPhaseConfig[] 
 function masteryGoal(order: number): MasteryGoalConfig {
   const chapter = Math.floor((order - 1) / 4);
   const cycle = (order - 1) % 5;
-  if (cycle === 0) return { type: "economy", target: 18 + chapter * 6, label: `${18 + chapter * 6} oduncu altini teslim et` };
-  if (cycle === 1) return { type: "counter_kills", target: 4 + chapter, label: `${4 + chapter} birimi avantajli karsi birlikle yen` };
-  if (cycle === 2) return { type: "worker_safety", target: 1, label: "En fazla 1 oduncu kaybet" };
-  if (cycle === 3) return { type: "castle_health", target: 55, label: "Kaleyi en az %55 canla koru" };
-  return { type: "combined_arms", target: 3, label: "Uc farkli savas kartini kullan" };
+  if (cycle === 0) return { type: "economy", target: 18 + chapter * 6, label: `Deliver ${18 + chapter * 6} worker gold` };
+  if (cycle === 1) return { type: "counter_kills", target: 4 + chapter, label: `Defeat ${4 + chapter} units with counter units` };
+  if (cycle === 2) return { type: "worker_safety", target: 1, label: "Lose no more than 1 worker" };
+  if (cycle === 3) return { type: "castle_health", target: 55, label: "Keep the castle above 55% health" };
+  return { type: "combined_arms", target: 3, label: "Use three different combat cards" };
 }
 
 const LEVEL_BLUEPRINTS: readonly LevelBlueprint[] = [
@@ -204,7 +203,7 @@ function createLevel(blueprint: LevelBlueprint): LevelConfig {
     story: {
       intro: `${blueprint.title}: sancak yolu ${blueprint.regionId.replace(/_/g, " ")} bolgesinden geciyor.`,
       victory: `${blueprint.title} temizlendi. Bir sonraki sancak yolu acildi.`,
-      defeatHint: "Unit acilimlarini ve worker ekonomisini dengele; dusman agirligini config belirliyor.",
+      defeatHint: "Balance unit unlocks with worker economy; the config controls enemy pressure.",
     },
     tactics: TACTICAL_IDENTITIES[blueprint.order - 1],
     duration: {

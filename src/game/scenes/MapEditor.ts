@@ -59,9 +59,9 @@ const ENEMY_FORTRESS_X = 1048;
 const FORTRESS_Y = 350;
 const FORTRESS_HEIGHT = 700;
 const MATERIAL_LABELS: Record<GroundMaterialId, string> = {
-  grass: "ÇİMEN", soil: "TOPRAK", forest_floor: "ORMAN ZEMİNİ", mud: "ÇAMUR",
-  dry_soil: "KURU TOPRAK", sand: "KUM", snow: "KAR", stone: "TAŞ", ash: "KÜL",
-  water: "SU", lava: "LAV",
+  grass: "GRASS", soil: "SOIL", forest_floor: "FOREST FLOOR", mud: "MUD",
+  dry_soil: "DRY SOIL", sand: "SAND", snow: "SNOW", stone: "STONE", ash: "ASH",
+  water: "WATER", lava: "LAVA",
 };
 
 const MATERIAL_COLORS: Record<GroundMaterialId, number> = {
@@ -73,14 +73,14 @@ const MATERIAL_COLORS: Record<GroundMaterialId, number> = {
 const MATERIAL_ORDER = Object.keys(MATERIAL_LABELS) as GroundMaterialId[];
 
 const ASSET_LABELS_TR: Record<string, string> = {
-  "Oak Tree": "Meşe Ağacı", "Wheat Field": "Buğday Tarlası", "Farm Fence": "Çiftlik Çiti", "Farm Cottage": "Çiftlik Evi",
-  "Pine Cluster": "Çam Kümesi", "Moss Rock": "Yosunlu Kaya", "Fallen Log": "Devrilmiş Kütük", "Forest Watchtower": "Orman Gözetleme Kulesi",
-  "Dead Tree": "Kuru Ağaç", Reeds: "Sazlık", "Mud Pool": "Çamur Havuzu", "Log Bridge": "Kütük Köprü",
-  "Cliff Rock": "Uçurum Kayası", "Lightning Mast": "Yıldırım Direği", "Ruined Arch": "Yıkık Kemer", "Storm Crystal": "Fırtına Kristali",
-  "Cracked Rock": "Çatlak Kaya", "Dry Bush": "Kuru Çalı", "Road Banner": "Yol Sancağı", "Supply Wagon": "Erzak Arabası",
-  Cactus: "Kaktüs", "Palm Tree": "Palmiye", "Sandstone Ruin": "Kumtaşı Harabesi", "Bone Pile": "Kemik Yığını",
-  "Snow Pine": "Karlı Çam", "Ice Crystal": "Buz Kristali", "Ice Rock": "Buz Kayası", "Frozen Tower": "Donmuş Kule",
-  "Obsidian Spike": "Obsidyen İğne", "Lava Vent": "Lav Bacası", "Burned Tree": "Yanmış Ağaç", "Infernal Ruin": "Cehennem Harabesi",
+  "Oak Tree": "Oak Tree", "Wheat Field": "Wheat Field", "Farm Fence": "Farm Fence", "Farm Cottage": "Farm Cottage",
+  "Pine Cluster": "Pine Cluster", "Moss Rock": "Moss Rock", "Fallen Log": "Fallen Log", "Forest Watchtower": "Forest Watchtower",
+  "Dead Tree": "Dead Tree", Reeds: "Reeds", "Mud Pool": "Mud Pool", "Log Bridge": "Log Bridge",
+  "Cliff Rock": "Cliff Rock", "Lightning Mast": "Lightning Mast", "Ruined Arch": "Ruined Arch", "Storm Crystal": "Storm Crystal",
+  "Cracked Rock": "Cracked Rock", "Dry Bush": "Dry Bush", "Road Banner": "Road Banner", "Supply Wagon": "Supply Wagon",
+  Cactus: "Cactus", "Palm Tree": "Palm Tree", "Sandstone Ruin": "Sandstone Ruin", "Bone Pile": "Bone Pile",
+  "Snow Pine": "Snow Pine", "Ice Crystal": "Ice Crystal", "Ice Rock": "Ice Rock", "Frozen Tower": "Frozen Tower",
+  "Obsidian Spike": "Obsidian Spike", "Lava Vent": "Lava Vent", "Burned Tree": "Burned Tree", "Infernal Ruin": "Infernal Ruin",
 };
 
 const cloneMap = (map: BattleMapConfig) =>
@@ -158,7 +158,7 @@ export class MapEditor extends Scene {
     this.createKeyboardControls();
     this.createPointerControls();
     this.renderWorld();
-    this.setStatus("Taslak hazır. Harita öğelerini sürükleyerek düzenleyebilirsin.");
+    this.setStatus("Draft ready. Drag map items to edit them.");
   }
 
   private loadMap(mapId: string) {
@@ -179,7 +179,7 @@ export class MapEditor extends Scene {
     this.makeUi(this.add.rectangle(1280 - RIGHT_WIDTH / 2, 393, RIGHT_WIDTH, 654, 0x152231, 0.97));
 
     let x = 8;
-    x = this.toolbarButton(x, 55, "GERİ", () => this.backToCampaign());
+    x = this.toolbarButton(x, 55, "BACK", () => this.backToCampaign());
     x = this.toolbarButton(x, 30, "<", () => this.shiftLevel(-1));
     this.levelText = this.makeUi(
       this.add
@@ -190,8 +190,8 @@ export class MapEditor extends Scene {
     this.levelText.on("pointerdown", () => this.toggleLevelMenu());
     x += 90;
     x = this.toolbarButton(x, 30, ">", () => this.shiftLevel(1));
-    x = this.toolbarButton(x, 55, "GERİ AL", () => this.undo());
-    x = this.toolbarButton(x, 55, "İLERİ", () => this.redo());
+    x = this.toolbarButton(x, 55, "UNDO", () => this.undo());
+    x = this.toolbarButton(x, 55, "REDO", () => this.redo());
     this.snapText = this.makeUi(
       this.add.text(0, 0, "", this.uiTextStyle(13)).setOrigin(0.5),
     );
@@ -203,7 +203,7 @@ export class MapEditor extends Scene {
       this.add.text(0, 0, "", this.uiTextStyle(11)).setOrigin(0.5),
     );
     x = this.toolbarButton(x, 28, "−", () => this.setZoom(this.zoom - 0.1));
-    x = this.toolbarButton(x, 50, "SIĞDIR", () => this.fitWorldView(), this.zoomText);
+    x = this.toolbarButton(x, 50, "FIT", () => this.fitWorldView(), this.zoomText);
     x = this.toolbarButton(x, 28, "+", () => this.setZoom(this.zoom + 0.1));
     this.flowText = this.makeUi(this.add.text(0, 0, "", this.uiTextStyle(10)).setOrigin(0.5));
     x = this.toolbarButton(x, 76, "REHBER", () => {
@@ -212,21 +212,21 @@ export class MapEditor extends Scene {
       this.updateToolbarState();
       this.renderWorld();
     }, this.flowText);
-    x = this.toolbarButton(x, 60, "İÇE AL", () => this.importJson());
-    x = this.toolbarButton(x, 60, "DIŞA", () => this.exportJson(false));
+    x = this.toolbarButton(x, 60, "IMPORT", () => this.importJson());
+    x = this.toolbarButton(x, 60, "EXPORT", () => this.exportJson(false));
     x = this.toolbarButton(x, 64, "TEST", () => this.testPlay());
-    x = this.toolbarButton(x, 66, "YAYINLA", () => this.publish());
+    x = this.toolbarButton(x, 66, "PUBLISH", () => this.publish());
     if (import.meta.env.DEV) {
-      this.toolbarButton(x, 72, "KAYDET", () => void this.saveProject());
+      this.toolbarButton(x, 72, "SAVE", () => void this.saveProject());
     }
     this.updateToolbarState();
 
     this.paletteTitle = this.makeUi(
-      this.add.text(1130, 82, "1 • ITEM VIEW / EKLE", this.uiTextStyle(16)).setOrigin(0.5),
+      this.add.text(1130, 82, "1 • ITEM VIEW / ADD", this.uiTextStyle(16)).setOrigin(0.5),
     );
     this.makeUi(
       this.add
-        .text(1130, 101, "Ara • filtrele • tıkla/sürükle", {
+        .text(1130, 101, "Search • filter • click/drag", {
           ...this.uiTextStyle(10), color: "#a9c2d4", strokeThickness: 2,
         })
         .setOrigin(0.5),
@@ -235,7 +235,7 @@ export class MapEditor extends Scene {
     this.rebuildPalette();
 
     this.makeUi(this.add.rectangle(1130, 407, 270, 2, 0x6d879c, 0.72));
-    this.makeUi(this.add.text(1130, 424, "2 • SEÇ VE DÜZENLE", this.uiTextStyle(15)).setOrigin(0.5));
+    this.makeUi(this.add.text(1130, 424, "2 • SELECT AND EDIT", this.uiTextStyle(15)).setOrigin(0.5));
     this.inspectorText = this.makeUi(
       this.add.text(997, 443, "", {
         ...this.uiTextStyle(11),
@@ -296,8 +296,8 @@ export class MapEditor extends Scene {
     });
     this.paletteButtons = [];
     const filters: Array<[string, PaletteFilter]> = [
-      ["PHASER", "procedural"], ["ZEMİN", "terrain"], ["SU/LAV", "hazard"],
-      ["KAYNAK", "resource"], ["ASSET", "assets"],
+      ["PHASER", "procedural"], ["GROUND", "terrain"], ["WATER/LAVA", "hazard"],
+      ["RESOURCE", "resource"], ["ASSET", "assets"],
     ];
     filters.forEach(([label, filter], index) => {
       const x = 1017 + (index % 4) * 76;
@@ -313,7 +313,7 @@ export class MapEditor extends Scene {
     const assets = this.assetFilter === "assets"
       ? MAP_ASSETS
         .filter((asset) => !normalizedSearch || this.normalizeSearch([asset.label, ...asset.searchTerms].join(" ")).includes(normalizedSearch))
-        .sort((first, second) => Number(second.biome === this.map.biome || second.featuredMapId === this.currentMapId) - Number(first.biome === this.map.biome || first.featuredMapId === this.currentMapId) || first.label.localeCompare(second.label, "tr"))
+        .sort((first, second) => Number(second.biome === this.map.biome || second.featuredMapId === this.currentMapId) - Number(first.biome === this.map.biome || first.featuredMapId === this.currentMapId) || first.label.localeCompare(second.label, "en"))
       : [];
     const procedural = this.assetFilter === "procedural"
       ? PROCEDURAL_VISUALS.filter((definition) => definition.libraryCategory !== "resource")
@@ -355,7 +355,7 @@ export class MapEditor extends Scene {
       const thumb = this.makeUi(this.add.rectangle(1268, 194 + thumbHeight / 2 + progress * (trackHeight - thumbHeight), 4, thumbHeight, 0x78b7cd, 0.95));
       this.paletteButtons.push(track, thumb);
     }
-    const counter = this.makeUi(this.add.text(1130, 397, `${totalItems === 0 ? 0 : this.assetScroll + 1}-${Math.min(this.assetScroll + 6, totalItems)} / ${totalItems}  •  tekerlekle kaydır`, { ...this.uiTextStyle(8), strokeThickness: 1 }).setOrigin(0.5));
+    const counter = this.makeUi(this.add.text(1130, 397, `${totalItems === 0 ? 0 : this.assetScroll + 1}-${Math.min(this.assetScroll + 6, totalItems)} / ${totalItems}  •  scroll to browse`, { ...this.uiTextStyle(8), strokeThickness: 1 }).setOrigin(0.5));
     this.paletteButtons.push(counter);
   }
 
@@ -388,7 +388,7 @@ export class MapEditor extends Scene {
   }
 
   private normalizeSearch(value: string) {
-    return value.toLocaleLowerCase("tr-TR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i");
+    return value.toLocaleLowerCase("en-US").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
   private paletteAssetCard(
@@ -416,7 +416,7 @@ export class MapEditor extends Scene {
     );
     const begin = () => {
       this.paletteDrag = drag;
-      this.setStatus(`${label}: karta tıklarsan ekranın ortasına, sürüklersen bıraktığın yere eklenir.`);
+      this.setStatus(`${label}: click to add at the screen center, or drag to place it.`);
     };
     back.on("pointerdown", begin);
     image.setInteractive({ useHandCursor: true }).on("pointerdown", begin);
@@ -452,7 +452,7 @@ export class MapEditor extends Scene {
     }).setOrigin(0.5));
     const begin = () => {
       this.paletteDrag = drag;
-      this.setStatus(`${label}: karta tıklarsan ekranın ortasına, sürüklersen bıraktığın yere eklenir.`);
+      this.setStatus(`${label}: click to add at the screen center, or drag to place it.`);
     };
     back.on("pointerdown", begin);
     text.setInteractive({ useHandCursor: true }).on("pointerdown", begin);
@@ -475,7 +475,7 @@ export class MapEditor extends Scene {
     );
     const begin = () => {
       this.paletteDrag = drag;
-      this.setStatus(`${label}: karta tıklarsan ekranın ortasına, sürüklersen bıraktığın yere eklenir.`);
+      this.setStatus(`${label}: click to add at the screen center, or drag to place it.`);
     };
     [back, swatch, text].forEach((object) => {
       object.setInteractive({ useHandCursor: true }).on("pointerdown", begin);
@@ -489,29 +489,29 @@ export class MapEditor extends Scene {
     const buttons: Array<[string, () => void]> = [
       ["X -", () => this.adjustSelection("x", -1)], ["X +", () => this.adjustSelection("x", 1)],
       ["Y -", () => this.adjustSelection("y", -1)], ["Y +", () => this.adjustSelection("y", 1)],
-      ["ÖLÇ/EN -", () => this.adjustPrimary(-1)], ["ÖLÇ/EN +", () => this.adjustPrimary(1)],
-      ["DÖN/BOY -", () => this.adjustSecondary(-1)], ["DÖN/BOY +", () => this.adjustSecondary(1)],
-      ["TÜR/VAR -", () => this.adjustVariant(-1)], ["TÜR/VAR +", () => this.adjustVariant(1)],
-      ["MİK/VARY -", () => this.adjustAmountOrDepth(-1)], ["MİK/VARY +", () => this.adjustAmountOrDepth(1)],
-      ["ÇOĞALT", () => this.duplicateSelection()], ["SİL", () => this.deleteSelection()],
+      ["SCALE/WIDTH -", () => this.adjustPrimary(-1)], ["SCALE/WIDTH +", () => this.adjustPrimary(1)],
+      ["ROT/HEIGHT -", () => this.adjustSecondary(-1)], ["ROT/HEIGHT +", () => this.adjustSecondary(1)],
+      ["TYPE/VAR -", () => this.adjustVariant(-1)], ["TYPE/VAR +", () => this.adjustVariant(1)],
+      ["AMOUNT/DEPTH -", () => this.adjustAmountOrDepth(-1)], ["AMOUNT/DEPTH +", () => this.adjustAmountOrDepth(1)],
+      ["DUPLICATE", () => this.duplicateSelection()], ["DELETE", () => this.deleteSelection()],
     ];
     buttons.forEach(([label, action], index) => {
       const isWide = index >= buttons.length - 2;
       const x = isWide ? 1130 : 1064 + (index % 2) * 132;
       const y = isWide ? 703 : 520 + Math.floor(index / 2) * 30;
       const width = isWide ? 124 : 124;
-      const wideX = label === "SİL" ? 1196 : 1064;
+      const wideX = label === "DELETE" ? 1196 : 1064;
       const back = this.makeUi(
         this.add
-          .rectangle(isWide ? wideX : x, y, width, 27, label === "SİL" ? 0x7b2933 : 0x263d51, 0.98)
-          .setStrokeStyle(1, label === "SİL" ? 0xd45f69 : 0x66849a)
+          .rectangle(isWide ? wideX : x, y, width, 27, label === "DELETE" ? 0x7b2933 : 0x263d51, 0.98)
+          .setStrokeStyle(1, label === "DELETE" ? 0xd45f69 : 0x66849a)
           .setInteractive({ useHandCursor: true }),
       );
       const text = this.makeUi(this.add.text(isWide ? wideX : x, y, label, this.uiTextStyle(10)).setOrigin(0.5));
       back.on("pointerdown", action);
       text.setInteractive({ useHandCursor: true }).on("pointerdown", action);
-      const baseColor = label === "SİL" ? 0x7b2933 : 0x263d51;
-      const hoverColor = label === "SİL" ? 0xa13b46 : 0x36566f;
+      const baseColor = label === "DELETE" ? 0x7b2933 : 0x263d51;
+      const hoverColor = label === "DELETE" ? 0xa13b46 : 0x36566f;
       back.on("pointerover", () => back.setFillStyle(hoverColor, 1)).on("pointerout", () => back.setFillStyle(baseColor, 0.98));
       text.on("pointerover", () => back.setFillStyle(hoverColor, 1)).on("pointerout", () => back.setFillStyle(baseColor, 0.98));
     });
@@ -563,7 +563,7 @@ export class MapEditor extends Scene {
     const header = this.add.rectangle(58, 28, 106, 47, 0x3b2418, alpha)
       .setStrokeStyle(3, 0xc5d1d8, alpha)
       .setDepth(1101);
-    const title = this.add.text(58, 28, "ASKER", {
+    const title = this.add.text(58, 28, "UNIT", {
       ...this.uiTextStyle(12), color: "#ffffff", strokeThickness: 3,
     }).setOrigin(0.5).setAlpha(alpha).setDepth(1102);
     this.registerWorld(panel, header, title);
@@ -589,7 +589,7 @@ export class MapEditor extends Scene {
       this.registerWorld(card, icon, label);
     });
 
-    const hint = this.add.text(58, 692, "OYUN MENÜSÜ\n(SOLUK ÖNİZLEME)", {
+    const hint = this.add.text(58, 692, "GAME MENU\n(GHOST PREVIEW)", {
       ...this.uiTextStyle(9), align: "center", color: "#dce8ef", strokeThickness: 2,
     }).setOrigin(0.5).setAlpha(0.5).setDepth(1103);
     this.registerWorld(hint);
@@ -609,7 +609,7 @@ export class MapEditor extends Scene {
         .setStrokeStyle(3, 0xffffff, 0.7)
         .setDepth(881);
       const text = this.add
-        .text(anchor.x, anchor.y, "KİLİTLİ", this.uiTextStyle(9))
+        .text(anchor.x, anchor.y, "LOCKED", this.uiTextStyle(9))
         .setOrigin(0.5)
         .setDepth(882);
       this.registerWorld(marker, text);
@@ -620,7 +620,7 @@ export class MapEditor extends Scene {
         .setStrokeStyle(3, color, 0.9)
         .setRotation(patch.rotation)
         .setDepth(884);
-      const label = this.add.text(patch.x, patch.y, patch.collision === "lava" ? "LAV ENGELİ" : "SU ENGELİ", this.uiTextStyle(8))
+      const label = this.add.text(patch.x, patch.y, patch.collision === "lava" ? "LAVA BLOCK" : "WATER BLOCK", this.uiTextStyle(8))
         .setOrigin(0.5)
         .setDepth(885);
       this.registerWorld(boundary, label);
@@ -839,7 +839,7 @@ export class MapEditor extends Scene {
       this.selection = { kind: "patch", id: patch.id };
     }
     this.commitChange();
-    this.setStatus(`${this.selectionKindLabel()} eklendi ve seçildi. Sağdaki kontrollerden düzenleyebilirsin.`);
+    this.setStatus(`${this.selectionKindLabel()} added and selected. Edit it with the controls on the right.`);
   }
 
   private nudge(dx: number, dy: number) {
@@ -896,7 +896,7 @@ export class MapEditor extends Scene {
     } else if ("visual" in target && target.visual.source === "procedural") {
       target.visual.variant = Math.max(0, target.visual.variant + direction);
     } else {
-      this.setStatus("Varyant yalnızca Phaser öğelerinde kullanılabilir.");
+    this.setStatus("Variants are only available for Phaser items.");
       return;
     }
     this.commitChange();
@@ -914,7 +914,7 @@ export class MapEditor extends Scene {
 
   private duplicateSelection() {
     if (!this.selection || this.selection.kind === "lane") {
-      this.setStatus("Çoğaltmak için önce haritadaki bir öğeyi seç.");
+    this.setStatus("Select a map item before duplicating it.");
       return;
     }
     const target = this.selectionTarget();
@@ -925,12 +925,12 @@ export class MapEditor extends Scene {
     if (this.selection.kind === "patch") this.map.terrain.patches.push(copy as TerrainPatchConfig);
     this.selection = { ...this.selection, id: copy.id } as Selection;
     this.commitChange();
-    this.setStatus("Seçili öğe çoğaltıldı.");
+    this.setStatus("Selected item duplicated.");
   }
 
   private deleteSelection() {
     if (!this.selection || this.selection.kind === "lane") {
-      this.setStatus("Silmek için önce haritadaki bir öğeyi seç. Akış noktaları silinemez.");
+      this.setStatus("Select a map item before deleting it. Flow points cannot be deleted.");
       return;
     }
     const deletedLabel = this.selectionKindLabel();
@@ -940,7 +940,7 @@ export class MapEditor extends Scene {
     if (kind === "patch") this.map.terrain.patches = this.map.terrain.patches.filter((item) => item.id !== id);
     this.selection = undefined;
     this.commitChange();
-    this.setStatus(`${deletedLabel} silindi. Geri Al ile geri getirebilirsin.`);
+      this.setStatus(`${deletedLabel} deleted. You can restore it with Undo.`);
   }
 
   private commitChange(resetHistory = false) {
@@ -983,7 +983,7 @@ export class MapEditor extends Scene {
     this.autosave?.remove(false);
     this.autosave = this.time.delayedCall(500, () => {
       saveDraftBattleMap(this.map);
-      this.setStatus(`Otomatik kayıt: ${this.levelLabel()} taslağı tarayıcıya kaydedildi.`);
+      this.setStatus(`Autosave: ${this.levelLabel()} draft saved to the browser.`);
     });
   }
 
@@ -1000,13 +1000,13 @@ export class MapEditor extends Scene {
 
   private publish() {
     const result = publishBattleMap(this.map);
-    this.setStatus(result.valid ? "Yayınlandı: normal oyun artık bu haritayı kullanacak." : `Yayınlama reddedildi: ${result.errors[0]}`);
+    this.setStatus(result.valid ? "Published: the normal game will now use this map." : `Publish rejected: ${result.errors[0]}`);
   }
 
   private async saveProject() {
     const validation = validateBattleMap(this.map);
     if (!validation.valid) {
-      this.setStatus(`Projeye kayıt reddedildi: ${validation.errors[0]}`);
+      this.setStatus(`Project save rejected: ${validation.errors[0]}`);
       return;
     }
     try {
@@ -1016,9 +1016,9 @@ export class MapEditor extends Scene {
         body: JSON.stringify({ mapId: this.currentMapId, map: this.map }),
       });
       const result = await response.json() as { ok?: boolean; error?: string };
-      this.setStatus(result.ok ? "Harita JSON dosyası projeye kaydedildi." : `Projeye kayıt hatası: ${result.error}`);
+    this.setStatus(result.ok ? "Map JSON file saved to the project." : `Project save error: ${result.error}`);
     } catch {
-      this.setStatus("Projeye kayıt hizmeti kullanılamadı.");
+    this.setStatus("Project save service is unavailable.");
     }
   }
 
@@ -1033,13 +1033,13 @@ export class MapEditor extends Scene {
       reader.onload = () => {
         const parsed = parseMapImport(String(reader.result ?? ""));
         if (parsed.errors.length > 0) {
-          this.setStatus(`İçe aktarma reddedildi: ${parsed.errors[0]}`);
+          this.setStatus(`Import rejected: ${parsed.errors[0]}`);
           return;
         }
         parsed.maps.forEach(saveDraftBattleMap);
         this.loadMap(parsed.maps.some((map) => map.id === this.currentMapId) ? this.currentMapId : parsed.maps[0].id);
         this.renderWorld();
-        this.setStatus(`${parsed.maps.length} harita başarıyla içe aktarıldı.`);
+        this.setStatus(`${parsed.maps.length} map(s) imported successfully.`);
       };
       reader.readAsText(file);
     };
@@ -1055,7 +1055,7 @@ export class MapEditor extends Scene {
     link.download = bundle ? "castle-raid-20-maps.json" : `${this.currentMapId}.json`;
     link.click();
     URL.revokeObjectURL(link.href);
-    this.setStatus(bundle ? "20 haritalık paket dışa aktarıldı." : `${this.levelLabel()} dışa aktarıldı.`);
+    this.setStatus(bundle ? "20-map bundle exported." : `${this.levelLabel()} exported.`);
   }
 
   private shiftLevel(direction: number) {
@@ -1104,9 +1104,9 @@ export class MapEditor extends Scene {
     const target = this.selectionTarget() as Record<string, unknown> | undefined;
     if (!this.selection || !target) {
       this.inspectorText.setText([
-        `${this.levelLabel().replace(" ▼", "")} • ${this.biomeLabel()} • ${this.map.objects.length} öğe • ${this.map.resources.length} kaynak`,
+        `${this.levelLabel().replace(" ▼", "")} • ${this.biomeLabel()} • ${this.map.objects.length} objects • ${this.map.resources.length} resources`,
         `Hava: ${weatherLabel(this.map.weather.type)}`,
-        "Öğeye tıkla → düzenle / çoğalt / SİL.",
+        "Click an item → edit / duplicate / DELETE.",
       ]);
       return;
     }
@@ -1117,12 +1117,12 @@ export class MapEditor extends Scene {
       ? (ASSET_LABELS_TR[asset.label] ?? asset.label)
       : procedural?.label ?? ("material" in target ? MATERIAL_LABELS[target.material as GroundMaterialId] : this.selectionKindLabel());
     const lines = [
-      `SEÇİLİ: ${selectedName}`,
+      `SELECTED: ${selectedName}`,
       `X: ${Number(target.x).toFixed(0)}   Y: ${Number(target.y).toFixed(0)}`,
     ];
     const transform: string[] = [];
-    if ("scale" in target) transform.push(`Ölçek ${Number(target.scale).toFixed(2)}`);
-    if ("rotation" in target) transform.push(`Dönüş ${Number(target.rotation).toFixed(2)}`);
+    if ("scale" in target) transform.push(`Scale ${Number(target.scale).toFixed(2)}`);
+    if ("rotation" in target) transform.push(`Rotation ${Number(target.rotation).toFixed(2)}`);
     if (transform.length > 0) lines.push(transform.join(" • "));
     const metadata: string[] = [];
     if ("depth" in target) metadata.push(`Katman ${target.depth}`);
@@ -1130,7 +1130,7 @@ export class MapEditor extends Scene {
     if (visual?.source === "procedural") metadata.push(`Varyant ${visual.variant}`);
     if ("collision" in target && target.collision !== "none") metadata.push(`Engel ${String(target.collision).toUpperCase()}`);
     if (metadata.length > 0) lines.push(metadata.join(" • "));
-    if (this.selection.kind === "lane") lines.push("Akış noktasının X değeri kilitlidir; Y değeri sürüklenebilir. Noktalar görünür yol ile birlik rotasını birlikte şekillendirir.");
+    if (this.selection.kind === "lane") lines.push("A flow point's X value is locked; Y can be dragged. Points shape the visible path and unit route together.");
     this.inspectorText.setText(lines);
   }
 
@@ -1145,7 +1145,7 @@ export class MapEditor extends Scene {
   private updateToolbarState() {
     this.snapText?.setText(`IZG ${this.snapEnabled ? GRID_SIZE : "KAP"}`);
     this.zoomText?.setText(`${Math.round(this.zoom * 100)}%`);
-    this.flowText?.setText(this.flowEditEnabled ? "REHBER AÇIK" : "REHBER KAPALI");
+    this.flowText?.setText(this.flowEditEnabled ? "GUIDE ON" : "GUIDE OFF");
   }
 
   private fitWorldView() {
@@ -1182,16 +1182,16 @@ export class MapEditor extends Scene {
 
   private biomeLabel() {
     const labels: Record<BattleMapConfig["biome"], string> = {
-      grasslands: "Çayırlar", silent_forest: "Sessiz Orman", muddy_fields: "Çamurlu Ova",
-      storm_valley: "Fırtına Vadisi", dry_steppe: "Kuru Bozkır", desert: "Çöl",
-      frozen_pass: "Donmuş Geçit", infernal_dungeon: "Cehennem Diyarı",
+      grasslands: "Grasslands", silent_forest: "Silent Forest", muddy_fields: "Muddy Fields",
+      storm_valley: "Storm Valley", dry_steppe: "Dry Steppe", desert: "Desert",
+      frozen_pass: "Frozen Pass", infernal_dungeon: "Infernal Dungeon",
     };
     return labels[this.map.biome];
   }
 
   private selectionKindLabel() {
-    if (!this.selection) return "SEÇİM";
-    return { object: "ÖĞE", resource: "KAYNAK", patch: "ZEMİN BÖLGESİ", lane: "AKIŞ NOKTASI" }[this.selection.kind];
+    if (!this.selection) return "SELECTION";
+    return { object: "OBJECT", resource: "RESOURCE", patch: "GROUND REGION", lane: "FLOW POINT" }[this.selection.kind];
   }
 
   private backToCampaign() {

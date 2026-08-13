@@ -52,6 +52,13 @@ export class NetworkClient extends Events.EventEmitter {
   private defaultServerUrl(): string {
     const configuredUrl = import.meta.env.VITE_ONLINE_SERVER_URL?.trim();
     if (configuredUrl) return configuredUrl;
+
+    // The production web bundle and Capacitor Android build run on different
+    // origins, so they must connect directly to the public Render WebSocket.
+    if (import.meta.env.PROD) {
+      return "wss://game-server-qkpa.onrender.com/socket";
+    }
+
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     return `${protocol}//${window.location.host}/socket`;
   }

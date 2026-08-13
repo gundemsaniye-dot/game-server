@@ -1,13 +1,19 @@
 import { en } from "./en";
 
-export type LanguageCode = "en";
+// Keep language registration data-driven so adding the next ten languages only
+// requires a dictionary and a metadata entry; game scenes do not need changes.
+export type LanguageCode = string;
 
 export interface TranslationDictionary {
   [key: string]: string;
 }
 
-const dictionaries: Record<LanguageCode, TranslationDictionary> = {
+const dictionaries: Record<string, TranslationDictionary> = {
   en,
+};
+
+const languageNames: Record<string, string> = {
+  en: "ENGLISH",
 };
 
 class Localization {
@@ -18,6 +24,7 @@ class Localization {
   }
 
   public setLanguage(lang: LanguageCode) {
+    if (!dictionaries[lang]) return;
     this.currentLanguage = lang;
     localStorage.setItem("castle-raid-lang", lang);
   }
@@ -27,19 +34,24 @@ class Localization {
   }
 
   public toggleLanguage() {
-    // For now, only English is fully supported.
-    // To support more languages, toggle between them here.
-    const langs: LanguageCode[] = ["en"];
+    const langs = this.getAvailableLanguages();
     const currentIndex = langs.indexOf(this.currentLanguage);
     const nextIndex = (currentIndex + 1) % langs.length;
     this.setLanguage(langs[nextIndex]);
   }
 
   public getLanguageName(lang: LanguageCode): string {
-    const names: Record<LanguageCode, string> = {
-      en: "ENGLISH",
-    };
-    return names[lang];
+    return languageNames[lang] || lang.toUpperCase();
+  }
+
+  public getAvailableLanguages(): LanguageCode[] {
+    return Object.keys(dictionaries);
+  }
+
+  /** Register a future translation without touching scene code. */
+  public registerLanguage(code: LanguageCode, name: string, dictionary: TranslationDictionary) {
+    dictionaries[code] = dictionary;
+    languageNames[code] = name;
   }
 
   private loadLanguage() {

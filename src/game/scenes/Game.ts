@@ -943,7 +943,7 @@ export class Game extends Scene {
     if (!this.isOnline || this.onlineUiQa || this.onlineClientReadySent) return;
     this.onlineClientReadySent = true;
     NetworkClient.getInstance().sendReady();
-    this.statusText.setText("ARENA HAZIR. RAKIP BEKLENIYOR...");
+    this.statusText.setText(t("game_online_arena_ready"));
     this.updateOnlineReadyOverlay(true, false);
     this.log("ONLINE", `client ready room=${this.roomId ?? "unknown"} side=${this.localPlayerSide}`);
   }
@@ -954,11 +954,11 @@ export class Game extends Scene {
     const opponentReady = this.localPlayerSide === "left" ? state.rightReady : state.leftReady;
     this.updateOnlineReadyOverlay(ownReady, opponentReady);
     if (ownReady && opponentReady) {
-      this.statusText.setText("IKI TARAF HAZIR. SAVAS BASLIYOR...");
+      this.statusText.setText(t("game_online_both_ready"));
     } else if (ownReady) {
-      this.statusText.setText("ARENA HAZIR. RAKIP BEKLENIYOR...");
+      this.statusText.setText(t("game_online_arena_ready"));
     } else {
-      this.statusText.setText("ARENA YUKLENIYOR...");
+      this.statusText.setText(t("game_online_arena_loading"));
     }
   }
 
@@ -969,7 +969,7 @@ export class Game extends Scene {
     this.onlineReadyOverlay = undefined;
     this.onlineReadyOwnText = undefined;
     this.onlineReadyOpponentText = undefined;
-    this.statusText.setText("SAVAS BASLADI!");
+    this.statusText.setText(t("game_online_battle_started"));
     NetworkClient.getInstance().requestResync();
     this.flashWarning(this.localPlayerSide === "left" ? "YOU ARE LEFT" : "YOU ARE RIGHT");
     this.log("ONLINE", `game start room=${this.roomId ?? "unknown"} side=${this.localPlayerSide}`);
@@ -984,28 +984,28 @@ export class Game extends Scene {
     const teamColor = this.localPlayerSide === "left" ? 0x36baf2 : 0xe85a4f;
     const shade = this.add.rectangle(640, 360, 700, 192, 0x07101a, 0.74)
       .setStrokeStyle(4, teamColor, 0.94);
-    const title = this.add.text(640, 302, "ARENA HAZIRLANIYOR", {
+    const title = this.add.text(640, 302, t("game_online_ready_title"), {
       fontFamily: "Arial Black",
       fontSize: 28,
       color: "#fff2c0",
       stroke: "#101010",
       strokeThickness: 6,
     }).setOrigin(0.5);
-    const subtitle = this.add.text(640, 340, "İki oyuncunun haritası tamamen yüklenene kadar beklenir.", {
+    const subtitle = this.add.text(640, 340, t("game_online_ready_subtitle"), {
       fontFamily: "Arial Black",
       fontSize: 15,
       color: "#ffffff",
       stroke: "#101010",
       strokeThickness: 4,
     }).setOrigin(0.5);
-    this.onlineReadyOwnText = this.add.text(640, 390, "SEN: HAZIRLANIYOR", {
+    this.onlineReadyOwnText = this.add.text(640, 390, `${t("game_online_you")}: ${t("game_online_preparing")}`, {
       fontFamily: "Arial Black",
       fontSize: 18,
       color: "#ffe38a",
       stroke: "#101010",
       strokeThickness: 4,
     }).setOrigin(0.5);
-    this.onlineReadyOpponentText = this.add.text(640, 425, "RAKİP: HAZIRLANIYOR", {
+    this.onlineReadyOpponentText = this.add.text(640, 425, `${t("game_online_opponent")}: ${t("game_online_preparing")}`, {
       fontFamily: "Arial Black",
       fontSize: 18,
       color: "#ffe38a",
@@ -1023,9 +1023,9 @@ export class Game extends Scene {
 
   private updateOnlineReadyOverlay(ownReady: boolean, opponentReady: boolean) {
     if (!this.onlineReadyOverlay) return;
-    this.onlineReadyOwnText?.setText(`SEN: ${ownReady ? "HAZIR" : "HAZIRLANIYOR"}`)
+    this.onlineReadyOwnText?.setText(`${t("game_online_you")}: ${ownReady ? t("game_online_ready") : t("game_online_preparing")}`)
       .setColor(ownReady ? "#6dff9b" : "#ffe38a");
-    this.onlineReadyOpponentText?.setText(`RAKİP: ${opponentReady ? "HAZIR" : "HAZIRLANIYOR"}`)
+    this.onlineReadyOpponentText?.setText(`${t("game_online_opponent")}: ${opponentReady ? t("game_online_ready") : t("game_online_preparing")}`)
       .setColor(opponentReady ? "#6dff9b" : "#ffe38a");
   }
 
@@ -4112,7 +4112,7 @@ export class Game extends Scene {
       return;
     }
     if (this.isOnlineWaitingForStart()) {
-      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      this.statusText.setText(t("game_online_arena_waiting"));
       return;
     }
 
@@ -4207,7 +4207,7 @@ export class Game extends Scene {
       return;
     }
     if (this.isOnlineWaitingForStart()) {
-      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      this.statusText.setText(t("game_online_arena_waiting"));
       return;
     }
 
@@ -4222,7 +4222,7 @@ export class Game extends Scene {
     }
 
     this.statusText.setText(
-      `${this.pendingDeploySummary()} kuyrukta. Turkuaz alanda istedigin noktaya koy.`,
+      `${this.pendingDeploySummary()} queued. Place it anywhere in the turquoise area.`,
     );
   }
 
@@ -4271,7 +4271,7 @@ export class Game extends Scene {
     this.missileAimPointerId = pointer.id;
     this.missileAimStartedAt = this.missileAimClockMs();
     this.missileAimY = clamp(y, 72, 648);
-    this.statusText.setText("BOMBAYI TUT: menzil dolar, birakinca duser.");
+    this.statusText.setText(t("game_online_hold_bomb"));
     this.updateMissileAim();
   }
 
@@ -4376,7 +4376,7 @@ export class Game extends Scene {
 
   private selectUnit(type: UnitType) {
     if (this.isOnlineWaitingForStart()) {
-      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      this.statusText.setText(t("game_online_arena_waiting"));
       return;
     }
     this.cancelMissileAim();
@@ -4387,8 +4387,8 @@ export class Game extends Scene {
     this.spawnMarker.y = this.heldDeployY;
     this.statusText.setText(
       this.queuedUnitCount(type) > 0
-        ? `${UNIT_CONFIGS[type].label} x${this.queuedUnitCount(type)} kuyrukta. Turkuaz alana tikla.`
-        : `${UNIT_CONFIGS[type].label} secildi. Sol menuden tekrar basarak adet ekle.`,
+        ? `${UNIT_CONFIGS[type].label} x${this.queuedUnitCount(type)} queued. Tap the turquoise area.`
+        : `${UNIT_CONFIGS[type].label} selected. Tap again in the left menu to add more.`,
     );
     this.playSfx("select-sfx", 0.35);
     this.log("UI", `Selected ${type}`);
@@ -4414,10 +4414,10 @@ export class Game extends Scene {
     this.stopHeldDeployment();
     this.statusText.setText(
       cancelledCount > 0
-        ? `Asker secimi iptal edildi. ${cancelledCount} birimin altini iade edildi.`
+        ? `Unit selection cancelled. Gold refunded for ${cancelledCount} unit(s).`
         : cancelledPower
-          ? `${cancelledPower === "missile" ? "MISSILE" : "ICE"} secimi iptal edildi.`
-          : "Asker secimi iptal edildi.",
+          ? `${cancelledPower === "missile" ? "MISSILE" : "ICE"} selection cancelled.`
+          : "Unit selection cancelled.",
     );
     this.log(
       "UI",
@@ -4534,7 +4534,7 @@ export class Game extends Scene {
     if (this.onlineLeaveDialogOpen || this.battleEnded) return;
     this.onlineLeaveDialogOpen = true;
     this.cancelUnitSelection("online-pause");
-    this.statusText.setText("ONLINE MAC DEVAM EDIYOR.");
+    this.statusText.setText(t("game_online_match_continues"));
 
     const shade = this.add.rectangle(640, 360, 1280, 720, 0x07101a, 0.56)
       .setDepth(2300)
@@ -4549,7 +4549,7 @@ export class Game extends Scene {
       stroke: "#000000",
       strokeThickness: 6,
     }).setOrigin(0.5).setDepth(2302);
-    const body = this.add.text(640, 335, "Ayrilirsan rakibin kazanir.", {
+    const body = this.add.text(640, 335, t("game_online_leave_body"), {
       fontFamily: "Arial Black",
       fontSize: 18,
       color: "#ffffff",
@@ -4580,7 +4580,7 @@ export class Game extends Scene {
     const close = () => {
       for (const object of objects) object.destroy();
       this.onlineLeaveDialogOpen = false;
-      this.statusText.setText(this.onlineMatchStarted ? "GAME RESUMED." : "RAKIP ARENASI BEKLENIYOR...");
+      this.statusText.setText(this.onlineMatchStarted ? "GAME RESUMED." : t("game_online_arena_waiting"));
       this.log("PAUSE", "online leave dialog closed");
     };
     const leave = () => {
@@ -4703,10 +4703,10 @@ export class Game extends Scene {
       } else if (command.type === "complete") {
         this.reserveWarningContainer?.destroy();
         this.reserveWarningContainer = undefined;
-        this.flashWarning("SAVUNMA MUHRU KIRILDI");
+        this.flashWarning("DEFENSE SEAL BROKEN");
         this.recordDirectorLog("DIRECTOR_PHASE", command.wave, "complete");
       } else {
-        this.flashWarning("SON KUSATMA: GELIR x2 · KALE HASARI +%35");
+        this.flashWarning("FINAL SIEGE: INCOME x2 · CASTLE DAMAGE +35%");
         this.log("DIRECTOR_EVENT", "final_siege passiveIncome=2x castleDamage=1.35x");
         this.balanceTelemetry.recordDirectorEvent({ second: Math.round(this.elapsedMs / 1000), type: "final_siege" });
         this.balanceTelemetry.recordStallEvent({
@@ -4749,7 +4749,7 @@ export class Game extends Scene {
     const title = this.add.text(640, 132, t("game_wave_warning", { seconds: warningSeconds, lanes: laneNames }), { fontFamily: "Arial Black", fontSize: 20, color: "#ffe17a" }).setOrigin(0.5);
     const silhouettes = this.add.text(640, 170, wave.units.map((unitId) => UNIT_CONFIGS[unitId].shortLabel).join("  ·  "), { fontFamily: "Arial Black", fontSize: 17, color: "#ffffff" }).setOrigin(0.5);
     this.reserveWarningContainer = this.add.container(0, 0, [back, title, silhouettes]).setDepth(1900);
-    this.flashWarning("DUSMAN REZERVI GELIYOR");
+        this.flashWarning("ENEMY RESERVES INCOMING");
   }
 
   private spawnReserveWave(wave: DirectorWave) {
@@ -5164,7 +5164,7 @@ export class Game extends Scene {
     const radius = power === "missile" ? MISSILE_RADIUS : ICE_BLAST_RADIUS;
     const marker = this.showPowerTelegraph(power, x, y, radius, powers.telegraphMs);
     this.playSfx("select-sfx", 0.62);
-    this.flashWarning(power === "missile" ? "DUSMAN MISSILE!" : "DUSMAN ICE!");
+    this.flashWarning(power === "missile" ? "ENEMY MISSILE!" : "ENEMY ICE!");
     this.log(
       "POWER_DECISION",
       `enemy power=${power} action=telegraph policy=${powers.targetingPolicy} cluster=${targetCount} x=${Math.round(x)} y=${Math.round(y)} castleDistance=${Math.round(context.castleDistance)}/${powers.defenseRadius} use=${context.castIndex}/${powers.maxCastsPerMatch} powerUse=${context.powerCastIndex}/${powers.maxCastsPerPower}`,
@@ -5920,7 +5920,7 @@ export class Game extends Scene {
     }
 
     this.statusText.setText(
-      `${batchCount} birim sectigin noktaya yerlestirildi.`,
+      `${batchCount} unit(s) deployed at the selected point.`,
     );
     this.log(
       "DEPLOY",
@@ -6005,7 +6005,7 @@ export class Game extends Scene {
       this.spawnUnit(this.localTeam(), type, deployY);
     }
     this.statusText.setText(
-      `${config.label} yerlestirildi. Para/slot yettikce tekrar dokun veya basili tut.`,
+      `${config.label} deployed. Tap again or hold while you have gold and slots available.`,
     );
     return true;
   }
@@ -8138,7 +8138,7 @@ export class Game extends Scene {
         ? " · MUHUR AKTIF"
         : "";
       this.setTextIfChanged(this.directorText,
-        `${this.battleDirector.phaseLabel} · REZERV ${this.battleDirector.reserveRemaining}${seal}${this.battleDirector.isFinalSiege ? " · SON KUSATMA" : ""}`,
+        `${this.battleDirector.phaseLabel} · RESERVES ${this.battleDirector.reserveRemaining}${seal}${this.battleDirector.isFinalSiege ? " · FINAL SIEGE" : ""}`,
       );
     }
     this.playerCastle.hpFill.width =
@@ -8318,13 +8318,13 @@ export class Game extends Scene {
       return;
     }
     if (this.isOnlineWaitingForStart()) {
-      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      this.statusText.setText(t("game_online_arena_waiting"));
       return;
     }
     if (!this.playerPowerUnlocked(power)) {
       const unlockLevel = this.playerPowerUnlockLevel(power);
       this.statusText.setText(
-        `${power === "missile" ? "Missile" : "Ice Blast"} Level ${unlockLevel}'da acilir.`,
+        `${power === "missile" ? "Missile" : "Ice Blast"} unlocks at level ${unlockLevel}.`,
       );
       this.log(
         "POWER_LOCK",
@@ -8348,8 +8348,8 @@ export class Game extends Scene {
     this.spawnMarker.setVisible(false);
     this.statusText.setText(
       power === "missile"
-        ? "BOMBA READY: Ortadaki tusa basili tut, birakinca duser."
-        : "ICE BLAST READY: Dondurma alani sec.",
+        ? "MISSILE READY: hold the center button and release to launch."
+        : "ICE BLAST READY: select an area to freeze.",
     );
     this.flashWarning(power === "missile" ? "MISSILE READY" : "ICE BLAST READY");
     this.updateMissileAim();
@@ -8358,7 +8358,7 @@ export class Game extends Scene {
 
   private tryCastPower(power: PowerType, x: number, y: number) {
     if (this.isOnlineWaitingForStart()) {
-      this.statusText.setText("RAKIP ARENASI BEKLENIYOR...");
+      this.statusText.setText(t("game_online_arena_waiting"));
       return;
     }
     if (!this.playerPowerUnlocked(power)) {

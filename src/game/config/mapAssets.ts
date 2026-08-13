@@ -31,22 +31,22 @@ export interface ProceduralVisualDefinition {
 }
 
 export const PROCEDURAL_VISUALS: readonly ProceduralVisualDefinition[] = [
-  { id: "pine_tall", label: "Uzun Çam", libraryCategory: "flora", defaultScale: 0.82, footprintRadius: 25, resourceType: "tree" },
-  { id: "pine_dense", label: "Yoğun Çam", libraryCategory: "flora", defaultScale: 0.78, footprintRadius: 29, resourceType: "tree" },
-  { id: "pine_young", label: "Genç Çam", libraryCategory: "flora", defaultScale: 0.64, footprintRadius: 19, resourceType: "tree" },
-  { id: "pine_snow", label: "Karlı Çam", libraryCategory: "flora", defaultScale: 0.8, footprintRadius: 27, resourceType: "tree" },
-  { id: "broadleaf_tree", label: "Geniş Yapraklı Ağaç", libraryCategory: "flora", defaultScale: 0.78, footprintRadius: 30, resourceType: "tree" },
-  { id: "dead_tree", label: "Kuru Ağaç", libraryCategory: "flora", defaultScale: 0.8, footprintRadius: 25, resourceType: "tree" },
-  { id: "burned_tree", label: "Yanmış Ağaç", libraryCategory: "flora", defaultScale: 0.8, footprintRadius: 25, resourceType: "tree" },
-  { id: "rock_cluster", label: "Kaya Kümesi", libraryCategory: "stone_wood", defaultScale: 0.82, footprintRadius: 27, resourceType: "ore" },
-  { id: "pebbles", label: "Çakıl", libraryCategory: "stone_wood", defaultScale: 0.7, footprintRadius: 18 },
+  { id: "pine_tall", label: "Tall Pine", libraryCategory: "flora", defaultScale: 0.82, footprintRadius: 25, resourceType: "tree" },
+  { id: "pine_dense", label: "Dense Pine", libraryCategory: "flora", defaultScale: 0.78, footprintRadius: 29, resourceType: "tree" },
+  { id: "pine_young", label: "Young Pine", libraryCategory: "flora", defaultScale: 0.64, footprintRadius: 19, resourceType: "tree" },
+  { id: "pine_snow", label: "Snowy Pine", libraryCategory: "flora", defaultScale: 0.8, footprintRadius: 27, resourceType: "tree" },
+  { id: "broadleaf_tree", label: "Broadleaf Tree", libraryCategory: "flora", defaultScale: 0.78, footprintRadius: 30, resourceType: "tree" },
+  { id: "dead_tree", label: "Dead Tree", libraryCategory: "flora", defaultScale: 0.8, footprintRadius: 25, resourceType: "tree" },
+  { id: "burned_tree", label: "Burned Tree", libraryCategory: "flora", defaultScale: 0.8, footprintRadius: 25, resourceType: "tree" },
+  { id: "rock_cluster", label: "Rock Cluster", libraryCategory: "stone_wood", defaultScale: 0.82, footprintRadius: 27, resourceType: "ore" },
+  { id: "pebbles", label: "Pebbles", libraryCategory: "stone_wood", defaultScale: 0.7, footprintRadius: 18 },
   { id: "branch", label: "Dal", libraryCategory: "stone_wood", defaultScale: 0.72, footprintRadius: 18 },
-  { id: "fallen_log", label: "Kütük", libraryCategory: "stone_wood", defaultScale: 0.78, footprintRadius: 27 },
-  { id: "reeds", label: "Sazlık", libraryCategory: "flora", defaultScale: 0.72, footprintRadius: 19 },
-  { id: "cactus", label: "Kaktüs", libraryCategory: "flora", defaultScale: 0.76, footprintRadius: 21, resourceType: "tree" },
+  { id: "fallen_log", label: "Fallen Log", libraryCategory: "stone_wood", defaultScale: 0.78, footprintRadius: 27 },
+  { id: "reeds", label: "Reeds", libraryCategory: "flora", defaultScale: 0.72, footprintRadius: 19 },
+  { id: "cactus", label: "Cactus", libraryCategory: "flora", defaultScale: 0.76, footprintRadius: 21, resourceType: "tree" },
   { id: "crystal", label: "Kristal", libraryCategory: "resource", defaultScale: 0.76, footprintRadius: 23, resourceType: "crystal" },
   { id: "obsidian", label: "Obsidyen", libraryCategory: "resource", defaultScale: 0.76, footprintRadius: 24, resourceType: "ore" },
-  { id: "lava_vent", label: "Lav Bacası", libraryCategory: "resource", defaultScale: 0.76, footprintRadius: 24, resourceType: "lava_rock" },
+  { id: "lava_vent", label: "Lava Vent", libraryCategory: "resource", defaultScale: 0.76, footprintRadius: 24, resourceType: "lava_rock" },
 ];
 
 export const PROCEDURAL_VISUALS_BY_ID = Object.fromEntries(
@@ -74,8 +74,8 @@ const expanded = (biome: BiomeId, name: string, category: LibraryCategory, featu
 
 const sharedPine: MapAssetDefinition = {
   key: "map-prop-shared-pine-tree", path: "maps/props/shared/pine-tree.png", atlasKey: "map-props-shared", frame: "pine-tree.png",
-  biome: "shared", label: "Çam Ağacı", category: "decoration", libraryCategory: "flora", renderLayer: "world", collision: "none",
-  defaultScale: 0.28, footprintRadius: 26, searchTerms: ["çam", "pine", "tree", "ağaç", "shared"],
+  biome: "shared", label: "Pine Tree", category: "decoration", libraryCategory: "flora", renderLayer: "world", collision: "none",
+  defaultScale: 0.28, footprintRadius: 26, searchTerms: ["pine", "tree", "shared"],
 };
 
 const BIOME_ITEMS: Record<BiomeId, Array<[string, LibraryCategory]>> = {
@@ -101,14 +101,14 @@ const SIGNATURES: Array<[BiomeId, string, string]> = [
 ];
 
 export const MAP_ASSETS: readonly MapAssetDefinition[] = [
-  legacy("grasslands", "oak", "Meşe Ağacı", "resource", 0.3, 30), legacy("grasslands", "wheat", "Buğday Tarlası", "decoration", 0.34, 28), legacy("grasslands", "fence", "Çiftlik Çiti", "obstacle", 0.34, 30), legacy("grasslands", "cottage", "Çiftlik Evi", "obstacle", 0.32, 42),
-  legacy("silent_forest", "pine-cluster", "Çam Kümesi", "resource", 0.32, 34), legacy("silent_forest", "moss-rock", "Yosunlu Kaya", "obstacle", 0.3, 30), legacy("silent_forest", "fallen-log", "Devrilmiş Kütük", "obstacle", 0.34, 34), legacy("silent_forest", "watchtower", "Orman Gözetleme Kulesi", "obstacle", 0.3, 40),
-  legacy("muddy_fields", "dead-tree", "Kuru Ağaç", "resource", 0.31, 30), legacy("muddy_fields", "reeds", "Sazlık", "decoration", 0.34, 22), legacy("muddy_fields", "mud-pool", "Çamur Havuzu", "decoration", 0.38, 36), legacy("muddy_fields", "log-bridge", "Kütük Köprü", "obstacle", 0.36, 38),
-  legacy("storm_valley", "cliff-rock", "Uçurum Kayası", "obstacle", 0.32, 34), legacy("storm_valley", "lightning-mast", "Yıldırım Direği", "obstacle", 0.29, 34), legacy("storm_valley", "ruined-arch", "Yıkık Kemer", "obstacle", 0.32, 40), legacy("storm_valley", "storm-crystal", "Fırtına Kristali", "resource", 0.29, 28),
-  legacy("dry_steppe", "cracked-rock", "Çatlak Kaya", "obstacle", 0.31, 32), legacy("dry_steppe", "dry-bush", "Kuru Çalı", "decoration", 0.3, 22), legacy("dry_steppe", "banner", "Yol Sancağı", "decoration", 0.3, 24), legacy("dry_steppe", "supply-wagon", "Erzak Arabası", "obstacle", 0.31, 40),
-  legacy("desert", "cactus", "Kaktüs", "decoration", 0.3, 24), legacy("desert", "palm", "Palmiye", "resource", 0.31, 30), legacy("desert", "sandstone-ruin", "Kumtaşı Harabesi", "obstacle", 0.31, 40), legacy("desert", "bone-pile", "Kemik Yığını", "decoration", 0.31, 24),
-  legacy("frozen_pass", "snow-pine", "Karlı Çam", "resource", 0.31, 30), legacy("frozen_pass", "ice-crystal", "Buz Kristali", "resource", 0.29, 26), legacy("frozen_pass", "ice-rock", "Buz Kayası", "obstacle", 0.31, 32), legacy("frozen_pass", "frozen-tower", "Donmuş Kule", "obstacle", 0.29, 42),
-  legacy("infernal_dungeon", "obsidian-spike", "Obsidyen İğne", "obstacle", 0.3, 30), legacy("infernal_dungeon", "lava-vent", "Lav Bacası", "resource", 0.3, 28), legacy("infernal_dungeon", "burned-tree", "Yanmış Ağaç", "decoration", 0.31, 26), legacy("infernal_dungeon", "infernal-ruin", "Cehennem Harabesi", "obstacle", 0.31, 42),
+  legacy("grasslands", "oak", "Oak Tree", "resource", 0.3, 30), legacy("grasslands", "wheat", "Wheat Field", "decoration", 0.34, 28), legacy("grasslands", "fence", "Farm Fence", "obstacle", 0.34, 30), legacy("grasslands", "cottage", "Farm Cottage", "obstacle", 0.32, 42),
+  legacy("silent_forest", "pine-cluster", "Pine Cluster", "resource", 0.32, 34), legacy("silent_forest", "moss-rock", "Moss Rock", "obstacle", 0.3, 30), legacy("silent_forest", "fallen-log", "Fallen Log", "obstacle", 0.34, 34), legacy("silent_forest", "watchtower", "Forest Watchtower", "obstacle", 0.3, 40),
+  legacy("muddy_fields", "dead-tree", "Dead Tree", "resource", 0.31, 30), legacy("muddy_fields", "reeds", "Reeds", "decoration", 0.34, 22), legacy("muddy_fields", "mud-pool", "Mud Pool", "decoration", 0.38, 36), legacy("muddy_fields", "log-bridge", "Log Bridge", "obstacle", 0.36, 38),
+  legacy("storm_valley", "cliff-rock", "Cliff Rock", "obstacle", 0.32, 34), legacy("storm_valley", "lightning-mast", "Lightning Mast", "obstacle", 0.29, 34), legacy("storm_valley", "ruined-arch", "Ruined Arch", "obstacle", 0.32, 40), legacy("storm_valley", "storm-crystal", "Storm Crystal", "resource", 0.29, 28),
+  legacy("dry_steppe", "cracked-rock", "Cracked Rock", "obstacle", 0.31, 32), legacy("dry_steppe", "dry-bush", "Dry Bush", "decoration", 0.3, 22), legacy("dry_steppe", "banner", "Road Banner", "decoration", 0.3, 24), legacy("dry_steppe", "supply-wagon", "Supply Wagon", "obstacle", 0.31, 40),
+  legacy("desert", "cactus", "Cactus", "decoration", 0.3, 24), legacy("desert", "palm", "Palm Tree", "resource", 0.31, 30), legacy("desert", "sandstone-ruin", "Sandstone Ruin", "obstacle", 0.31, 40), legacy("desert", "bone-pile", "Bone Pile", "decoration", 0.31, 24),
+  legacy("frozen_pass", "snow-pine", "Snow Pine", "resource", 0.31, 30), legacy("frozen_pass", "ice-crystal", "Ice Crystal", "resource", 0.29, 26), legacy("frozen_pass", "ice-rock", "Ice Rock", "obstacle", 0.31, 32), legacy("frozen_pass", "frozen-tower", "Frozen Tower", "obstacle", 0.29, 42),
+  legacy("infernal_dungeon", "obsidian-spike", "Obsidian Spike", "obstacle", 0.3, 30), legacy("infernal_dungeon", "lava-vent", "Lava Vent", "resource", 0.3, 28), legacy("infernal_dungeon", "burned-tree", "Burned Tree", "decoration", 0.31, 26), legacy("infernal_dungeon", "infernal-ruin", "Infernal Ruin", "obstacle", 0.31, 42),
   sharedPine,
   ...Object.entries(BIOME_ITEMS).flatMap(([biome, items]) => items.map(([name, category]) => expanded(biome as BiomeId, name, category))),
   ...SIGNATURES.map(([biome, name, mapId]) => expanded(biome, name, "signature", mapId)),

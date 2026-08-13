@@ -226,7 +226,7 @@ export function generateUiTextures(scene: Phaser.Scene) {
   g.fillPath();
   g.generateTexture("banner_fill_enemy", 24, 8);
 
-  // 2. Resource Bar Background (Yatay Ağaç Can Barı)
+  // 2. Resource Bar Background (Horizontal Tree Health Bar)
   g.clear();
   g.fillStyle(0x2a2a2a, 0.95);
   g.lineStyle(1, 0x8a6a22, 1);
@@ -234,7 +234,7 @@ export function generateUiTextures(scene: Phaser.Scene) {
   g.strokeRoundedRect(0, 0, 36, 8, 2);
   g.generateTexture("medallion_bg", 36, 8);
 
-  // 3. Hit Spark Effect (Çapraz Kıvılcım)
+  // 3. Hit Spark Effect (Cross Spark)
   g.clear();
   g.fillStyle(0xffeeba, 1); // Bright yellow-white
   g.beginPath();
@@ -250,7 +250,7 @@ export function generateUiTextures(scene: Phaser.Scene) {
   g.fillPath();
   g.generateTexture("effect_hit_spark", 32, 32);
 
-  // 4. Spawn Burst (Ruh / Sprout / Işık Hüzmesi)
+  // 4. Spawn Burst (Spirit / Sprout / Light Beam)
   g.clear();
   g.fillStyle(0xffffcc, 0.6);
   g.fillCircle(32, 32, 28);
@@ -264,7 +264,7 @@ export function generateUiTextures(scene: Phaser.Scene) {
   g.fillRoundedRect(0, 0, 24, 2, 1);
   g.generateTexture("effect_arrow_trail", 24, 4);
 
-  // 6. Runic Circle (Spell / Büyü Mührü)
+  // 6. Runic Circle (Spell / Magic Seal)
   g.clear();
   g.lineStyle(3, 0x44aaff, 0.9);
   g.strokeCircle(48, 48, 44);
@@ -282,7 +282,7 @@ export function generateUiTextures(scene: Phaser.Scene) {
   g.strokePath();
   g.generateTexture("effect_runic_circle", 96, 96);
   
-  // 7. Smoke Puff (Kale Hasarı)
+  // 7. Smoke Puff (Castle Damage)
   g.clear();
   g.fillStyle(0xcccccc, 0.7);
   g.fillCircle(16, 16, 14);
