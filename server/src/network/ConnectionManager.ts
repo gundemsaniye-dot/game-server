@@ -81,6 +81,9 @@ export class ConnectionManager {
         this.matchmaking.addToQueue(player);
         break;
       case ClientMessages.CANCEL_MATCH:
+        // Cancellation is explicit and synchronous. The client sends this
+        // before closing its socket, so a rapid re-search cannot reuse the
+        // previous queue entry.
         this.matchmaking.removeFromQueue(player);
         break;
       default:

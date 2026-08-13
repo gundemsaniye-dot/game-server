@@ -12,8 +12,13 @@ export class Matchmaking {
   constructor(private gameLoop: GameLoop) {}
 
   addToQueue(player: Player) {
-    if (!this.queue.includes(player)) {
-      this.queue.push(player);
+    if (player.roomId || player.isQueued || this.queue.includes(player)) {
+      Logger.info(`Player ${player.id} ignored duplicate matchmaking request.`);
+      return;
+    }
+    player.isQueued = true;
+    this.queue.push(player);
+    {
       Logger.info(`Player ${player.id} joined matchmaking. Queue size: ${this.queue.length}`);
       this.tryMatch();
     }
@@ -25,12 +30,15 @@ export class Matchmaking {
       this.queue.splice(index, 1);
       Logger.info(`Player ${player.id} left matchmaking. Queue size: ${this.queue.length}`);
     }
+    player.isQueued = false;
   }
 
   private tryMatch() {
     while (this.queue.length >= 2) {
       const p1 = this.queue.shift()!;
       const p2 = this.queue.shift()!;
+      p1.isQueued = false;
+      p2.isQueued = false;
 
       const roomId = `room_${++this.roomCounter}`;
 

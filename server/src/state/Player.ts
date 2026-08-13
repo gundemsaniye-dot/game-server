@@ -2,6 +2,7 @@ export class Player {
   public id: string;
   public ws: any; // uWS.WebSocket
   public roomId: string | null = null;
+  public isQueued = false;
   public isReady: boolean = false;
 
   /**

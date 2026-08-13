@@ -407,6 +407,10 @@ export class MainMenu extends Scene {
       this.sound.play("select-sfx", { volume: 0.32 });
       ++this.onlineAttemptId;
       cleanupAttempt();
+      // Remove the player from the server queue before closing the socket.
+      // Closing alone is asynchronous and allowed the next search to race
+      // with the old queue entry.
+      net.cancelMatch();
       net.disconnect();
       closeOverlay();
     });
