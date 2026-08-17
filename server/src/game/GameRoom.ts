@@ -5,7 +5,10 @@ import {
   type InitialOnlineState,
   type NetworkMessage,
   type OnlineGameEnd,
+  ONLINE_EMOTE_IDS,
+  type OnlineEmoteEvent,
   type OnlineReadyState,
+  type SendEmoteCommand,
   type SpawnUnitCommand,
   type UsePowerCommand,
 } from "../network/NetworkProtocol";
@@ -18,6 +21,8 @@ export class GameRoom {
   private endBroadcast = false;
   private started = false;
   private readonly readyPlayerIds = new Set<string>();
+  private readonly lastEmoteAtByPlayer = new Map<string, number>();
+  private emoteSequence = 0;
 
   get isFinished() {
     return this.endBroadcast;
@@ -76,6 +81,38 @@ export class GameRoom {
         this.broadcast({ type: ServerMessages.POWER_CAST, payload: result.event });
       }
       this.broadcastSnapshot();
+      return;
+    }
+    if (msg.type === ClientMessages.SEND_EMOTE) {
+      const payload = msg.payload as Partial<SendEmoteCommand> | undefined;
+      if (!payload || !ONLINE_EMOTE_IDS.includes(payload.emote as never)) {
+        this.send(player, {
+          type: ServerMessages.ERROR,
+          payload: { code: "INVALID_EMOTE", message: "Unknown online emote." },
+        });
+        return;
+      }
+      const emote = payload.emote as OnlineEmoteEvent["emote"];
+      const now = Date.now();
+      const lastEmoteAt = this.lastEmoteAtByPlayer.get(player.id) ?? 0;
+      if (now - lastEmoteAt < 1_200) {
+        this.send(player, {
+          type: ServerMessages.ERROR,
+          payload: { code: "EMOTE_COOLDOWN", message: "Please wait before sending another emote." },
+        });
+        return;
+      }
+      this.lastEmoteAtByPlayer.set(player.id, now);
+      const event: OnlineEmoteEvent = {
+        roomId: this.id,
+        sequence: ++this.emoteSequence,
+        playerId: player.id,
+        side: player.side,
+        emote,
+        serverTime: now,
+      };
+      this.broadcast({ type: ServerMessages.EMOTE, payload: event });
+      Logger.info(`EMOTE room=${this.id} side=${player.side} emote=${event.emote}`);
       return;
     }
     if (msg.type === ClientMessages.RESYNC_REQUEST) {

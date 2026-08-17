@@ -1,5 +1,20 @@
 export type OnlineSide = "left" | "right";
 export type OnlinePower = "missile" | "ice";
+export const ONLINE_EMOTE_IDS = ["laugh", "grin", "cry", "worry"] as const;
+export type OnlineEmoteId = (typeof ONLINE_EMOTE_IDS)[number];
+
+export interface SendEmoteCommand {
+  emote: OnlineEmoteId;
+}
+
+export interface OnlineEmoteEvent {
+  roomId: string;
+  sequence: number;
+  playerId: string;
+  side: OnlineSide;
+  emote: OnlineEmoteId;
+  serverTime: number;
+}
 
 export type OnlineUnitState =
   | "moving"
@@ -112,6 +127,10 @@ export interface OnlineCommandError {
   message: string;
 }
 
+export interface OnlinePing {
+  id: number;
+}
+
 export enum ClientMessages {
   HELLO = "HELLO",
   FIND_MATCH = "FIND_MATCH",
@@ -121,7 +140,9 @@ export enum ClientMessages {
   READY = "READY",
   ATTACK_UNIT = "ATTACK_UNIT",
   USE_ABILITY = "USE_ABILITY",
-  RESYNC_REQUEST = "RESYNC_REQUEST"
+  SEND_EMOTE = "SEND_EMOTE",
+  RESYNC_REQUEST = "RESYNC_REQUEST",
+  PING = "PING"
 }
 
 export enum ServerMessages {
@@ -143,7 +164,9 @@ export enum ServerMessages {
   STATE_CORRECTION = "STATE_CORRECTION",
   GAME_END = "GAME_END",
   POWER_CAST = "POWER_CAST",
+  EMOTE = "EMOTE",
   STATE_UPDATE = "STATE_UPDATE",
+  PONG = "PONG",
   ERROR = "ERROR"
 }
 

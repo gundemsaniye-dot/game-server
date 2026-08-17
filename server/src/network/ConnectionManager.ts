@@ -3,7 +3,7 @@ import { Player } from "../state/Player";
 import { Matchmaking } from "../game/Matchmaking";
 import { GameLoop } from "../game/GameLoop";
 import { Logger } from "../utils/Logger";
-import { ClientMessages, NetworkMessage, ServerMessages } from "../network/NetworkProtocol";
+import { ClientMessages, NetworkMessage, ServerMessages, type OnlinePing } from "../network/NetworkProtocol";
 
 export class ConnectionManager {
   private players: Map<string, Player> = new Map();
@@ -86,6 +86,12 @@ export class ConnectionManager {
         // previous queue entry.
         this.matchmaking.removeFromQueue(player);
         break;
+      case ClientMessages.PING:
+        this.send(player, {
+          type: ServerMessages.PONG,
+          payload: msg.payload as OnlinePing,
+        });
+        break;
       default:
         // Forward game commands to the room if player is in one
         if (player.roomId) {
@@ -96,5 +102,12 @@ export class ConnectionManager {
         }
         break;
     }
+  }
+
+  private send(player: Player, msg: NetworkMessage) {
+    if (!player.ws || player.ws.getBufferedAmount() >= 64 * 1_024) return;
+    const serialized = JSON.stringify(msg);
+    player.ws.send(serialized);
+    Logger.logNetworkOut(Buffer.byteLength(serialized, "utf8"));
   }
 }

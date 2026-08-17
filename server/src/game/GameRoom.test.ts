@@ -50,3 +50,33 @@ test("online room waits for both loaded clients before game start and simulation
   assert.ok(firstSnapshot);
   assert.equal(firstSnapshot.payload.elapsedMs, 0);
 });
+
+test("online king emotes are validated and broadcast to both players", () => {
+  const left = createPlayer("left-id", "left");
+  const right = createPlayer("right-id", "right");
+  const room = new GameRoom("room-ready", left.player, right.player, 456);
+
+  room.start();
+  room.handleClientMessage(left.player, { type: ClientMessages.READY });
+  room.handleClientMessage(right.player, { type: ClientMessages.READY });
+  room.handleClientMessage(left.player, {
+    type: ClientMessages.SEND_EMOTE,
+    payload: { emote: "laugh" },
+  });
+
+  for (const socket of [left.socket, right.socket]) {
+    const message = socket.sent.find((candidate) => candidate.type === ServerMessages.EMOTE);
+    assert.ok(message);
+    assert.equal(message.payload.side, "left");
+    assert.equal(message.payload.emote, "laugh");
+  }
+
+  room.handleClientMessage(right.player, {
+    type: ClientMessages.SEND_EMOTE,
+    payload: { emote: "not-an-emote" },
+  });
+  const error = right.socket.sent.find(
+    (candidate) => candidate.type === ServerMessages.ERROR && candidate.payload.code === "INVALID_EMOTE",
+  );
+  assert.ok(error);
+});
