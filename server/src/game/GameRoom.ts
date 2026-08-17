@@ -23,6 +23,7 @@ export class GameRoom {
   private readonly readyPlayerIds = new Set<string>();
   private readonly lastEmoteAtByPlayer = new Map<string, number>();
   private emoteSequence = 0;
+  private snapshotBroadcastAccumulatorMs = 0;
 
   get isFinished() {
     return this.endBroadcast;
@@ -125,8 +126,19 @@ export class GameRoom {
   tick(deltaMs: number) {
     if (!this.started) return;
     const gameEnd = this.simulation.tick(deltaMs);
-    if (gameEnd) this.broadcastEnd(gameEnd);
-    else this.broadcastSnapshot();
+    if (gameEnd) {
+      this.broadcastEnd(gameEnd);
+      return;
+    }
+
+    // Keep the authoritative simulation at 20 Hz, but present snapshots at
+    // 10 Hz. Mobile WebViews otherwise receive a JSON/network task between
+    // almost every display frame, which measurably halves Android rAF cadence
+    // even in an empty match. Commands still trigger an immediate snapshot.
+    this.snapshotBroadcastAccumulatorMs += deltaMs;
+    if (this.snapshotBroadcastAccumulatorMs < 100) return;
+    this.snapshotBroadcastAccumulatorMs %= 100;
+    this.broadcastSnapshot();
   }
 
   handleDisconnect(playerId: string) {

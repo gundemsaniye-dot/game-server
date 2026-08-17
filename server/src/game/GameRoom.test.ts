@@ -49,6 +49,20 @@ test("online room waits for both loaded clients before game start and simulation
   const firstSnapshot = left.socket.sent.find((message) => message.type === ServerMessages.MATCH_STATE);
   assert.ok(firstSnapshot);
   assert.equal(firstSnapshot.payload.elapsedMs, 0);
+
+  const snapshotCount = () => left.socket.sent.filter(
+    (message) => message.type === ServerMessages.MATCH_STATE,
+  ).length;
+  assert.equal(snapshotCount(), 1);
+  room.tick(50);
+  room.tick(49);
+  assert.equal(snapshotCount(), 1, "20 Hz simulation must not imply 20 Hz network snapshots");
+  room.tick(1);
+  assert.equal(snapshotCount(), 2, "the room should present one snapshot per 100 ms");
+  room.tick(50);
+  assert.equal(snapshotCount(), 2);
+  room.tick(50);
+  assert.equal(snapshotCount(), 3);
 });
 
 test("online king emotes are validated and broadcast to both players", () => {
