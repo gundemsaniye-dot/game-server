@@ -18,10 +18,7 @@ import {
   resolveDeploymentClick,
   type SideGeometry,
 } from "../../../shared/online/SideGeometry";
-import {
-  CASTLE_CONTACT_CLEARANCE,
-  CASTLE_CONTACT_TOLERANCE,
-} from "../../../shared/online/CastleContact";
+import { castleContactX } from "../../../shared/online/CastleContact";
 import { t } from "../i18n/Localization";
 import {
   ALL_UNIT_IDS,
@@ -2159,31 +2156,50 @@ export class Game extends Scene {
   private startCastleCombatQa() {
     const playerHpBefore = this.playerCastle.hp;
     const enemyHpBefore = this.enemyCastle.hp;
+    // Use a melee enemy authored for this level. Later TMJs replace the basic
+    // swordsman with special units, whose loaded atlas must drive the QA run.
+    const enemyMeleeType = this.levelRuntime.enemyUnitIds.find(
+      (type) => !isWorkerUnit(type) && !isRangedUnit(type),
+    ) ?? "swordsman";
     const player = this.spawnUnit("player", "swordsman", 300, this.enemyCastle.frontX - 12, {
       forceBaseLevel: true,
     });
-    const enemy = this.spawnUnit("enemy", "swordsman", 420, this.playerCastle.frontX + 12, {
+    const enemy = this.spawnUnit("enemy", enemyMeleeType, 420, this.playerCastle.frontX + 12, {
       forceBaseLevel: true,
     });
     player.lastAttackAt = -player.cooldown;
     enemy.lastAttackAt = -enemy.cooldown;
 
-    this.time.delayedCall(250, () => {
+    // Some TMJ facades begin partway through a navigation cell. The spawn
+    // safety pass may therefore place the QA soldier in the adjacent outside
+    // cell; allow its normal final-approach movement to reach the exact facade.
+    this.time.delayedCall(1_500, () => {
+      const playerCrossedEnemyFacade = player.x >= this.enemyCastle.frontX;
+      const enemyCrossedPlayerFacade = enemy.x <= this.playerCastle.frontX;
       const report = {
         passed:
           player.state === "attackCastle" &&
           enemy.state === "attackCastle" &&
           this.enemyCastle.hp < enemyHpBefore &&
-          this.playerCastle.hp < playerHpBefore,
+          this.playerCastle.hp < playerHpBefore &&
+          !playerCrossedEnemyFacade &&
+          !enemyCrossedPlayerFacade,
         playerAttacking: player.state === "attackCastle",
         enemyAttacking: enemy.state === "attackCastle",
         playerCastleDamage: playerHpBefore - this.playerCastle.hp,
         enemyCastleDamage: enemyHpBefore - this.enemyCastle.hp,
+        playerCastleFacadeX: this.playerCastle.frontX,
+        enemyCastleFacadeX: this.enemyCastle.frontX,
         playerDistance: Math.abs(this.enemyCastle.frontX - player.x),
         enemyDistance: Math.abs(this.playerCastle.frontX - enemy.x),
+        playerCrossedEnemyFacade,
+        enemyCrossedPlayerFacade,
       };
       (window as typeof window & { __CASTLE_COMBAT_QA_RESULT__?: typeof report })
         .__CASTLE_COMBAT_QA_RESULT__ = report;
+      // Browser automation executes in an isolated world, so mirror the
+      // dev-only result onto the shared DOM. This never runs in normal play.
+      document.documentElement.dataset.castleCombatQaResult = JSON.stringify(report);
       this.log("CASTLE_COMBAT_QA", `${report.passed ? "PASS" : "FAIL"} ${JSON.stringify(report)}`);
     });
   }
@@ -2785,14 +2801,20 @@ export class Game extends Scene {
   }
 
   private referenceCastleFrontX(team: Team) {
-    if (this.tiledCollisionGrid) {
-      return team === "player"
-        ? this.tiledCollisionGrid.playerCastleFrontX
-        : this.tiledCollisionGrid.enemyCastleFrontX;
+    // PERMANENT INVARIANT: this value must come from the current TMJ castle
+    // rectangle's battlefield-facing edge. Never use anchorX, rounding or a
+    // cross-map constant here. Online uses the same castleContactX helper.
+    if (this.tiledNavigation) {
+      const contactX = team === "player"
+        ? this.tiledNavigation.playerCastleFrontX
+        : this.tiledNavigation.enemyCastleFrontX;
+      if (contactX !== undefined) return contactX;
     }
     type CastleAnchorObject = {
       x?: number;
+      y?: number;
       width?: number;
+      height?: number;
       type?: string;
       class?: string;
       properties?: Array<{ name: string; value: unknown }>;
@@ -2811,16 +2833,23 @@ export class Game extends Scene {
     });
     if (
       typeof anchor?.x !== "number" ||
+      typeof anchor.y !== "number" ||
       typeof anchor.width !== "number" ||
+      typeof anchor.height !== "number" ||
       !Number.isFinite(anchor.x) ||
-      !Number.isFinite(anchor.width)
+      !Number.isFinite(anchor.y) ||
+      !Number.isFinite(anchor.width) ||
+      !Number.isFinite(anchor.height)
     ) {
       return undefined;
     }
 
-    return team === "player"
-      ? Math.ceil((anchor.x + anchor.width) / 20) * 20
-      : Math.floor(anchor.x / 20) * 20;
+    return castleContactX({
+      minX: anchor.x,
+      maxX: anchor.x + anchor.width,
+      minY: anchor.y,
+      maxY: anchor.y + anchor.height,
+    }, team === "player" ? "left" : "right");
   }
 
   private applyLevelCastleHp() {

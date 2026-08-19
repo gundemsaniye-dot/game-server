@@ -5,7 +5,6 @@ import { tiledLevelFiles } from "./lib/tiled-level-manifest.mjs";
 const root = process.cwd();
 const sourceMapsRoot = path.join(root, "art", "tiled", "maps");
 const runtimeMapsRoot = path.join(root, "public", "assets", "tiled", "maps");
-const CASTLE_CONTACT_CLEARANCE = 10;
 const errors = [];
 
 const json = async (file) => JSON.parse(await readFile(file, "utf8"));
@@ -247,18 +246,21 @@ for (const { file, mapId } of levelFiles) {
   }
   if (deployObject && spawnObject) {
     const fineGrid = fineNavigationGrid(map);
+    // The exact facade cell is deliberately blocked by CastleAnchor. Validate
+    // the immediately adjacent battlefield cell, derived from that TMJ edge;
+    // runtime contact itself still uses the unrounded exact coordinate.
     const playerAttackLineX = enemyCastle
-      ? Math.floor(enemyCastle.x / 20) * 20 - CASTLE_CONTACT_CLEARANCE
+      ? Math.floor(enemyCastle.x / 20) * 20 - 0.001
       : undefined;
     const enemyAttackLineX = playerCastle
-      ? Math.ceil((playerCastle.x + playerCastle.width) / 20) * 20 + CASTLE_CONTACT_CLEARANCE
+      ? Math.ceil((playerCastle.x + playerCastle.width) / 20) * 20
       : undefined;
     if (playerAttackLineX === undefined || enemyAttackLineX === undefined) continue;
     if (!fineCanReach(fineGrid, fineCellsForZone(deployObject), fineCellsForVerticalLine(playerAttackLineX))) {
-      errors.push(`${mapId}: player units cannot reach the enemy red attack line at x=${playerAttackLineX}.`);
+      errors.push(`${mapId}: player units cannot reach the cell beside the enemy TMJ castle facade at x=${enemyCastle?.x}.`);
     }
     if (!fineCanReach(fineGrid, fineCellsForZone(spawnObject), fineCellsForVerticalLine(enemyAttackLineX))) {
-      errors.push(`${mapId}: enemy units cannot reach the player red attack line at x=${enemyAttackLineX}.`);
+      errors.push(`${mapId}: enemy units cannot reach the cell beside the player TMJ castle facade at x=${playerCastle ? playerCastle.x + playerCastle.width : "unknown"}.`);
     }
   }
 

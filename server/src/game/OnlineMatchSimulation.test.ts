@@ -247,16 +247,85 @@ test("match produces one authoritative winner and disconnect has no bot takeover
 
 test("all 20 maps in ONLINE_MAP_POOL initialize a valid simulation with correct castle contact", () => {
   assert.equal(ONLINE_MAP_POOL.length, 20);
+  const leftFacades = new Set<number>();
+  const rightFacades = new Set<number>();
   for (const mapId of ONLINE_MAP_POOL) {
     const contract = getOnlineMapContract(mapId);
     assert.equal(contract.mapId, mapId);
-    assert.equal(contract.castleContactX.left, 195);
-    assert.equal(contract.castleContactX.right, 1085);
+    // Regression lock: each server room must use this map's exact TMJ
+    // CastleAnchor inner edge, never a shared/static contact coordinate.
+    assert.equal(contract.castleContactX.left, contract.sides.left.castle.maxX);
+    assert.equal(contract.castleContactX.right, contract.sides.right.castle.minX);
+    leftFacades.add(contract.castleContactX.left);
+    rightFacades.add(contract.castleContactX.right);
     const simulation = new OnlineMatchSimulation(`pool-${mapId}`, { left: "p1", right: "p2" }, 1234, contract);
     assert.equal(simulation.mapId, mapId);
     const snapshot = simulation.snapshot();
     assert.equal(snapshot.left.castleHp, ONLINE_MATCH_CONFIG.castleHp);
     assert.equal(snapshot.right.castleHp, ONLINE_MATCH_CONFIG.castleHp);
     assert.equal(snapshot.resources.length, 4);
+  }
+  assert.ok(leftFacades.size > 5, "left castle facades must vary with the TMJ maps");
+  assert.ok(rightFacades.size > 5, "right castle facades must vary with the TMJ maps");
+});
+
+test("both armies reach every TMJ castle facade without entering its CastleAnchor", () => {
+  for (const mapId of ONLINE_MAP_POOL) {
+    const contract = getOnlineMapContract(mapId);
+    const deployY = (contract.deployBounds.left.minY + contract.deployBounds.left.maxY) / 2;
+
+    const leftSimulation = new OnlineMatchSimulation(
+      `left-facade-${mapId}`,
+      { left: "left-id", right: "right-id" },
+      4321,
+      contract,
+    );
+    assert.equal(
+      leftSimulation.spawn(
+        "left-id",
+        command(`left-${mapId}`, "swordsman", contract.deployBounds.left.maxX, deployY),
+      ).ok,
+      true,
+      `${mapId}: left spawn failed`,
+    );
+    advanceUntil(
+      leftSimulation,
+      () => leftSimulation.snapshot().right.castleHp < leftSimulation.snapshot().right.castleMaxHp,
+      60_000,
+    );
+    const leftAttacker = leftSimulation.snapshot().units.find((unit) => unit.side === "left");
+    assert.ok(leftAttacker, `${mapId}: left attacker disappeared before contact`);
+    assert.equal(leftAttacker.state, "attackingCastle", `${mapId}: left attacker never attacked the castle`);
+    assert.ok(
+      leftAttacker.x < contract.sides.right.castle.minX,
+      `${mapId}: left attacker entered enemy CastleAnchor at ${leftAttacker.x}`,
+    );
+
+    const rightSimulation = new OnlineMatchSimulation(
+      `right-facade-${mapId}`,
+      { left: "left-id", right: "right-id" },
+      4321,
+      contract,
+    );
+    assert.equal(
+      rightSimulation.spawn(
+        "right-id",
+        command(`right-${mapId}`, "swordsman", contract.deployBounds.right.minX, deployY),
+      ).ok,
+      true,
+      `${mapId}: right spawn failed`,
+    );
+    advanceUntil(
+      rightSimulation,
+      () => rightSimulation.snapshot().left.castleHp < rightSimulation.snapshot().left.castleMaxHp,
+      60_000,
+    );
+    const rightAttacker = rightSimulation.snapshot().units.find((unit) => unit.side === "right");
+    assert.ok(rightAttacker, `${mapId}: right attacker disappeared before contact`);
+    assert.equal(rightAttacker.state, "attackingCastle", `${mapId}: right attacker never attacked the castle`);
+    assert.ok(
+      rightAttacker.x > contract.sides.left.castle.maxX,
+      `${mapId}: right attacker entered player CastleAnchor at ${rightAttacker.x}`,
+    );
   }
 });

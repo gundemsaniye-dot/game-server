@@ -9,7 +9,6 @@ import type {
   SpawnUnitCommand,
   UsePowerCommand,
 } from "../../../shared/online/Protocol";
-import { CASTLE_CONTACT_TOLERANCE } from "../../../shared/online/CastleContact";
 import { ONLINE_MAP_CONTRACT, type OnlineMapContract } from "./OnlineMapContract";
 import { OnlineMapNavigation, type OnlinePathPoint } from "./OnlineMapNavigation";
 import { ONLINE_MATCH_CONFIG, ONLINE_UNIT_STATS, type OnlineUnitStats } from "./OnlineMatchConfig";

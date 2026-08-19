@@ -1,4 +1,5 @@
 import type { NavCell, NavigationProfile } from "./TiledTypes";
+import { castleContactX } from "../../../shared/online/CastleContact";
 
 export const TILED_NAV_CELL_SIZE = 20;
 export const TILED_NAV_COLUMNS = 64;
@@ -31,8 +32,8 @@ export class TiledCollisionGrid {
     Array.from({ length: TILED_NAV_COLUMNS }, groundCell),
   );
 
-  public playerCastleFrontX = 195;
-  public enemyCastleFrontX = 1085;
+  public playerCastleFrontX?: number;
+  public enemyCastleFrontX?: number;
 
   constructor(tilemap: Phaser.Tilemaps.Tilemap) {
     const blocked = tilemap.getLayer("NAV_BLOCKED");
@@ -84,13 +85,19 @@ export class TiledCollisionGrid {
       const team = objectProperty(object, "team");
       const first = this.worldToCell(object.x, object.y);
       const last = this.worldToCell(object.x + object.width - 0.001, object.y + object.height - 0.001);
+      const castleBounds = {
+        minX: object.x,
+        maxX: object.x + object.width,
+        minY: object.y,
+        maxY: object.y + object.height,
+      };
 
       if (team === "player") {
-        const wallX = 195;
+        // TMJ owns this facade. See CastleContact.ts before changing it.
+        const wallX = castleContactX(castleBounds, "left");
         this.playerCastleFrontX = wallX;
-        const blockerEndCell = this.worldToCell(wallX - 10, object.y);
         for (let row = first.row; row <= last.row; row += 1) {
-          for (let column = first.column; column <= Math.min(last.column, blockerEndCell.column); column += 1) {
+          for (let column = first.column; column <= last.column; column += 1) {
             this.cells[row][column] = {
               walkable: false,
               terrainType: "solid",
@@ -101,11 +108,11 @@ export class TiledCollisionGrid {
           }
         }
       } else if (team === "enemy") {
-        const wallX = 1085;
+        // TMJ owns this facade. See CastleContact.ts before changing it.
+        const wallX = castleContactX(castleBounds, "right");
         this.enemyCastleFrontX = wallX;
-        const blockerStartCell = this.worldToCell(wallX + 10, object.y);
         for (let row = first.row; row <= last.row; row += 1) {
-          for (let column = Math.max(first.column, blockerStartCell.column); column <= last.column; column += 1) {
+          for (let column = first.column; column <= last.column; column += 1) {
             this.cells[row][column] = {
               walkable: false,
               terrainType: "solid",
@@ -269,4 +276,3 @@ export class TiledCollisionGrid {
     });
   }
 }
-
