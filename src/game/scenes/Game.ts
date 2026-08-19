@@ -31,7 +31,7 @@ import {
 } from "../assets/RuntimeAssets";
 import { getAndroidPerfRequest, type AndroidPerfRequest } from "../performance/AndroidPerf";
 import { AndroidPerformanceMonitor } from "../performance/AndroidPerformanceMonitor";
-import { playAndroidHaptic } from "../platform/AndroidHaptics";
+import { isNativeAndroidRuntime, playAndroidHaptic } from "../platform/AndroidHaptics";
 import { MAP_ASSETS_BY_KEY, MAP_PROP_ATLASES } from "../config/mapAssets";
 import { playSceneMusic, stopSceneMusic } from "../audio/GameAudio";
 import {
@@ -8088,7 +8088,7 @@ export class Game extends Scene {
           playAndroidHaptic("castle_hit");
           this.cameras.main.shake(140, 0.004);
           this.flashWarning("BASE UNDER ATTACK");
-        } else {
+        } else if (!this.suppressOfflineAndroidOpponentCastleFeedback(castle)) {
           playAndroidHaptic("selection");
           this.cameras.main.shake(80, 0.002);
         }
@@ -8107,7 +8107,7 @@ export class Game extends Scene {
       playAndroidHaptic("castle_hit");
       this.cameras.main.shake(150, 0.0045);
       this.flashWarning("BASE UNDER ATTACK");
-    } else {
+    } else if (!this.suppressOfflineAndroidOpponentCastleFeedback(castle)) {
       playAndroidHaptic("selection");
       this.cameras.main.shake(90, 0.0025);
     }
@@ -8115,6 +8115,13 @@ export class Game extends Scene {
     this.playCastleImpactSfx(attacker);
     this.createHitEffect(impact.x, impact.y, attacker.type);
     this.createDamageText(impact.x, impact.y - 48, dealtDamage, t("game_base_hit"));
+  }
+
+  private suppressOfflineAndroidOpponentCastleFeedback(castle: CastleState) {
+    // PERMANENT ANDROID OFFLINE UX RULE: outgoing hits on the opponent castle
+    // must never shake or vibrate the player's device. Incoming damage keeps
+    // its warning feedback, and online snapshot feedback remains unchanged.
+    return !this.isOnline && castle.team === "enemy" && isNativeAndroidRuntime();
   }
 
   private pacedCastleDamage(attacker: BattleUnit) {

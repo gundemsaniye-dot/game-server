@@ -80,3 +80,8 @@ export function isAndroidHapticsAvailable() {
   return Boolean(nativeHapticsBridge()) || (typeof navigator !== "undefined" && typeof navigator.vibrate === "function");
 }
 
+/** True only inside the native Android WebView. Keep this separate from
+ * isAndroidHapticsAvailable(), which may also be true in a desktop browser. */
+export function isNativeAndroidRuntime() {
+  return Boolean(nativeHapticsBridge());
+}
