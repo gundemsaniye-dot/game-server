@@ -81,37 +81,47 @@ export function getOnlineLevelRuntime(
   playerLoadout: UnitId[] = ["peasant", "swordsman", "archer", "horseman"],
 ): LevelRuntime {
   const map = getBattleMapConfig(mapId);
-  return {
-    level: {
-      id: `online_${map.id}`,
-      title: map.displayName,
-      order: 1,
-      mapId: map.id,
-      regionId: map.biome,
-      player: {
-        gold: 8,
-        castleHp: 2500,
-        unlockedUnits: playerLoadout,
-      },
-      enemy: {
-        ai: "aggressive",
-        castleHp: 2500,
-        allowedUnits: playerLoadout,
-        unitWeights: {},
-      },
-      rewards: {},
-      duration: {
-        targetSeconds: 0,
-        incomePacing: 1,
-        castleDamagePacing: 1,
-      },
-      encounterType: "standard",
+  // Online battles are server-authoritative, but the shared Game scene still
+  // reads the complete LevelConfig while it builds its HUD and resets local
+  // presentation state. Reuse the campaign level for this map as a complete
+  // client-side template instead of returning a legacy partial level shape.
+  // Missing fields here used to crash before sendReady(), leaving the peer
+  // permanently waiting at 1/2 readiness.
+  const templateLevel = LEVELS.find((level) => level.mapId === map.id) ?? getLevelConfig("level_001");
+  const level: LevelConfig = {
+    ...templateLevel,
+    id: `online_${map.id}`,
+    title: map.displayName,
+    order: 1,
+    mapId: map.id,
+    regionId: map.biome,
+    encounterType: "normal",
+    player: {
+      ...templateLevel.player,
+      startGold: 8,
+      castleHp: 2500,
     },
+    enemy: {
+      ...templateLevel.enemy,
+      castleHp: 2500,
+      startGold: 8,
+      aiProfile: "balanced",
+      allowedUnits: [...playerLoadout],
+      unitWeights: {},
+    },
+    rewards: {
+      gold: 0,
+      starsAvailable: 3,
+    },
+  };
+
+  return {
+    level,
     map,
     campaignId: "online_multiplayer",
-    unlockedUnitIds: playerLoadout,
-    playerUnitIds: playerLoadout,
-    enemyUnitIds: playerLoadout,
+    unlockedUnitIds: [...playerLoadout],
+    playerUnitIds: [...playerLoadout],
+    enemyUnitIds: [...playerLoadout],
     battleStartData: {
       levelId: `online_${map.id}`,
       mapId: map.id,
