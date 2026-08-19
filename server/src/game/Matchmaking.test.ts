@@ -3,7 +3,7 @@ import test from "node:test";
 import { Player } from "../state/Player";
 import { GameLoop } from "./GameLoop";
 import { Matchmaking } from "./Matchmaking";
-import { ONLINE_MATCH_CONFIG } from "./OnlineMatchConfig";
+import { ONLINE_MAP_POOL } from "./OnlineMapContract";
 
 test("matched players are attached to the authoritative room", () => {
   const socket = () => ({ send() {}, getBufferedAmount: () => 0 });
@@ -18,6 +18,6 @@ test("matched players are attached to the authoritative room", () => {
   assert.equal(right.roomId, left.roomId);
   assert.equal(left.side, "left");
   assert.equal(right.side, "right");
-  assert.equal(left.mapId, ONLINE_MATCH_CONFIG.mapId);
-  assert.equal(right.mapId, ONLINE_MATCH_CONFIG.mapId);
+  assert.ok(typeof left.mapId === "string" && ONLINE_MAP_POOL.includes(left.mapId));
+  assert.equal(right.mapId, left.mapId);
 });

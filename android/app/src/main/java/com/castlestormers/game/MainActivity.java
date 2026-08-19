@@ -7,6 +7,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
+import android.os.SystemClock;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.os.VibratorManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -30,8 +34,8 @@ public class MainActivity extends BridgeActivity {
 
         PowerManager powerManager = getSystemService(PowerManager.class);
         // The reference device exposes Android's sustained-performance API.
-        // Defaulting this to false let the short launch boost expire during the
-        // menu/map flow, after which WebView frame times steadily degraded.
+        // Defaulting this to false lets the short launch boost expire during the
+        // menu/map flow, after which WebView frame times steadily degrade.
         // Keep an Intent override for diagnostics, but ship the stable mode on.
         boolean sustainedPerformance = getIntent().getBooleanExtra("sustainedPerformance", true);
         if (
@@ -49,8 +53,23 @@ public class MainActivity extends BridgeActivity {
             bridge.getWebView().setRequestedFrameRate(60.0f);
         }
         WindowManager.LayoutParams performanceAttributes = getWindow().getAttributes();
-        performanceAttributes.preferredRefreshRate = 60.0f;
-        getWindow().setAttributes(performanceAttributes);
+        // Keep WebView content at 60 FPS, but let high-refresh devices compose
+        // it on a 120 Hz display timeline. A frame that narrowly misses 16.7 ms
+        // can then present at the next 8.3 ms slot instead of collapsing to the
+        // next 33.3 ms slot on devices with strict 60 Hz frame pacing.
+        float compositorRefreshRate = 0.0f;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getDisplay() != null) {
+            android.view.Display.Mode[] supportedModes = getDisplay().getSupportedModes();
+            float[] supportedRates = new float[supportedModes.length];
+            for (int index = 0; index < supportedModes.length; index++) {
+                supportedRates[index] = supportedModes[index].getRefreshRate();
+            }
+            compositorRefreshRate = RefreshRatePolicy.chooseCompositorRate(supportedRates);
+        }
+        if (compositorRefreshRate > 0.0f) {
+            performanceAttributes.preferredRefreshRate = compositorRefreshRate;
+            getWindow().setAttributes(performanceAttributes);
+        }
 
         bridge.getWebView().setOverScrollMode(View.OVER_SCROLL_NEVER);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -61,8 +80,25 @@ public class MainActivity extends BridgeActivity {
         }
         bridge.getWebView().setHorizontalScrollBarEnabled(false);
         bridge.getWebView().setVerticalScrollBarEnabled(false);
+        bridge.getWebView().addJavascriptInterface(new HapticsBridge(), "CastleHapticsNative");
         if (BuildConfig.PERF_LOG_BRIDGE) {
             bridge.getWebView().addJavascriptInterface(new PerfLogBridge(), "CastlePerfNative");
+        }
+
+        if (BuildConfig.DEBUG) {
+            String qaMode = getIntent().getStringExtra("qaMode");
+            String qaUrl = getIntent().getStringExtra("qaUrl");
+            if ("castleCombat".equals(qaMode)) {
+                bridge.getWebView().loadUrl(
+                    "https://localhost/?scene=battle&level=1&castleCombatQa=1"
+                );
+            } else if ("loadout".equals(qaMode)) {
+                bridge.getWebView().loadUrl(
+                    "https://localhost/?scene=loadout&unlockAll=1"
+                );
+            } else if (qaUrl != null && qaUrl.startsWith("https://localhost/")) {
+                bridge.getWebView().loadUrl(qaUrl);
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -81,6 +117,79 @@ public class MainActivity extends BridgeActivity {
             if (line != null && line.startsWith("[CastlePerf]") && line.length() <= 32_000) {
                 Log.i("CastlePerf", line);
             }
+        }
+    }
+
+    public final class HapticsBridge {
+        private long lastSelectionAt;
+        private long lastCastleHitAt;
+
+        @JavascriptInterface
+        public void impact(String kind) {
+            if (
+                !"selection".equals(kind) &&
+                !"castle_hit".equals(kind)
+            ) {
+                return;
+            }
+
+            long now = SystemClock.uptimeMillis();
+            // Castle snapshots can contain several simultaneous attackers.
+            // Keep one tactile pulse per combat beat so vibration never turns
+            // into continuous work that competes with WebView rendering.
+            long minimumGap = "selection".equals(kind) ? 45L : 600L;
+            long lastImpactAt = "selection".equals(kind)
+                ? lastSelectionAt
+                : lastCastleHitAt;
+            if (now - lastImpactAt < minimumGap) {
+                return;
+            }
+            if ("selection".equals(kind)) {
+                lastSelectionAt = now;
+            } else {
+                lastCastleHitAt = now;
+            }
+
+            runOnUiThread(() -> vibrate(kind));
+        }
+
+        private void vibrate(String kind) {
+            Vibrator vibrator;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                VibratorManager manager = getSystemService(VibratorManager.class);
+                vibrator = manager == null ? null : manager.getDefaultVibrator();
+            } else {
+                vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            }
+            if (vibrator == null || !vibrator.hasVibrator()) return;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                boolean amplitudeControl = vibrator.hasAmplitudeControl();
+                if ("selection".equals(kind)) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(
+                        30L,
+                        amplitudeControl ? 95 : VibrationEffect.DEFAULT_AMPLITUDE
+                    ));
+                } else {
+                    long[] timings = new long[] { 0L, 32L, 30L, 45L };
+                    int[] amplitudes = amplitudeControl
+                        ? new int[] { 0, 190, 0, 255 }
+                        : new int[] {
+                            0,
+                            VibrationEffect.DEFAULT_AMPLITUDE,
+                            0,
+                            VibrationEffect.DEFAULT_AMPLITUDE
+                        };
+                    vibrator.vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1));
+                }
+            } else {
+                vibrator.vibrate("selection".equals(kind) ? 30L : 70L);
+            }
+
+            String intensity = "selection".equals(kind)
+                ? "duration=30 amplitude=95"
+                : "pattern=32/30/45 amplitudes=190/255";
+            Log.i("CastleHaptics", "impact=" + kind + " " + intensity);
         }
     }
 

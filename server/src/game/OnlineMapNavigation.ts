@@ -1,4 +1,4 @@
-import { ONLINE_MAP_CONTRACT } from "./OnlineMapContract";
+import { ONLINE_MAP_CONTRACT, type OnlineMapContract } from "./OnlineMapContract";
 
 export interface OnlinePathPoint {
   x: number;
@@ -22,7 +22,7 @@ const DIRECTIONS = [
 ] as const;
 
 export class OnlineMapNavigation {
-  private readonly contract = ONLINE_MAP_CONTRACT;
+  constructor(private readonly contract: OnlineMapContract = ONLINE_MAP_CONTRACT) {}
 
   isWalkableWorld(x: number, y: number) {
     const cell = this.worldToCell(x, y);

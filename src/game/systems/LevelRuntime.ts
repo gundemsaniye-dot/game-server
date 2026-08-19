@@ -76,6 +76,53 @@ export function getLevelRuntime(
   };
 }
 
+export function getOnlineLevelRuntime(
+  mapId = "grasslands_01",
+  playerLoadout: UnitId[] = ["peasant", "swordsman", "archer", "horseman"],
+): LevelRuntime {
+  const map = getBattleMapConfig(mapId);
+  return {
+    level: {
+      id: `online_${map.id}`,
+      title: map.displayName,
+      order: 1,
+      mapId: map.id,
+      regionId: map.biome,
+      player: {
+        gold: 8,
+        castleHp: 2500,
+        unlockedUnits: playerLoadout,
+      },
+      enemy: {
+        ai: "aggressive",
+        castleHp: 2500,
+        allowedUnits: playerLoadout,
+        unitWeights: {},
+      },
+      rewards: {},
+      duration: {
+        targetSeconds: 0,
+        incomePacing: 1,
+        castleDamagePacing: 1,
+      },
+      encounterType: "standard",
+    },
+    map,
+    campaignId: "online_multiplayer",
+    unlockedUnitIds: playerLoadout,
+    playerUnitIds: playerLoadout,
+    enemyUnitIds: playerLoadout,
+    battleStartData: {
+      levelId: `online_${map.id}`,
+      mapId: map.id,
+      biome: map.biome,
+      campaignId: "online_multiplayer",
+      playerLoadout,
+      attemptSeed: map.seed,
+    },
+  };
+}
+
 export function validateCampaignConfig(): CampaignValidationResult {
   const errors: string[] = [];
   const unitIds = new Set<UnitId>(UNIT_ORDER);

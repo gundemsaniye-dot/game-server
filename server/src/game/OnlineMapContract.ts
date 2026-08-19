@@ -52,7 +52,28 @@ export interface OnlineMapContract {
   };
 }
 
-const mapPath = resolve(__dirname, "../../../public/assets/tiled/maps/grasslands_01.json");
+export const ONLINE_MAP_POOL: readonly string[] = Object.freeze([
+  "grasslands_01",
+  "grasslands_02",
+  "silent_forest_01",
+  "silent_forest_02",
+  "silent_forest_03",
+  "muddy_fields_01",
+  "muddy_fields_02",
+  "muddy_fields_03",
+  "storm_valley_01",
+  "storm_valley_02",
+  "storm_valley_03",
+  "dry_steppe_01",
+  "dry_steppe_02",
+  "dry_steppe_03",
+  "desert_01",
+  "desert_02",
+  "frozen_pass_01",
+  "frozen_pass_02",
+  "infernal_dungeon_01",
+  "ash_citadel_final",
+]);
 
 function property(properties: TiledProperty[] | undefined, name: string) {
   return properties?.find((candidate) => candidate.name === name)?.value;
@@ -65,10 +86,11 @@ function finite(value: number | undefined, label: string) {
   return value;
 }
 
-function loadOnlineMapContract(): OnlineMapContract {
+function loadOnlineMapContract(mapId = "grasslands_01"): OnlineMapContract {
+  const mapPath = resolve(__dirname, `../../../public/assets/tiled/maps/${mapId}.json`);
   const map = JSON.parse(readFileSync(mapPath, "utf8")) as TiledMap;
   const gameplay = map.layers.find((layer) => layer.name === "GAMEPLAY_ZONES");
-  if (!gameplay?.objects) throw new Error("Online TMJ contract is missing GAMEPLAY_ZONES.");
+  if (!gameplay?.objects) throw new Error(`Online TMJ contract for ${mapId} is missing GAMEPLAY_ZONES.`);
 
   const objectFor = (type: string, team: string) => gameplay.objects?.find((object) =>
     (object.type === type || object.class === type) && property(object.properties, "team") === team
@@ -78,7 +100,7 @@ function loadOnlineMapContract(): OnlineMapContract {
   const playerDeploy = objectFor("DeployZone", "player");
   const enemySpawn = objectFor("SpawnZone", "enemy");
   if (!playerCastle || !enemyCastle || !playerDeploy || !enemySpawn) {
-    throw new Error("Online TMJ contract requires both castles and both deployment zones.");
+    throw new Error(`Online TMJ contract for ${mapId} requires both castles and both deployment zones.`);
   }
 
   const zone = (object: TiledObject, label: string) => {
@@ -96,7 +118,7 @@ function loadOnlineMapContract(): OnlineMapContract {
   const bridgeLayer = map.layers.find((layer) => layer.name === "05_BRIDGES");
   const cellCount = map.width * map.height;
   if (blockedLayer?.data?.length !== cellCount || bridgeLayer?.data?.length !== cellCount) {
-    throw new Error("Online TMJ contract requires complete NAV_BLOCKED and 05_BRIDGES layers.");
+    throw new Error(`Online TMJ contract for ${mapId} requires complete NAV_BLOCKED and 05_BRIDGES layers.`);
   }
   const world = { minX: 120, maxX: map.width * map.tilewidth - 120, minY: 52, maxY: map.height * map.tileheight - 52 };
   const leftDeploy = bounds(playerDeploy, "playerDeploy");
@@ -107,7 +129,7 @@ function loadOnlineMapContract(): OnlineMapContract {
   const rightCastleLineX = finite(Number(property(enemyCastle.properties, "anchorX")), "enemyCastle.anchorX");
 
   return {
-    mapId: String(property(map.properties, "mapId") ?? "frozen_pass_01"),
+    mapId: String(property(map.properties, "mapId") ?? mapId),
     worldWidth: map.width * map.tilewidth,
     worldHeight: map.height * map.tileheight,
     tileSize: map.tilewidth,
@@ -130,4 +152,21 @@ function loadOnlineMapContract(): OnlineMapContract {
   };
 }
 
-export const ONLINE_MAP_CONTRACT = Object.freeze(loadOnlineMapContract());
+const contractsById = new Map<string, OnlineMapContract>();
+
+export function getOnlineMapContract(mapId = "grasslands_01"): OnlineMapContract {
+  const normalizedId = ONLINE_MAP_POOL.includes(mapId) ? mapId : "grasslands_01";
+  const cached = contractsById.get(normalizedId);
+  if (cached) return cached;
+  const contract = Object.freeze(loadOnlineMapContract(normalizedId));
+  contractsById.set(normalizedId, contract);
+  return contract;
+}
+
+export function getRandomOnlineMapContract(): OnlineMapContract {
+  const randomIndex = Math.floor(Math.random() * ONLINE_MAP_POOL.length);
+  const selectedId = ONLINE_MAP_POOL[randomIndex];
+  return getOnlineMapContract(selectedId);
+}
+
+export const ONLINE_MAP_CONTRACT = Object.freeze(getOnlineMapContract("grasslands_01"));

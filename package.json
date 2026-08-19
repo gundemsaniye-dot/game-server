@@ -32,7 +32,7 @@
     "assets:base-runs": "python tools/build-base-unit-run-cycles.py",
     "assets:atlases": "node tools/build-unit-atlases.mjs",
     "assets:map-atlases": "PATH=\"$(pwd)/.venv/bin:$PATH\" python tools/build-map-prop-atlases.py",
-    "validate:atlases": "node tools/validate-unit-atlases.mjs && python tools/validate-unit-visual-continuity.py",
+    "validate:atlases": "node tools/validate-unit-atlases.mjs && python tools/validate-unit-visual-continuity.py && node tools/validate-unit-animation-timing.mjs",
     "generate:maps": "node tools/generate-campaign-maps.mjs",
     "validate:maps": "node tools/validate-campaign-maps.mjs",
     "tiled:lock:check": "node tools/check-tmj-source-lock.mjs",

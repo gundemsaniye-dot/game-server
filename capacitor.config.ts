@@ -2,6 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const enableWebDebugging = process.env.CAPACITOR_WEB_DEBUG === '1';
 const enablePerfTest = process.env.CAPACITOR_PERF_TEST === '1';
+const enableOnlineQa = process.env.CAPACITOR_ONLINE_QA === '1';
 const perfProfile = process.env.CAPACITOR_PERF_PROFILE === 'diagnostic' ? 'diagnostic' : 'telemetry';
 const perfMobileTextures = process.env.CAPACITOR_PERF_MOBILE_TEXTURES === '0' ? '0' : '1';
 const requestedPerfLevel = Number.parseInt(process.env.CAPACITOR_PERF_LEVEL ?? '20', 10);
@@ -31,10 +32,12 @@ const config: CapacitorConfig = {
     backgroundColor: '#071525',
     server: enablePerfTest ? {
         appStartPath: `/android-perf?androidPerf=1&scene=battle&level=${perfLevel}&seed=${20000 + perfLevel}&profile=${perfProfile}&skipBriefing=${perfSkipBriefing}&mobileTextures=${perfMobileTextures}&realSystems=${perfRealSystems}&syntheticPopulation=${perfSyntheticPopulation}${powerFxQa}${onlineUiQa}${powerQaState}`
+    } : enableOnlineQa ? {
+        appStartPath: '/?onlineQaAutoplay=1'
     } : undefined,
     android: {
         backgroundColor: '#071525',
-        allowMixedContent: false,
+        allowMixedContent: enableOnlineQa,
         webContentsDebuggingEnabled: enableWebDebugging,
         loggingBehavior: enableWebDebugging || enablePerfTest ? 'debug' : 'none'
     }

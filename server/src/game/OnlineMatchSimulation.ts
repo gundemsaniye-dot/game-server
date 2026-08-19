@@ -10,8 +10,8 @@ import type {
   UsePowerCommand,
 } from "../../../shared/online/Protocol";
 import { CASTLE_CONTACT_TOLERANCE } from "../../../shared/online/CastleContact";
-import { ONLINE_MAP_CONTRACT } from "./OnlineMapContract";
-import { ONLINE_MAP_NAVIGATION, type OnlinePathPoint } from "./OnlineMapNavigation";
+import { ONLINE_MAP_CONTRACT, type OnlineMapContract } from "./OnlineMapContract";
+import { OnlineMapNavigation, type OnlinePathPoint } from "./OnlineMapNavigation";
 import { ONLINE_MATCH_CONFIG, ONLINE_UNIT_STATS, type OnlineUnitStats } from "./OnlineMatchConfig";
 
 interface OnlinePlayerState {
@@ -63,6 +63,7 @@ export class OnlineMatchSimulation {
     left: ONLINE_MATCH_CONFIG.castleHp,
     right: ONLINE_MATCH_CONFIG.castleHp,
   };
+  private readonly navigation: OnlineMapNavigation;
   private elapsedMs = 0;
   private passiveIncomeAt = ONLINE_MATCH_CONFIG.passiveGoldIntervalMs;
   private nextUnitId = 1;
@@ -75,8 +76,10 @@ export class OnlineMatchSimulation {
     public readonly roomId: string,
     playerIds: OnlineMatchPlayers,
     public readonly seed: number,
+    public readonly contract: OnlineMapContract = ONLINE_MAP_CONTRACT,
   ) {
     this.randomState = seed >>> 0;
+    this.navigation = new OnlineMapNavigation(this.contract);
     const player = (playerId: string): OnlinePlayerState => ({
       playerId,
       gold: ONLINE_MATCH_CONFIG.startingGold,
@@ -92,7 +95,7 @@ export class OnlineMatchSimulation {
   }
 
   get mapId() {
-    return ONLINE_MATCH_CONFIG.mapId;
+    return this.contract.mapId;
   }
 
   sideForPlayer(playerId: string): OnlineSide | undefined {
@@ -122,7 +125,7 @@ export class OnlineMatchSimulation {
     const player = this.players[side];
     if (player.gold < stats.cost) return this.reject(command.commandId, "NOT_ENOUGH_GOLD", "Not enough gold.");
 
-    const bounds = ONLINE_MATCH_CONFIG.deployBounds[side];
+    const bounds = this.contract.deployBounds[side];
     if (!Number.isFinite(command.x) || command.x < bounds.minX || command.x > bounds.maxX) {
       return this.reject(command.commandId, "INVALID_DEPLOY_X", "Deployment is outside the TMJ zone.");
     }
@@ -144,8 +147,8 @@ export class OnlineMatchSimulation {
     const config = ONLINE_MATCH_CONFIG.powers[command.power];
     if (!config) return this.rejectPower(command.commandId, "UNKNOWN_POWER", "Unknown online power.");
     if (!Number.isFinite(command.x) || !Number.isFinite(command.y) ||
-        command.x < 0 || command.x > ONLINE_MAP_CONTRACT.worldWidth ||
-        command.y < 0 || command.y > ONLINE_MAP_CONTRACT.worldHeight) {
+        command.x < 0 || command.x > this.contract.worldWidth ||
+        command.y < 0 || command.y > this.contract.worldHeight) {
       return this.rejectPower(command.commandId, "INVALID_POWER_TARGET", "Power target is outside the map.");
     }
 
@@ -154,9 +157,9 @@ export class OnlineMatchSimulation {
       return this.rejectPower(command.commandId, "POWER_COOLDOWN", "Power is cooling down.");
     }
     if (command.power === "missile") {
-      const geometry = ONLINE_MAP_CONTRACT.sides[side];
+      const geometry = this.contract.sides[side];
       const opponent: OnlineSide = side === "left" ? "right" : "left";
-      const opponentGeometry = ONLINE_MAP_CONTRACT.sides[opponent];
+      const opponentGeometry = this.contract.sides[opponent];
       const homeTargetX = geometry.castleLineX ?? (side === "left" ? geometry.castle.maxX : geometry.castle.minX);
       const opponentCastleEdge = opponentGeometry.castleLineX ?? (
         opponent === "left" ? opponentGeometry.castle.maxX : opponentGeometry.castle.minX
@@ -309,8 +312,10 @@ export class OnlineMatchSimulation {
       return;
     }
     const castleX = this.castleFront(opponent);
-    if (Math.abs(castleX - unit.x) <= CASTLE_CONTACT_TOLERANCE) {
-      unit.x = castleX;
+    const isRanged = unit.stats.range > 80;
+    const attackRange = isRanged ? Math.min(unit.stats.range, 160) : 16;
+    const forwardDistance = unit.side === "left" ? castleX - unit.x : unit.x - castleX;
+    if (forwardDistance <= attackRange) {
       unit.path = [];
       unit.pathIndex = 0;
       unit.pathGoalKey = undefined;
@@ -330,18 +335,33 @@ export class OnlineMatchSimulation {
       this.moveNavigated(unit, target.x, target.y, deltaMs);
       return;
     }
+
+    // Final approach corridor to castle wall:
+    const castleDistance = Math.abs(castleX - unit.x);
+    if (castleDistance <= 110) {
+      const step = Math.min(castleDistance, unit.stats.speed * (deltaMs / 1_000));
+      unit.x += unit.side === "left" ? step : -step;
+      unit.facing = unit.side === "left" ? 1 : -1;
+      const updatedDistance = unit.side === "left" ? castleX - unit.x : unit.x - castleX;
+      if (updatedDistance <= attackRange) {
+        unit.state = "attackingCastle";
+        if (this.attackReady(unit)) this.castles[opponent] = Math.max(0, this.castles[opponent] - unit.stats.castleDamage);
+      }
+      return;
+    }
+
     this.moveNavigated(unit, castleX, unit.y, deltaMs);
   }
 
   private moveNavigated(unit: SimulatedUnit, targetX: number, targetY: number, deltaMs: number) {
-    const goalKey = `${Math.floor(targetX / ONLINE_MAP_CONTRACT.tileSize)}:${Math.floor(targetY / ONLINE_MAP_CONTRACT.tileSize)}`;
+    const goalKey = `${Math.floor(targetX / this.contract.tileSize)}:${Math.floor(targetY / this.contract.tileSize)}`;
     if (unit.pathGoalKey !== goalKey || unit.pathIndex >= unit.path.length) {
-      unit.path = ONLINE_MAP_NAVIGATION.findPath(unit, { x: targetX, y: targetY });
+      unit.path = this.navigation.findPath(unit, { x: targetX, y: targetY });
       unit.pathIndex = 0;
       unit.pathGoalKey = goalKey;
     }
     const waypoint = unit.path[unit.pathIndex];
-    if (!waypoint) return Math.hypot(targetX - unit.x, targetY - unit.y) <= ONLINE_MAP_CONTRACT.tileSize;
+    if (!waypoint) return Math.hypot(targetX - unit.x, targetY - unit.y) <= this.contract.tileSize;
     if (this.moveToward(unit, waypoint.x, waypoint.y, deltaMs)) unit.pathIndex += 1;
     return unit.pathIndex >= unit.path.length;
   }
@@ -449,25 +469,25 @@ export class OnlineMatchSimulation {
     maxDistance: number,
     ignoredResourceId?: number,
   ): OnlinePathPoint {
-    const midpoint = ONLINE_MAP_CONTRACT.worldWidth / 2;
+    const midpoint = this.contract.worldWidth / 2;
     const bounds = side === "left"
-      ? { minX: ONLINE_MAP_CONTRACT.deployBounds.left.maxX + 40, maxX: midpoint - 70 }
-      : { minX: midpoint + 70, maxX: ONLINE_MAP_CONTRACT.deployBounds.right.minX - 40 };
+      ? { minX: this.contract.deployBounds.left.maxX + 20, maxX: midpoint - 40 }
+      : { minX: midpoint + 40, maxX: this.contract.deployBounds.right.minX - 20 };
     const candidates: OnlinePathPoint[] = [];
-    const step = ONLINE_MAP_CONTRACT.tileSize / 2;
-    for (let y = 70; y <= ONLINE_MAP_CONTRACT.worldHeight - 70; y += step) {
+    const step = this.contract.tileSize / 2;
+    for (let y = 60; y <= this.contract.worldHeight - 60; y += step) {
       for (let x = bounds.minX; x <= bounds.maxX; x += step) {
         const distance = Math.hypot(x - anchor.x, y - anchor.y);
         if (distance < minDistance || distance > maxDistance) continue;
-        if (!ONLINE_MAP_NAVIGATION.isResourcePlacementSafe(x, y)) continue;
+        if (!this.navigation.isResourcePlacementSafe(x, y, 14)) continue;
         const separated = [...this.resources.values()].every((resource) =>
-          resource.id === ignoredResourceId || Math.hypot(x - resource.x, y - resource.y) >= ONLINE_MATCH_CONFIG.resourceSeparation
+          resource.id === ignoredResourceId || Math.hypot(x - resource.x, y - resource.y) >= 48
         );
         if (separated) candidates.push({ x, y });
       }
     }
-    if (candidates.length === 0 && minDistance > 0) {
-      return this.chooseResourcePosition(side, anchor, 0, maxDistance + ONLINE_MAP_CONTRACT.tileSize, ignoredResourceId);
+    if (candidates.length === 0 && maxDistance < 600) {
+      return this.chooseResourcePosition(side, anchor, 0, maxDistance + 60, ignoredResourceId);
     }
     if (candidates.length === 0) throw new Error(`No safe online resource position for ${side}.`);
     candidates.sort((left, right) => Math.hypot(left.x - anchor.x, left.y - anchor.y) - Math.hypot(right.x - anchor.x, right.y - anchor.y));
@@ -565,7 +585,7 @@ export class OnlineMatchSimulation {
   }
 
   private castleFront(side: OnlineSide) {
-    return side === "left" ? ONLINE_MATCH_CONFIG.leftCastleFrontX : ONLINE_MATCH_CONFIG.rightCastleFrontX;
+    return this.contract.castleContactX[side];
   }
 
   private distance(a: OnlinePathPoint, b: OnlinePathPoint) {

@@ -9,7 +9,7 @@ import {
 import type { BattleStartData } from "../systems/LevelRuntime";
 
 type TransitionTarget = "MainMenu" | "MapSelect" | "Game";
-type TransitionRelease = "menu" | "campaign" | "campaign-for-battle" | "battle";
+type TransitionRelease = "menu" | "menu-for-battle" | "campaign" | "campaign-for-battle" | "battle";
 
 export interface SceneTransitionData {
   target: TransitionTarget;
@@ -43,9 +43,15 @@ export class SceneTransition extends Scene {
     this.cameras.main.setBackgroundColor(0x071525);
     this.add.rectangle(640, 360, 1280, 720, 0x071525, 1);
 
-    if (this.transition.release === "menu") {
+    if (
+      this.transition.release === "menu" ||
+      this.transition.release === "menu-for-battle"
+    ) {
       releaseSplashTextures(this);
       releaseMainMenuTextures(this);
+      if (this.transition.release === "menu-for-battle") {
+        releaseLobbyRuntimeMemory(this);
+      }
     } else if (
       this.transition.release === "campaign" ||
       this.transition.release === "campaign-for-battle"

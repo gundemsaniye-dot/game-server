@@ -19,6 +19,7 @@ import {
 } from "../systems/ProgressionStore";
 import type { UnitId } from "../types/UnitTypes";
 import { castleLog } from "../utils/DevLog";
+import { playAndroidHaptic } from "../platform/AndroidHaptics";
 
 const CARD_WIDTH = 132;
 const CARD_HEIGHT = 164;
@@ -39,7 +40,8 @@ export class ArmyLoadout extends Scene {
   }
 
   create() {
-    const debugUnlockAll = import.meta.env.DEV && new URLSearchParams(window.location.search).has("unlockAll");
+    const debugUnlockAll = (import.meta.env.DEV || import.meta.env.VITE_ANDROID_QA === "1") &&
+      new URLSearchParams(window.location.search).has("unlockAll");
     this.progress = debugUnlockAll
       ? createDebugUnlockedProgress(loadCampaignProgress())
       : loadCampaignProgress();
@@ -84,6 +86,7 @@ export class ArmyLoadout extends Scene {
         interactive: index > 0,
         onClick: () => {
           if (index === 0) return;
+          playAndroidHaptic("selection");
           this.activeSlot = index - 1;
           this.renderCards();
         },
@@ -121,6 +124,7 @@ export class ArmyLoadout extends Scene {
   }
 
   private chooseUnit(unitId: UnitId) {
+    playAndroidHaptic("selection");
     const existingIndex = this.selectedCombat.indexOf(unitId);
     if (existingIndex >= 0) {
       this.activeSlot = existingIndex;

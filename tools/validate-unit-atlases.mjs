@@ -20,7 +20,7 @@ const teams = ['player', 'enemy'];
 const actions = [
   { name: 'idle', count: 8, row: 0 },
   { name: 'run', count: 16, row: 1 },
-  { name: 'attack', count: 8, row: 2 }
+  { name: 'attack', count: 16, row: 2 }
 ];
 const frameSize = 128;
 const columns = 16;

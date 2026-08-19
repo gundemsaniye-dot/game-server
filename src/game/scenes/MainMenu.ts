@@ -90,11 +90,15 @@ export class MainMenu extends Scene {
     releaseBattleRuntimeMemory(this);
     releaseCampaignTexture(this);
     this.applyStoredSoundPreference();
+    const autoOnlineQa = import.meta.env.VITE_ONLINE_QA === "1" &&
+      new URLSearchParams(window.location.search).has("onlineQaAutoplay");
+    if (autoOnlineQa) this.skipSplash = true;
     if (this.skipSplash) {
       releaseSplashTextures(this);
       this.createMainMenuVisuals();
       this.createMenuButtons();
       this.startLobbyMusic();
+      if (autoOnlineQa) this.time.delayedCall(80, () => this.startOnlineMatch());
       return;
     }
     this.createSplashScreen();
@@ -382,14 +386,19 @@ export class MainMenu extends Scene {
       cleanupAttempt();
       statusText.setText(t("game_online_arena_loading"));
       closeOverlay();
-      this.scene.start("Game", {
-        isOnline: true,
-        roomId: authoritativeRoomId,
-        side: authoritativeSide,
-        levelId: "level_001",
-        mapIndex: 0,
-        playerLoadout: ["peasant", "swordsman", "archer", "horseman"],
-        attemptSeed: net.matchSeed ?? undefined,
+      this.scene.start("SceneTransition", {
+        target: "Game",
+        release: "menu-for-battle",
+        targetData: {
+          isOnline: true,
+          roomId: authoritativeRoomId,
+          side: authoritativeSide,
+          mapId: net.mapId ?? "grasslands_01",
+          levelId: "level_001",
+          mapIndex: 0,
+          playerLoadout: ["peasant", "swordsman", "archer", "horseman"],
+          attemptSeed: net.matchSeed ?? undefined,
+        },
       });
     };
     const cleanupAttempt = () => {

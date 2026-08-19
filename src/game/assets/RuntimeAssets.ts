@@ -149,21 +149,20 @@ export function releaseSplashTextures(scene: Scene) {
   releaseTextures(scene, SPLASH_TEXTURE_KEYS);
 }
 
-export function releaseMainMenuTextures(_scene: Scene) {
-  // Disabled for performance: releaseTextures(scene, MAIN_MENU_TEXTURES.map((asset) => asset.key));
+export function releaseMainMenuTextures(scene: Scene) {
+  releaseTextures(scene, MAIN_MENU_TEXTURES.map((asset) => asset.key));
 }
 
-export function releaseCampaignTexture(_scene: Scene) {
-  // Disabled for performance: releaseTextures(scene, [CAMPAIGN_TEXTURE.key]);
+export function releaseCampaignTexture(scene: Scene) {
+  releaseTextures(scene, [CAMPAIGN_TEXTURE.key]);
 }
 
 export function releaseLobbyRuntimeMemory(scene: Scene) {
   scene.sound.stopByKey("lobby-music");
-  // Disabled for performance:
-  // scene.sound.removeByKey("lobby-music");
-  // scene.cache.audio.remove("lobby-music");
-  // scene.cache.json.remove("legal-content");
-  // releaseTextures(scene, ["logo"]);
+  scene.sound.removeByKey("lobby-music");
+  scene.cache.audio.remove("lobby-music");
+  scene.cache.json.remove("legal-content");
+  releaseTextures(scene, ["logo"]);
 }
 
 export function releaseBattleRuntimeMemory(scene: Scene) {

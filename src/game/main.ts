@@ -11,9 +11,7 @@ import { SceneTransition } from './scenes/SceneTransition';
 
 const launchParams = new URLSearchParams(window.location.search);
 const mobileTexturesOverride = launchParams.get('mobileTextures');
-const isAndroidRuntime = /Android/i.test(navigator.userAgent);
 const timeoutLoopOverride = launchParams.get('timeoutLoop');
-const desynchronizedOverride = launchParams.get('desynchronized');
 // Keep this an explicit A/B option. On the reference Android device Phaser's
 // one-texture mobile mode increased the scene from about 41 to 69 draw calls,
 // so the normal multi-texture batcher remains the shipping default.

@@ -3,7 +3,7 @@ import { GameRoom } from "./GameRoom";
 import { GameLoop } from "./GameLoop";
 import { Logger } from "../utils/Logger";
 import { ClientMessages, ServerMessages, NetworkMessage } from "../network/NetworkProtocol";
-import { ONLINE_MATCH_CONFIG } from "./OnlineMatchConfig";
+import { getRandomOnlineMapContract } from "./OnlineMapContract";
 
 export class Matchmaking {
   private queue: Player[] = [];
@@ -50,7 +50,8 @@ export class Matchmaking {
        * A unit at server x=1200 is rendered at x=1200 on BOTH clients.
        * Only the camera viewport starting position differs per player.
        */
-      const mapId = ONLINE_MATCH_CONFIG.mapId;
+      const contract = getRandomOnlineMapContract();
+      const mapId = contract.mapId;
       p1.side = "left";
       p1.mapId = mapId;
       p1.roomId = roomId;
@@ -59,7 +60,7 @@ export class Matchmaking {
       p2.roomId = roomId;
 
       const seed = this.createMatchSeed(roomId);
-      const room = new GameRoom(roomId, p1, p2, seed);
+      const room = new GameRoom(roomId, p1, p2, seed, contract);
       
       this.gameLoop.addRoom(room);
       

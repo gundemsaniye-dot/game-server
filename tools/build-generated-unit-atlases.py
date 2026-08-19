@@ -223,7 +223,7 @@ def validate_run_stability(atlas: Image.Image, unit_id: str) -> None:
         )
 
 
-def recolor_red_to_enemy_blue(image: Image.Image) -> Image.Image:
+def recolor_red_to_player_blue(image: Image.Image) -> Image.Image:
     recolored = image.copy()
     pixels = recolored.load()
     for y in range(recolored.height):
@@ -235,9 +235,9 @@ def recolor_red_to_enemy_blue(image: Image.Image) -> Image.Image:
             is_red_fabric = (hue <= 0.065 or hue >= 0.96) and saturation >= 0.34
             if not is_red_fabric:
                 continue
-            enemy_hue = 0.59
+            player_hue = 0.59
             new_red, new_green, new_blue = colorsys.hsv_to_rgb(
-                enemy_hue,
+                player_hue,
                 min(1.0, saturation * 0.92),
                 min(1.0, value * 1.04),
             )
@@ -289,9 +289,11 @@ def main() -> None:
     for unit_id, source_path in SOURCES.items():
         if not source_path.exists():
             raise FileNotFoundError(source_path)
-        player_atlas = build_atlas(unit_id, source_path)
-        validate_run_stability(player_atlas, unit_id)
-        enemy_atlas = recolor_red_to_enemy_blue(player_atlas)
+        # Generated advanced-unit sources are authored in red. Runtime team
+        # identity is player=blue and enemy=red, matching the four base units.
+        enemy_atlas = build_atlas(unit_id, source_path)
+        validate_run_stability(enemy_atlas, unit_id)
+        player_atlas = recolor_red_to_player_blue(enemy_atlas)
         player_atlas.save(ATLAS_DIR / f"player-{unit_id}.png", optimize=True)
         enemy_atlas.save(ATLAS_DIR / f"enemy-{unit_id}.png", optimize=True)
         print(f"Built player/enemy atlases: {unit_id}")

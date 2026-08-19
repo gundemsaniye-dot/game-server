@@ -20,7 +20,7 @@ const columns = 16;
 const rows = [
   { action: 'idle', row: 0, count: 8 },
   { action: 'run', row: 1, count: 16 },
-  { action: 'attack', row: 2, count: 8 }
+  { action: 'attack', row: 2, count: 16 }
 ];
 
 const makeFrame = (x, y) => ({

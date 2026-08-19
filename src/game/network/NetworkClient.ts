@@ -8,6 +8,8 @@ import {
   type SpawnUnitCommand,
   type UsePowerCommand,
   type OnlinePower,
+  type OnlinePing,
+  type OnlineEmoteId,
 } from "./NetworkProtocol";
 
 export class NetworkClient extends Events.EventEmitter {
@@ -39,7 +41,11 @@ export class NetworkClient extends Events.EventEmitter {
   public matchDurationMs: number | null = null;
   public matchStarted = false;
   public latestReadyState: OnlineReadyState | null = null;
+  public latencyMs: number | null = null;
   private commandSequence = 0;
+  private pingSequence = 0;
+  private pingTimer?: number;
+  private readonly pendingPings = new Map<number, number>();
 
   private constructor() {
     super();
@@ -91,6 +97,7 @@ export class NetworkClient extends Events.EventEmitter {
         }
         this.isConnected = true;
         this.sendMessage({ type: ClientMessages.HELLO });
+        this.startLatencyProbe();
         this.emit("connected");
         settled = true;
         resolve();
@@ -135,6 +142,9 @@ export class NetworkClient extends Events.EventEmitter {
   }
 
   private resetSessionState() {
+    if (this.pingTimer !== undefined) window.clearInterval(this.pingTimer);
+    this.pingTimer = undefined;
+    this.pendingPings.clear();
     this.isConnected = false;
     this.roomId = null;
     this.playerId = null;
@@ -144,7 +154,25 @@ export class NetworkClient extends Events.EventEmitter {
     this.matchDurationMs = null;
     this.matchStarted = false;
     this.latestReadyState = null;
+    this.latencyMs = null;
     this.commandSequence = 0;
+  }
+
+  private startLatencyProbe() {
+    if (this.pingTimer !== undefined) window.clearInterval(this.pingTimer);
+    const probe = () => {
+      if (!this.ws || !this.isConnected) return;
+      const id = ++this.pingSequence;
+      this.pendingPings.set(id, performance.now());
+      while (this.pendingPings.size > 3) {
+        const oldest = this.pendingPings.keys().next().value as number | undefined;
+        if (oldest === undefined) break;
+        this.pendingPings.delete(oldest);
+      }
+      this.sendMessage({ type: ClientMessages.PING, payload: { id } satisfies OnlinePing });
+    };
+    probe();
+    this.pingTimer = window.setInterval(probe, 2_000);
   }
 
   private handleMessage(msg: NetworkMessage) {
@@ -200,6 +228,19 @@ export class NetworkClient extends Events.EventEmitter {
         break;
       }
 
+      case ServerMessages.PONG: {
+        const pong = msg.payload as OnlinePing;
+        const sentAt = this.pendingPings.get(pong.id);
+        if (sentAt === undefined) break;
+        this.pendingPings.delete(pong.id);
+        const sample = Math.max(0, performance.now() - sentAt);
+        this.latencyMs = this.latencyMs === null
+          ? sample
+          : this.latencyMs * 0.72 + sample * 0.28;
+        this.emit("latency", this.latencyMs);
+        break;
+      }
+
       default:
         this.emit(msg.type, msg.payload);
     }
@@ -250,6 +291,10 @@ export class NetworkClient extends Events.EventEmitter {
     };
     this.sendMessage({ type: ClientMessages.USE_ABILITY, payload: command });
     return command.commandId;
+  }
+
+  public sendEmote(emote: OnlineEmoteId) {
+    this.sendMessage({ type: ClientMessages.SEND_EMOTE, payload: { emote } });
   }
 
   private sendMessage(msg: NetworkMessage) {

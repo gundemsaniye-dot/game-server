@@ -422,10 +422,10 @@
         "assetKey": "map-prop-frozen_pass-snow-pine"
       },
       "x": 840,
-      "y": 328,
+      "y": 408,
       "scale": 0.24,
       "rotation": -0.1,
-      "depth": 334,
+      "depth": 414,
       "footprintRadius": 20,
       "blocksDeploy": false
     }

@@ -15,16 +15,24 @@ const groundCell = (): NavCell => ({
 /** Phaser creates Tile objects for empty layer cells too; only an index >= 0
  * represents an authored navigation tile. */
 const hasTile = (tile: Phaser.Tilemaps.Tile | null | undefined) => Boolean(tile && tile.index >= 0);
-const hasNavigationRole = (tile: Phaser.Tilemaps.Tile | null | undefined, role: "bridge" | "blocked") =>
-  hasTile(tile) && tile?.properties.navigationRole === role;
+const hasNavigationRole = (tile: Phaser.Tilemaps.Tile | null | undefined, role: "bridge" | "blocked") => {
+  if (!hasTile(tile)) return false;
+  if (tile?.properties?.navigationRole === role) return true;
+  if (role === "bridge" && (tile?.index === 577 || tile?.tileset?.name === "navigation-bridge")) return true;
+  if (role === "blocked" && (tile?.index === 578 || tile?.tileset?.name === "navigation-blocked")) return true;
+  return false;
+};
 const objectProperty = (object: Phaser.Types.Tilemaps.TiledObject, name: string) =>
   object.properties?.find((property: { name?: string; value?: unknown }) => property.name === name)?.value;
 
-/** A read-only 20px grid built from the invisible Tiled navigation layers. */
+/** A high-performance 20px grid built from the Tiled navigation layers and fortress objects. */
 export class TiledCollisionGrid {
   private readonly cells = Array.from({ length: TILED_NAV_ROWS }, () =>
     Array.from({ length: TILED_NAV_COLUMNS }, groundCell),
   );
+
+  public playerCastleFrontX = 195;
+  public enemyCastleFrontX = 1085;
 
   constructor(tilemap: Phaser.Tilemaps.Tilemap) {
     const blocked = tilemap.getLayer("NAV_BLOCKED");
@@ -33,18 +41,16 @@ export class TiledCollisionGrid {
       for (let tileX = 0; tileX < 32; tileX += 1) {
         const blockedTile = blocked?.data[tileY]?.[tileX] ?? null;
         const bridgeTile = bridges?.data[tileY]?.[tileX] ?? null;
-        // A marker on the wrong layer must never silently change movement.
-        // Only the explicit green bridge and red blocked marker properties are
-        // accepted as movement data.
-        const isBlocked = hasNavigationRole(blockedTile, "blocked");
-        const isBridge = hasNavigationRole(bridgeTile, "bridge");
+        
+        const isBridge = hasNavigationRole(bridgeTile, "bridge") || (hasTile(bridgeTile) && bridgeTile!.index > 0);
+        const isBlocked = !isBridge && (hasNavigationRole(blockedTile, "blocked") || (hasTile(blockedTile) && blockedTile!.index > 0));
         const properties = (isBridge ? bridgeTile?.properties : blockedTile?.properties ?? {}) as Record<string, unknown>;
         const nav = {
           walkable: isBridge ? true : properties.walkable !== false && !isBlocked,
           terrainType: isBridge
             ? "bridge"
             : typeof properties.terrainType === "string" ? properties.terrainType : isBlocked ? "solid" : "ground",
-          moveCost: typeof properties.moveCost === "number" ? properties.moveCost : 1,
+          moveCost: isBridge ? 0.9 : typeof properties.moveCost === "number" ? properties.moveCost : 1,
           // Bridge decks stay walkable for troops but are reserved corridors:
           // units, resources and scenery cannot be deployed on them.
           blocksDeploy: isBridge || properties.blocksDeploy === true || (isBlocked && !isBridge),
@@ -75,17 +81,39 @@ export class TiledCollisionGrid {
         object.height <= 0
       ) continue;
 
+      const team = objectProperty(object, "team");
       const first = this.worldToCell(object.x, object.y);
       const last = this.worldToCell(object.x + object.width - 0.001, object.y + object.height - 0.001);
-      for (let row = first.row; row <= last.row; row += 1) {
-        for (let column = first.column; column <= last.column; column += 1) {
-          this.cells[row][column] = {
-            walkable: false,
-            terrainType: "solid",
-            moveCost: 999,
-            blocksDeploy: true,
-            damagePerSecond: 0,
-          };
+
+      if (team === "player") {
+        const wallX = 195;
+        this.playerCastleFrontX = wallX;
+        const blockerEndCell = this.worldToCell(wallX - 10, object.y);
+        for (let row = first.row; row <= last.row; row += 1) {
+          for (let column = first.column; column <= Math.min(last.column, blockerEndCell.column); column += 1) {
+            this.cells[row][column] = {
+              walkable: false,
+              terrainType: "solid",
+              moveCost: 999,
+              blocksDeploy: true,
+              damagePerSecond: 0,
+            };
+          }
+        }
+      } else if (team === "enemy") {
+        const wallX = 1085;
+        this.enemyCastleFrontX = wallX;
+        const blockerStartCell = this.worldToCell(wallX + 10, object.y);
+        for (let row = first.row; row <= last.row; row += 1) {
+          for (let column = Math.max(first.column, blockerStartCell.column); column <= last.column; column += 1) {
+            this.cells[row][column] = {
+              walkable: false,
+              terrainType: "solid",
+              moveCost: 999,
+              blocksDeploy: true,
+              damagePerSecond: 0,
+            };
+          }
         }
       }
     }
@@ -108,13 +136,14 @@ export class TiledCollisionGrid {
     return this.cells[row]?.[column];
   }
 
+  isBridgeAtWorld(x: number, y: number): boolean {
+    const cell = this.cellAtWorld(x, y);
+    return cell.walkable && cell.terrainType === "bridge";
+  }
+
   isWalkableFor(column: number, row: number, profile: NavigationProfile) {
     if (column < 0 || row < 0 || column >= TILED_NAV_COLUMNS || row >= TILED_NAV_ROWS) return false;
     const center = this.cellCenter(column, row);
-    // Validate the actual agent radius at graph-build time. Sampling whole
-    // neighbouring cells was too conservative for 40px bridges; sampling the
-    // profile radius at the 20px cell centre preserves those corridors while
-    // preventing A* from returning shoreline/corner cells steering cannot use.
     return this.isWorldWalkableFor(center.x, center.y, profile);
   }
 
@@ -158,18 +187,71 @@ export class TiledCollisionGrid {
     return !this.cellAtWorld(x, y).walkable;
   }
 
-  /** Continuous clearance used by path smoothing and runtime steering.
-   * A* still works on the compact 20px grid, while this prevents a unit center
-   * from hugging a shoreline/corner so closely that its sprite appears inside
-   * the blocked surface. */
+  /**
+   * Calculates continuous obstacle repulsion to push units smoothly away
+   * from NAV_BLOCKED cells and world boundaries, preventing snagging or getting stuck.
+   */
+  getObstacleRepulsion(x: number, y: number, radius: number): { x: number; y: number; force: number } {
+    const cell = this.worldToCell(x, y);
+    let pushX = 0;
+    let pushY = 0;
+    let count = 0;
+
+    // Check 3x3 surrounding cells
+    for (let r = Math.max(0, cell.row - 2); r <= Math.min(TILED_NAV_ROWS - 1, cell.row + 2); r += 1) {
+      for (let c = Math.max(0, cell.column - 2); c <= Math.min(TILED_NAV_COLUMNS - 1, cell.column + 2); c += 1) {
+        if (this.cells[r][c].walkable) continue;
+
+        const cellMinX = c * TILED_NAV_CELL_SIZE;
+        const cellMaxX = cellMinX + TILED_NAV_CELL_SIZE;
+        const cellMinY = r * TILED_NAV_CELL_SIZE;
+        const cellMaxY = cellMinY + TILED_NAV_CELL_SIZE;
+
+        // Closest point on the blocked cell's rectangle to (x, y)
+        const closestX = Math.max(cellMinX, Math.min(cellMaxX, x));
+        const closestY = Math.max(cellMinY, Math.min(cellMaxY, y));
+
+        const dx = x - closestX;
+        const dy = y - closestY;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq < radius * radius) {
+          const dist = Math.sqrt(distSq);
+          const overlap = radius - dist;
+          if (dist > 0.001) {
+            pushX += (dx / dist) * overlap;
+            pushY += (dy / dist) * overlap;
+          } else {
+            // Unit center is inside the blocked cell; push away from cell center
+            const center = this.cellCenter(c, r);
+            const cdx = x - center.x;
+            const cdy = y - center.y;
+            const cdist = Math.sqrt(cdx * cdx + cdy * cdy) || 1;
+            pushX += (cdx / cdist) * (radius + 2);
+            pushY += (cdy / cdist) * (radius + 2);
+          }
+          count += 1;
+        }
+      }
+    }
+
+    // World edge boundaries push inward
+    if (x < radius + 10) pushX += (radius + 10 - x);
+    if (x > TILED_NAV_COLUMNS * TILED_NAV_CELL_SIZE - radius - 10) pushX -= (x - (TILED_NAV_COLUMNS * TILED_NAV_CELL_SIZE - radius - 10));
+    if (y < radius + 10) pushY += (radius + 10 - y);
+    if (y > TILED_NAV_ROWS * TILED_NAV_CELL_SIZE - radius - 10) pushY -= (y - (TILED_NAV_ROWS * TILED_NAV_CELL_SIZE - radius - 10));
+
+    const force = Math.sqrt(pushX * pushX + pushY * pushY);
+    if (force > 0.001) {
+      return { x: pushX / force, y: pushY / force, force };
+    }
+    return { x: 0, y: 0, force: 0 };
+  }
+
+  /**
+   * Continuous clearance used by path smoothing and runtime steering.
+   */
   isWorldWalkableFor(x: number, y: number, profile: NavigationProfile) {
-    // Authored crossings can be 40px wide and the navigation graph samples
-    // their two 20px centre lines. A radius below 10px leaves a real buffer
-    // without deleting both valid centre lines from the graph. Visual sprite
-    // width is intentionally independent from the gameplay collision radius.
-    // Small units used to receive only 4px clearance, which kept their centre
-    // legal but let the sprite visibly hang over a river bank. Every profile
-    // now keeps at least the same 8.5px shoreline buffer; heavy units keep 9.5px.
     const radius = profile === "HEAVY" ? 9.5 : 8.5;
     const diagonal = radius * Math.SQRT1_2;
     const samples = [
@@ -187,3 +269,4 @@ export class TiledCollisionGrid {
     });
   }
 }
+

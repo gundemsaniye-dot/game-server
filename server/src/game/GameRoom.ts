@@ -14,6 +14,7 @@ import {
 } from "../network/NetworkProtocol";
 import { Logger } from "../utils/Logger";
 import { OnlineMatchSimulation } from "./OnlineMatchSimulation";
+import type { OnlineMapContract } from "./OnlineMapContract";
 
 export class GameRoom {
   private readonly players: [Player, Player];
@@ -29,9 +30,15 @@ export class GameRoom {
     return this.endBroadcast;
   }
 
-  constructor(public readonly id: string, player1: Player, player2: Player, seed: number) {
+  constructor(
+    public readonly id: string,
+    player1: Player,
+    player2: Player,
+    seed: number,
+    contract?: OnlineMapContract,
+  ) {
     this.players = [player1, player2];
-    this.simulation = new OnlineMatchSimulation(id, { left: player1.id, right: player2.id }, seed);
+    this.simulation = new OnlineMatchSimulation(id, { left: player1.id, right: player2.id }, seed, contract);
   }
 
   start() {

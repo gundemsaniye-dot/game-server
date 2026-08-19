@@ -103,7 +103,7 @@ export class Preloader extends Scene {
   create() {
     const params = new URLSearchParams(window.location.search);
     const perf = getAndroidPerfRequest();
-    const qaAllowed = import.meta.env.DEV || perf.enabled;
+    const qaAllowed = import.meta.env.DEV || perf.enabled || import.meta.env.VITE_ANDROID_QA === "1";
 
     if (params.get("nativeReturn") === "menu") {
       castleLog("PRELOAD", "complete -> native return MainMenu");
@@ -141,7 +141,7 @@ export class Preloader extends Scene {
       });
       return;
     }
-    if (import.meta.env.DEV && new URLSearchParams(window.location.search).get("scene") === "loadout") {
+    if ((import.meta.env.DEV || import.meta.env.VITE_ANDROID_QA === "1") && new URLSearchParams(window.location.search).get("scene") === "loadout") {
       castleLog("PRELOAD", "complete -> ArmyLoadout direct path");
       this.scene.start("ArmyLoadout");
       return;
@@ -199,7 +199,12 @@ export class Preloader extends Scene {
   private directBattleLevel() {
     const params = new URLSearchParams(window.location.search);
     const perf = getAndroidPerfRequest();
-    if ((!import.meta.env.DEV && !perf.enabled) || params.get("scene") !== "battle") return undefined;
+    const androidCastleQa = import.meta.env.VITE_ANDROID_QA === "1" &&
+      window.location.pathname.includes("/android-qa/castle-combat");
+    if (
+      (!import.meta.env.DEV && !perf.enabled && import.meta.env.VITE_ANDROID_QA !== "1") ||
+      (params.get("scene") !== "battle" && !androidCastleQa)
+    ) return undefined;
     const order = Math.max(1, Math.min(20, Number.parseInt(params.get("level") ?? "1", 10) || 1));
     return `level_${String(order).padStart(3, "0")}`;
   }

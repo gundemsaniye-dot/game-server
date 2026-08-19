@@ -20,14 +20,17 @@ export const UNIT_ANIMATION_DEFINITIONS: Record<UnitAnimationName, UnitAnimation
         prefix: 'run_',
         start: 0,
         end: 15,
-        frameRate: 16,
+        // 12 authored poses per second maps cleanly to a 60 Hz display: each
+        // pose gets five refreshes. A 16-pose stride now lasts about 1.33 s
+        // before the per-unit movement-speed adjustment is applied.
+        frameRate: 12,
         repeat: -1
     },
     attack: {
         prefix: 'attack_',
         start: 0,
-        end: 7,
-        frameRate: 10,
+        end: 15,
+        frameRate: 12,
         repeat: 0
     }
 };

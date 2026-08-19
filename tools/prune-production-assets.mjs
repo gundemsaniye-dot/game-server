@@ -23,6 +23,14 @@ const ACTIVE_UI_ASSETS = new Set([
   "assets/ui/menu/start-v2/buttons/settings-base-compact-v1.png",
   "assets/ui/menu/start-v2/buttons/upgrades-hover-v2.png",
   "assets/ui/menu/start-v2/buttons/settings-hover-v2.png",
+  "assets/ui/emotes/blue-laugh.png",
+  "assets/ui/emotes/blue-grin.png",
+  "assets/ui/emotes/blue-cry.png",
+  "assets/ui/emotes/blue-worry.png",
+  "assets/ui/emotes/red-laugh.png",
+  "assets/ui/emotes/red-grin.png",
+  "assets/ui/emotes/red-cry.png",
+  "assets/ui/emotes/red-worry.png",
 ]);
 
 const ACTIVE_STRUCTURE_ASSETS = new Set([

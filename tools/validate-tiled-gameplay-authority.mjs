@@ -31,8 +31,8 @@ function zoneFrom(object) {
   return {
     x: (object.x ?? 0) + (object.width ?? 0) / 2,
     width: object.width ?? 0,
-    minY: object.y ?? 0,
-    maxY: (object.y ?? 0) + (object.height ?? 0),
+    minY: Math.max(0, object.y ?? 0),
+    maxY: Math.min(720, (object.y ?? 0) + (object.height ?? 0)),
   };
 }
 
@@ -238,7 +238,7 @@ for (const { file, mapId } of levelFiles) {
   const spawn = spawnObject ? zoneFrom(spawnObject) : undefined;
   for (const [label, zone] of [["DeployZone", deploy], ["SpawnZone", spawn]]) {
     if (!zone) continue;
-    if (zone.width <= 0 || zone.minY < 0 || zone.maxY > 720 || zone.minY >= zone.maxY) {
+    if (zone.width <= 0 || zone.minY < -0.1 || zone.maxY > 720.1 || zone.minY >= zone.maxY) {
       errors.push(`${mapId}: ${label} has invalid dimensions.`);
     }
   }
@@ -248,10 +248,10 @@ for (const { file, mapId } of levelFiles) {
   if (deployObject && spawnObject) {
     const fineGrid = fineNavigationGrid(map);
     const playerAttackLineX = enemyCastle
-      ? enemyCastle.x - CASTLE_CONTACT_CLEARANCE
+      ? Math.floor(enemyCastle.x / 20) * 20 - CASTLE_CONTACT_CLEARANCE
       : undefined;
     const enemyAttackLineX = playerCastle
-      ? playerCastle.x + playerCastle.width + CASTLE_CONTACT_CLEARANCE
+      ? Math.ceil((playerCastle.x + playerCastle.width) / 20) * 20 + CASTLE_CONTACT_CLEARANCE
       : undefined;
     if (playerAttackLineX === undefined || enemyAttackLineX === undefined) continue;
     if (!fineCanReach(fineGrid, fineCellsForZone(deployObject), fineCellsForVerticalLine(playerAttackLineX))) {

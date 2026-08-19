@@ -234,8 +234,8 @@
     {
       "id": "frozen_pass_02_wood_1",
       "type": "tree",
-      "x": 560,
-      "y": 400,
+      "x": 640,
+      "y": 560,
       "amount": 12,
       "visual": {
         "source": "asset",

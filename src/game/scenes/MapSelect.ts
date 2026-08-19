@@ -20,6 +20,7 @@ import {
   resetCampaignProgress,
   type CampaignProgress,
 } from "../systems/ProgressionStore";
+import { playAndroidHaptic } from "../platform/AndroidHaptics";
 import {
   formatCampaignValidation,
   getLevelRuntime,
@@ -61,6 +62,7 @@ export class MapSelect extends Scene {
   private pinchStartZoom = DEFAULT_MAP_ZOOM;
   private progress: CampaignProgress = loadCampaignProgress();
   private unlockAllForDebug = false;
+  public static isSecretUnlocked = false;
 
   constructor() {
     super("MapSelect");
@@ -319,7 +321,7 @@ export class MapSelect extends Scene {
     const zone = this.add
       .zone(node.x, node.y, PIN_RADIUS * 3.2 * baseScale, PIN_RADIUS * 3.4 * baseScale)
       .setDepth(PIN_DEPTH + 160 + index)
-      .setInteractive({ useHandCursor: !isLocked || this.unlockAllForDebug });
+      .setInteractive({ useHandCursor: true });
 
     if (state === "current" || (!isLocked && isBoss)) {
       this.tweens.add({
@@ -455,6 +457,103 @@ export class MapSelect extends Scene {
     progressBack.setStrokeStyle(2, 0xf7d36c, 0.46);
     progressFill.setStrokeStyle(1, 0xfff0a0, 0.35);
     progressText.setShadow(0, 2, "#000000", 5, true, true);
+
+    const isAlreadySecretUnlocked = MapSelect.isSecretUnlocked || localStorage.getItem("cs_secret_all_levels") === "true";
+    if (isAlreadySecretUnlocked) {
+      hint.setText("★ ALL LEVELS UNLOCKED ★");
+      hint.setColor("#ffe066");
+    }
+
+    const titleZone = this.add
+      .zone(640, 25, 380, 52)
+      .setOrigin(0.5)
+      .setDepth(HUD_DEPTH + 10)
+      .setScrollFactor(0)
+      .setInteractive({ useHandCursor: true });
+
+    let holdTimer: Phaser.Time.TimerEvent | undefined;
+    let holdTween: Phaser.Tweens.Tween | undefined;
+    let holdProgressGlow: Phaser.GameObjects.Rectangle | undefined;
+
+    const cancelHold = () => {
+      if (holdTimer) {
+        holdTimer.remove();
+        holdTimer = undefined;
+      }
+      if (holdTween) {
+        holdTween.stop();
+        holdTween = undefined;
+      }
+      if (holdProgressGlow) {
+        holdProgressGlow.destroy();
+        holdProgressGlow = undefined;
+      }
+      title.setScale(1);
+      if (!MapSelect.isSecretUnlocked && localStorage.getItem("cs_secret_all_levels") !== "true") {
+        title.setColor("#fff0b7");
+      }
+    };
+
+    titleZone.on("pointerdown", () => {
+      cancelHold();
+      playAndroidHaptic("selection");
+
+      holdProgressGlow = this.add
+        .rectangle(640, 48, 0, 4, 0x00ffff, 0.95)
+        .setOrigin(0.5)
+        .setDepth(HUD_DEPTH + 12)
+        .setScrollFactor(0);
+
+      this.tweens.add({
+        targets: holdProgressGlow,
+        width: 320,
+        duration: 5000,
+        ease: "Linear",
+      });
+
+      holdTween = this.tweens.add({
+        targets: title,
+        scaleX: 1.08,
+        scaleY: 1.08,
+        duration: 5000,
+        ease: "Linear",
+      });
+
+      holdTimer = this.time.delayedCall(5000, () => {
+        cancelHold();
+        MapSelect.isSecretUnlocked = true;
+        try {
+          localStorage.setItem("cs_secret_all_levels", "true");
+        } catch {}
+
+        playAndroidHaptic("castle_hit");
+        this.sound.play("select-sfx", { volume: 0.7 });
+        this.cameras.main.shake(160, 0.0035);
+
+        title.setColor("#55ffff");
+        hint.setText("★ ALL LEVELS UNLOCKED ★");
+        hint.setColor("#ffe066");
+
+        this.tweens.add({
+          targets: title,
+          scaleX: 1.22,
+          scaleY: 1.22,
+          duration: 130,
+          yoyo: true,
+          repeat: 3,
+          ease: "Back.Out",
+          onComplete: () => {
+            title.setScale(1);
+          },
+        });
+
+        this.log("SECRET", "5-second hold on CAMPAIGN MAP triggered: all levels unlocked for play!");
+      });
+    });
+
+    titleZone.on("pointerup", cancelHold);
+    titleZone.on("pointerout", cancelHold);
+    titleZone.on("pointercancel", cancelHold);
 
     const backShadow = this.add
       .rectangle(87, 57, 146, 62, 0x120b07, 0.72)
@@ -614,8 +713,9 @@ export class MapSelect extends Scene {
 
   private selectLevel(node: CampaignNodeConfig, pin: Phaser.GameObjects.Container) {
     const state = getNodeState(node.levelId, this.progress, this.unlockAllForDebug);
+    const isUnlockedBySecret = MapSelect.isSecretUnlocked || localStorage.getItem("cs_secret_all_levels") === "true";
 
-    if (state === "locked") {
+    if (state === "locked" && !isUnlockedBySecret) {
       this.log("MAP", `locked level selected id=${node.levelId}`);
       this.sound.play("hit-sfx", { volume: 0.16 });
       this.tweens.add({
