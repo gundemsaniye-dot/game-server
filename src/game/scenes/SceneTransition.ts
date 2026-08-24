@@ -5,11 +5,11 @@ import {
   releaseLobbyRuntimeMemory,
   releaseMainMenuTextures,
   releaseSplashTextures,
+  releaseStoryRuntimeMemory,
 } from "../assets/RuntimeAssets";
-import type { BattleStartData } from "../systems/LevelRuntime";
 
-type TransitionTarget = "MainMenu" | "MapSelect" | "Game";
-type TransitionRelease = "menu" | "menu-for-battle" | "campaign" | "campaign-for-battle" | "battle";
+type TransitionTarget = "MainMenu" | "MapSelect" | "Story" | "HowToPlay" | "Game";
+type TransitionRelease = "menu" | "menu-for-battle" | "campaign" | "campaign-for-story" | "campaign-for-battle" | "story-for-tutorial" | "story-for-battle" | "tutorial-for-battle" | "battle";
 
 export interface SceneTransitionData {
   target: TransitionTarget;
@@ -54,12 +54,22 @@ export class SceneTransition extends Scene {
       }
     } else if (
       this.transition.release === "campaign" ||
-      this.transition.release === "campaign-for-battle"
+      this.transition.release === "campaign-for-battle" ||
+      this.transition.release === "campaign-for-story"
     ) {
       releaseCampaignTexture(this);
       if (this.transition.release === "campaign-for-battle") {
         releaseLobbyRuntimeMemory(this);
       }
+    } else if (
+      this.transition.release === "story-for-battle" ||
+      this.transition.release === "story-for-tutorial"
+    ) {
+      releaseStoryRuntimeMemory(this);
+      releaseLobbyRuntimeMemory(this);
+    } else if (this.transition.release === "tutorial-for-battle") {
+      // Tutorial unit atlases are intentionally retained and reused by Game.
+      releaseLobbyRuntimeMemory(this);
     } else {
       releaseBattleRuntimeMemory(this);
     }

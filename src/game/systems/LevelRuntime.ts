@@ -11,6 +11,10 @@ import {
 import type { LevelConfig } from "../types/LevelTypes";
 import { BATTLE_MAP_SCHEMA_VERSION, type BattleMapConfig, type BiomeId } from "../types/MapTypes";
 import type { UnitId } from "../types/UnitTypes";
+import {
+  getTiledBattleMapDefinition,
+  validateCampaignMapPackageAssignments,
+} from "../tiled/TiledMapRegistry";
 
 export interface BattleStartData {
   levelId: string;
@@ -48,9 +52,23 @@ export function getLevelRuntime(
   campaignProgress: CampaignProgress = loadCampaignProgress(),
 ): LevelRuntime {
   const level = getLevelConfig(normalizeLevelId(levelId));
-  const map = mapOverride?.id === level.mapId && mapOverride.schemaVersion === BATTLE_MAP_SCHEMA_VERSION
+  const configuredMap = mapOverride?.id === level.mapId && mapOverride.schemaVersion === BATTLE_MAP_SCHEMA_VERSION
     ? mapOverride
     : getBattleMapConfig(level.mapId);
+  const packageDefinition = mapOverride ? undefined : getTiledBattleMapDefinition(configuredMap.id);
+  const packageMap = packageDefinition?.sourceMapId
+    ? getBattleMapConfig(packageDefinition.sourceMapId)
+    : configuredMap;
+  // Reference art, TMJ navigation and resource nodes were authored as one
+  // package. Keep the campaign identity/modifiers from the selected level,
+  // but take resource positions and visuals from the same source package so a
+  // remapped grass map can never inherit snow trees (or the reverse).
+  const map: BattleMapConfig = packageMap === configuredMap
+    ? configuredMap
+    : {
+      ...configuredMap,
+      resources: packageMap.resources,
+    };
 
   const unlockedUnitIds = getUnlockedUnitIds(campaignProgress);
   const playerUnitIds = [
@@ -134,7 +152,7 @@ export function getOnlineLevelRuntime(
 }
 
 export function validateCampaignConfig(): CampaignValidationResult {
-  const errors: string[] = [];
+  const errors: string[] = validateCampaignMapPackageAssignments();
   const unitIds = new Set<UnitId>(UNIT_ORDER);
 
   for (const level of LEVELS) {

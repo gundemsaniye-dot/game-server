@@ -8,6 +8,10 @@ export interface TiledTilesetDefinition {
 
 export interface TiledBattleMapDefinition {
   mapId: string;
+  /** Original authored package retained as one unit (TMJ, art, navigation and anchors). */
+  sourceMapId?: string;
+  sourcePackageLevel?: number;
+  visualBiome?: string;
   tilemapKey: string;
   mapUrl: string;
   tilesets: TiledTilesetDefinition[];

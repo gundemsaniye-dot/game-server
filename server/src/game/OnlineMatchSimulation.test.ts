@@ -4,6 +4,7 @@ import { ONLINE_MAP_CONTRACT, ONLINE_MAP_POOL, getOnlineMapContract } from "./On
 import { ONLINE_MAP_NAVIGATION } from "./OnlineMapNavigation";
 import { ONLINE_MATCH_CONFIG, ONLINE_UNIT_STATS } from "./OnlineMatchConfig";
 import { OnlineMatchSimulation } from "./OnlineMatchSimulation";
+import { campaignMapPackageFor } from "../../../shared/maps/CampaignMapPackages";
 
 const left = ONLINE_MAP_CONTRACT.deployBounds.left;
 const right = ONLINE_MAP_CONTRACT.deployBounds.right;
@@ -49,6 +50,25 @@ test("server strictly validates TMJ deployment, loadout, gold, caps and command 
   const campaignOnly = simulation.spawn("right-id", command("campaign-unit", "mage", right.minX));
   assert.equal(campaignOnly.ok, false);
   if (!campaignOnly.ok) assert.equal(campaignOnly.error.code, "UNKNOWN_UNIT");
+});
+
+test("server rejects deployment on a NAV_BLOCKED cell even when it is inside the deployment bounds", () => {
+  const base = getOnlineMapContract("grasslands_02");
+  const x = (base.deployBounds.left.minX + base.deployBounds.left.maxX) / 2;
+  const y = (base.deployBounds.left.minY + base.deployBounds.left.maxY) / 2;
+  const column = Math.floor(x / base.tileSize);
+  const row = Math.floor(y / base.tileSize);
+  const blocked = [...base.blocked];
+  blocked[row * base.columns + column] = true;
+  const contract = {
+    ...base,
+    blocked,
+  };
+  const simulation = new OnlineMatchSimulation("blocked-deploy", { left: "left-id", right: "right-id" }, 125, contract);
+  const result = simulation.spawn("left-id", command("blocked", "swordsman", x, y));
+  assert.equal(result.ok, false);
+  if (!result.ok) assert.equal(result.error.code, "INVALID_DEPLOY_NAVIGATION");
+  assert.equal(simulation.snapshot().units.length, 0);
 });
 
 test("combat units have no count cap while gold remains authoritative", () => {
@@ -252,6 +272,7 @@ test("all 20 maps in ONLINE_MAP_POOL initialize a valid simulation with correct 
   for (const mapId of ONLINE_MAP_POOL) {
     const contract = getOnlineMapContract(mapId);
     assert.equal(contract.mapId, mapId);
+    assert.equal(contract.sourceMapId, campaignMapPackageFor(mapId).sourceMapId);
     // Regression lock: each server room must use this map's exact TMJ
     // CastleAnchor inner edge, never a shared/static contact coordinate.
     assert.equal(contract.castleContactX.left, contract.sides.left.castle.maxX);

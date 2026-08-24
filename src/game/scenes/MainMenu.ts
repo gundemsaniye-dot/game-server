@@ -256,7 +256,7 @@ export class MainMenu extends Scene {
       y: 630,
       width: 171,
       height: 136,
-      onClick: () => this.scene.start("ArmyLoadout"),
+      onClick: () => this.scene.start("HowToPlay", { returnScene: "MainMenu" }),
     });
     this.createHitButton({
       action: "settings",

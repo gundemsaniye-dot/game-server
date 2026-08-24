@@ -6,7 +6,7 @@ import {
   releaseBattleRuntimeMemory,
   releaseMainMenuTextures,
 } from "../assets/RuntimeAssets";
-import { playSceneMusic, stopSceneMusic } from "../audio/GameAudio";
+import { playSceneMusic } from "../audio/GameAudio";
 import { MAIN_CAMPAIGN } from "../config/campaign.config";
 import { getLevelConfig } from "../config/levels.config";
 import type { CampaignNodeConfig } from "../types/CampaignTypes";
@@ -752,12 +752,11 @@ export class MapSelect extends Scene {
       ease: "Sine.Out",
     });
 
-    stopSceneMusic(this, "lobby-music");
     this.cameras.main.fadeOut(180, 0, 0, 0);
     this.time.delayedCall(180, () => this.scene.start("SceneTransition", {
-      target: "Game",
-      targetData: battleData,
-      release: "campaign-for-battle",
+      target: "Story",
+      targetData: { battleStartData: battleData },
+      release: "campaign-for-story",
     }));
   }
 

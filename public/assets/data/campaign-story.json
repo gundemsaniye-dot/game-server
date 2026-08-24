@@ -1,85 +1,164 @@
 {
   "language": "en",
+  "prologue": {
+    "pages": [
+      {
+        "image": "story/prologue-01.webp",
+        "bubbles": [
+          { "kind": "caption", "text": "Once, the crown bound every banner beneath one promise: no kingdom would stand alone.", "x": 27, "y": 22, "width": 42 },
+          { "kind": "speech", "speaker": "THE KING", "text": "While the crown endures, our people endure.", "x": 75, "y": 63, "width": 30 }
+        ]
+      },
+      {
+        "image": "story/prologue-02.webp",
+        "bubbles": [
+          { "kind": "caption", "text": "Then the Ash King came beneath a sky of fire.", "x": 25, "y": 22, "width": 38 },
+          { "kind": "speech", "speaker": "ASH KING", "text": "Let their promise burn.", "x": 73, "y": 60, "width": 27 }
+        ]
+      },
+      {
+        "image": "story/prologue-03.webp",
+        "bubbles": [
+          { "kind": "caption", "text": "He shattered the crown and armed four warlords with its fragments.", "x": 26, "y": 22, "width": 42 },
+          { "kind": "speech", "speaker": "ASH KING", "text": "Let hope die chasing what it has lost.", "x": 74, "y": 65, "width": 31 }
+        ]
+      },
+      {
+        "image": "story/prologue-04.webp",
+        "bubbles": [
+          { "kind": "caption", "text": "One blue banner still refused to kneel.", "x": 24, "y": 22, "width": 36 },
+          { "kind": "speech", "speaker": "COMMANDER", "text": "We are not chasing gold or glory. We are bringing every stolen home back with us.", "x": 75, "y": 61, "width": 36 }
+        ]
+      },
+      {
+        "image": "story/prologue-05.webp",
+        "bubbles": [
+          { "kind": "speech", "speaker": "SCOUT", "text": "Raiders crossed the Faded Field. Their arrows point north.", "x": 73, "y": 24, "width": 31 },
+          { "kind": "speech", "speaker": "COMMANDER", "text": "Raise the banner. The road begins here.", "x": 26, "y": 65, "width": 31 }
+        ]
+      }
+    ]
+  },
   "levels": {
     "level_001": {
       "title": "The Faded Field",
-      "body": "The Ash King's raiders burned the royal standard and vanished north with a shard of the crown. Hold the Faded Field—then follow the arrows waiting on the road ahead."
+      "body": "The Ash King's raiders burned the royal standard and vanished north with a shard of the crown. Hold the Faded Field—then follow the arrows waiting on the road ahead.",
+      "objective": "Hold the Faded Field. Recover the four crown fragments. Defeat the Ash King.",
+      "image": "story/level-01.webp"
     },
     "level_002": {
       "title": "First Arrows",
-      "body": "Enemy archers have sealed the northern road, but one carries the first warlord's orders. Break their line and discover why every trail leads into the Silent Woodline."
+      "body": "Enemy archers have sealed the northern road, but one carries the first warlord's orders. Break their line and discover why every trail leads into the Silent Woodline.",
+      "objective": "Break the archer line and recover the warlord's orders.",
+      "image": "story/level-02.webp"
     },
     "level_003": {
       "title": "Silent Woodline",
-      "body": "The Silent Woodline has swallowed every royal scout sent beneath its branches. At dusk, fresh hoofprints appear beside their abandoned banners—and they lead deeper into the forest."
+      "body": "The Silent Woodline has swallowed every royal scout sent beneath its branches. At dusk, fresh hoofprints appear beside their abandoned banners—and they lead deeper into the forest.",
+      "objective": "Find the lost scouts and follow the hoofprints.",
+      "image": "story/level-03.webp"
     },
     "level_004": {
       "title": "Hoofbreak Trail",
-      "body": "Enemy cavalry races along a broken trail, carrying the crown fragment toward an ancient grove. Stop the riders before they reach the warlord waiting beneath the oldest trees."
+      "body": "Enemy cavalry races along a broken trail, carrying the crown fragment toward an ancient grove. Stop the riders before they reach the warlord waiting beneath the oldest trees.",
+      "objective": "Intercept the riders before they reach the grove.",
+      "image": "story/level-04.webp"
     },
     "level_005": {
       "title": "Deep Forest Clash",
-      "body": "The Forest Warlord makes his final stand around the first fragment. When the shard is reclaimed, its surface reveals a road drowned beneath black water."
+      "body": "The Forest Warlord makes his final stand around the first fragment. When the shard is reclaimed, its surface reveals a road drowned beneath black water.",
+      "objective": "Defeat the Forest Warlord and reclaim the first fragment.",
+      "image": "story/level-05.webp"
     },
     "level_006": {
       "title": "Mire Spear",
-      "body": "Long spears guard every crossing through the flooded lowlands. Yet the soldiers are protecting more than a road—chains disappear into the fog beyond the mire."
+      "body": "Long spears guard every crossing through the flooded lowlands. Yet the soldiers are protecting more than a road—chains disappear into the fog beyond the mire.",
+      "objective": "Break the spear guard and trace the chains through the fog.",
+      "image": "story/level-06.webp"
     },
     "level_007": {
       "title": "Worker's Bog",
-      "body": "The chains belong to captured villagers forced to feed the enemy war machine. Free them, and they may reveal what waits behind the shielded fortress across the bog."
+      "body": "The chains belong to captured villagers forced to feed the enemy war machine. Free them, and they may reveal what waits behind the shielded fortress across the bog.",
+      "objective": "Free the captive villagers and secure the road.",
+      "image": "story/level-07.webp"
     },
     "level_008": {
       "title": "Shield in the Mire",
-      "body": "A shielded garrison seals the only causeway out of the mire. Its commander bears an iron sigil that grows warmer whenever thunder rolls beyond the mountains."
+      "body": "A shielded garrison seals the only causeway out of the mire. Its commander bears an iron sigil that grows warmer whenever thunder rolls beyond the mountains.",
+      "objective": "Take the causeway and claim the iron sigil.",
+      "image": "story/level-08.webp"
     },
     "level_009": {
       "title": "Thunder Approach",
-      "body": "The iron sigil opens the road into Storm Valley, where lightning answers the warlord's horns. Before the climb begins, unseen archers take their positions above."
+      "body": "The iron sigil opens the road into Storm Valley, where lightning answers the warlord's horns. Before the climb begins, unseen archers take their positions above.",
+      "objective": "Enter Storm Valley and survive the hidden archers.",
+      "image": "story/level-09.webp"
     },
     "level_010": {
       "title": "Ranged Pressure",
-      "body": "Archers command every ridge leading to the Iron Warlord's citadel. As the final bow falls silent, a forbidden flame rises from the tower ahead."
+      "body": "Archers command every ridge leading to the Iron Warlord's citadel. As the final bow falls silent, a forbidden flame rises from the tower ahead.",
+      "objective": "Clear the ridges and reach the burning citadel.",
+      "image": "story/level-10.webp"
     },
     "level_011": {
       "title": "First Flame of Magic",
-      "body": "The Iron Warlord has awakened the second fragment's forbidden flame. Extinguish it—and learn why the shard shows a royal caravan dying far across the steppe."
+      "body": "The Iron Warlord has awakened the second fragment's forbidden flame. Extinguish it—and learn why the shard shows a royal caravan dying far across the steppe.",
+      "objective": "Defeat the Iron Warlord and reclaim the second fragment.",
+      "image": "story/level-11.webp"
     },
     "level_012": {
       "title": "Cracked Provision",
-      "body": "The royal caravan lies shattered, its provisions scattered across the steppe. Every surviving crate bears the same knife mark, and riders circle beyond the dust."
+      "body": "The royal caravan lies shattered, its provisions scattered across the steppe. Every surviving crate bears the same knife mark, and riders circle beyond the dust.",
+      "objective": "Secure the provisions and identify the knife riders.",
+      "image": "story/level-12.webp"
     },
     "level_013": {
       "title": "Fast Dust",
-      "body": "Knife riders strike from the dust and vanish before the line can answer. One captured raider speaks of a black banner guarding the last road west."
+      "body": "Knife riders strike from the dust and vanish before the line can answer. One captured raider speaks of a black banner guarding the last road west.",
+      "objective": "Defeat the knife riders and find the black banner.",
+      "image": "story/level-13.webp"
     },
     "level_014": {
       "title": "Banner of the Last Road",
-      "body": "The black banner marks the last defended road before the desert. Beyond it waits no army—only a trail of empty wells and footprints that end in open sand."
+      "body": "The black banner marks the last defended road before the desert. Beyond it waits no army—only a trail of empty wells and footprints that end in open sand.",
+      "objective": "Seize the last road and follow the desert trail.",
+      "image": "story/level-14.webp"
     },
     "level_015": {
       "title": "Widening Desert",
-      "body": "The final wells have been poisoned, and the desert widens without mercy. Beneath the dunes, hidden blades wait for anyone who follows the vanished tracks."
+      "body": "The final wells have been poisoned, and the desert widens without mercy. Beneath the dunes, hidden blades wait for anyone who follows the vanished tracks.",
+      "objective": "Cross the poisoned desert and expose the hidden blades.",
+      "image": "story/level-15.webp"
     },
     "level_016": {
       "title": "Needles in Sand",
-      "body": "The Sand Warlord rises from the dunes with the third fragment and an army of hidden blades. When the shard is taken, it points toward a seal buried in eternal ice."
+      "body": "The Sand Warlord rises from the dunes with the third fragment and an army of hidden blades. When the shard is taken, it points toward a seal buried in eternal ice.",
+      "objective": "Defeat the Sand Warlord and reclaim the third fragment.",
+      "image": "story/level-16.webp"
     },
     "level_017": {
       "title": "Frozen Seal",
-      "body": "The final fragment lies beyond the frozen pass, locked inside a seal no living mage can open. When the ice begins to crack, something ancient wakes behind the northern gate."
+      "body": "The final fragment lies beyond the frozen pass, locked inside a seal no living mage can open. When the ice begins to crack, something ancient wakes behind the northern gate.",
+      "objective": "Cross the frozen pass and break the ancient seal.",
+      "image": "story/level-17.webp"
     },
     "level_018": {
       "title": "Long Winter Siege",
-      "body": "The Winter Warlord has awakened and sealed the northern gate behind an endless siege. Defeat him, reunite the crown, and reveal the road hidden beneath its four fragments."
+      "body": "The Winter Warlord has awakened and sealed the northern gate behind an endless siege. Defeat him, reunite the crown, and reveal the road hidden beneath its four fragments.",
+      "objective": "Defeat the Winter Warlord and restore the crown.",
+      "image": "story/level-18.webp"
     },
     "level_019": {
       "title": "Infernal Gate",
-      "body": "The restored crown opens a road through fire to the Infernal Gate. Beyond it, the Ash King waits—and the crown begins to pulse as if it remembers the citadel."
+      "body": "The restored crown opens a road through fire to the Infernal Gate. Beyond it, the Ash King waits—and the crown begins to pulse as if it remembers the citadel.",
+      "objective": "Open the Infernal Gate and reach the Ash Citadel.",
+      "image": "story/level-19.webp"
     },
     "level_020": {
       "title": "Ash Citadel Final",
-      "body": "Every fragment, every fallen banner, and every road has led to the Ash Citadel. Defeat the Ash King and return the restored crown to a realm that refused to kneel."
+      "body": "Every fragment, every fallen banner, and every road has led to the Ash Citadel. Defeat the Ash King and return the restored crown to a realm that refused to kneel.",
+      "objective": "Defeat the Ash King and restore the realm.",
+      "image": "story/level-20.webp"
     }
   }
 }

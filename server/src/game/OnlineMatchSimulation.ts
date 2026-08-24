@@ -131,6 +131,9 @@ export class OnlineMatchSimulation {
     if (!Number.isFinite(command.y) || command.y < bounds.minY || command.y > bounds.maxY) {
       return this.reject(command.commandId, "INVALID_DEPLOY_Y", "Deployment is outside the TMJ zone.");
     }
+    if (!this.navigation.isWalkableWorld(command.x, command.y)) {
+      return this.reject(command.commandId, "INVALID_DEPLOY_NAVIGATION", "Deployment is blocked by the TMJ navigation layer.");
+    }
 
     player.gold -= stats.cost;
     const unit = this.createUnit(playerId, side, command.type, Math.max(1, Math.floor(command.level || 1)), command.x, command.y, stats);

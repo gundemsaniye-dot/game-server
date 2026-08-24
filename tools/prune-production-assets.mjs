@@ -23,6 +23,7 @@ const ACTIVE_UI_ASSETS = new Set([
   "assets/ui/menu/start-v2/buttons/settings-base-compact-v1.png",
   "assets/ui/menu/start-v2/buttons/upgrades-hover-v2.png",
   "assets/ui/menu/start-v2/buttons/settings-hover-v2.png",
+  "assets/ui/tutorial-card-bg.webp",
   "assets/ui/emotes/blue-laugh.png",
   "assets/ui/emotes/blue-grin.png",
   "assets/ui/emotes/blue-cry.png",
@@ -42,6 +43,11 @@ const ACTIVE_STRUCTURE_ASSETS = new Set([
   "assets/structures/enemy-wall-rampart-v3.png",
 ]);
 
+const ACTIVE_STORY_ASSETS = new Set([
+  ...Array.from({ length: 5 }, (_, index) => `assets/story/prologue-${String(index + 1).padStart(2, "0")}.webp`),
+  ...Array.from({ length: 20 }, (_, index) => `assets/story/level-${String(index + 1).padStart(2, "0")}.webp`),
+]);
+
 const REQUIRED_EXACT_ASSETS = [
   "index.html",
   "favicon.png",
@@ -57,6 +63,7 @@ const REQUIRED_EXACT_ASSETS = [
   "assets/tiled/tilesets/navigation-blocked.png",
   ...ACTIVE_UI_ASSETS,
   ...ACTIVE_STRUCTURE_ASSETS,
+  ...ACTIVE_STORY_ASSETS,
 ];
 
 function normalize(relativePath) {
@@ -114,6 +121,9 @@ function removalReason(relativePath) {
   }
   if (relativePath.startsWith("assets/structures/") && !ACTIVE_STRUCTURE_ASSETS.has(relativePath)) {
     return "inactive structure variant not loaded by Preloader";
+  }
+  if (relativePath.startsWith("assets/story/") && !ACTIVE_STORY_ASSETS.has(relativePath)) {
+    return "unused story illustration variant";
   }
   if (relativePath.startsWith("assets/tiled/tilesets/")) {
     const fileName = path.posix.basename(relativePath);
@@ -189,6 +199,12 @@ function validateRuntimeAssets() {
     missing.push(`assets/maps/atlases/*.json (expected 9, found ${mapAtlasJsonCount})`);
   }
 
+  const storyDir = path.join(distRoot, "assets", "story");
+  const storyCount = fs.existsSync(storyDir)
+    ? fs.readdirSync(storyDir).filter((name) => name.endsWith(".webp")).length
+    : 0;
+  if (storyCount !== 25) missing.push(`assets/story/*.webp (expected 25, found ${storyCount})`);
+
   if (missing.length > 0) {
     throw new Error(`Production asset validation failed:\n${[...new Set(missing)].sort().map((item) => `- ${item}`).join("\n")}`);
   }
@@ -199,6 +215,7 @@ function validateRuntimeAssets() {
     unitAtlasCount: unitAtlasJsonCount,
     mapAtlasCount: mapAtlasJsonCount,
     requiredExactCount: REQUIRED_EXACT_ASSETS.length,
+    storyCount,
   };
 }
 

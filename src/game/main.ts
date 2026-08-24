@@ -8,6 +8,8 @@ import { Game, Scale, WEBGL } from 'phaser';
 import { Preloader } from './scenes/Preloader';
 import { ArmyLoadout } from './scenes/ArmyLoadout';
 import { SceneTransition } from './scenes/SceneTransition';
+import { Story } from './scenes/Story';
+import { HowToPlay } from './scenes/HowToPlay';
 
 const launchParams = new URLSearchParams(window.location.search);
 const mobileTexturesOverride = launchParams.get('mobileTextures');
@@ -72,6 +74,8 @@ const config: Phaser.Types.Core.GameConfig = {
         ArmyLoadout,
         MapSelect,
         MapEditor,
+        Story,
+        HowToPlay,
         MainGame,
         GameOver
     ]

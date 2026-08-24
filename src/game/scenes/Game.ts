@@ -86,7 +86,6 @@ import {
 import { getLevelRuntime, getOnlineLevelRuntime, type BattleStartData, type LevelRuntime } from "../systems/LevelRuntime";
 import {
   ensureLevelAttemptSeed,
-  getLevelLossCount,
   isLevelCompleted,
   loadCampaignProgress,
   markLevelCompleted,
@@ -102,6 +101,7 @@ import { TiledNavigation, type TiledPathPoint } from "../tiled/TiledNavigation";
 import type { MapVisualConfig, ResourceNodeConfig } from "../types/MapTypes";
 import type { UnitId } from "../types/UnitTypes";
 import type { EnemyPowerRule } from "../types/LevelTypes";
+import type { CampaignStoryData } from "../types/StoryTypes";
 
 type Team = "player" | "enemy";
 type UnitType = UnitId;
@@ -118,8 +118,6 @@ type UnitState =
 type UnitVisualAction = UnitAnimationName;
 type Side = "left" | "right";
 type CastleVariant = "tower" | "main";
-type CampaignStoryEntry = { title?: string; body?: string };
-type CampaignStoryData = { levels?: Record<string, CampaignStoryEntry> };
 type ResourceTreePart =
   | Phaser.GameObjects.Container
   | Phaser.GameObjects.Image
@@ -677,7 +675,7 @@ export class Game extends Scene {
   private removeSelectionButton?: Phaser.GameObjects.Container;
   private removeSelectionLabel?: Phaser.GameObjects.Text;
   private removeSelectionVisible = false;
-  private storyOverlayObjects: Phaser.GameObjects.GameObject[] = [];
+  private pauseOverlay?: Phaser.GameObjects.Container;
   private isPaused = false;
   private deployPointerHeld = false;
   private deployPointerId: number | undefined;
@@ -928,19 +926,9 @@ export class Game extends Scene {
     }
     this.createSpawnGuide();
     this.enableDeploymentInput();
+    this.publishMapPackageQa();
     if (this.onlineUiQa) this.setupOnlineUiQa();
-    if (
-      !this.isOnline &&
-      !this.balanceQaMode &&
-      !this.economyQaMode &&
-      !this.editorPreview &&
-      !this.navigationQaMode &&
-      !this.isEnemyPowerQaPath() &&
-      !this.androidPerf.skipBriefing
-    ) {
-      this.createBattleBriefing();
-    }
-
+    this.time.delayedCall(34, () => this.publishStoryCleanupQa());
     if (!this.isOnline && (!this.androidPerf.enabled || this.androidPerf.realSystems)) {
       this.time.addEvent({
         delay: ECONOMY_TICK_MS,
@@ -2652,8 +2640,8 @@ export class Game extends Scene {
       for (let offsetY = -radius; offsetY <= radius; offsetY += TREE_NAV_SEARCH_STEP) {
         for (let offsetX = -radius; offsetX <= radius; offsetX += TREE_NAV_SEARCH_STEP) {
           if (Math.max(Math.abs(offsetX), Math.abs(offsetY)) !== radius) continue;
-          const x = Phaser.Math.Clamp(scaledConfig.x + offsetX, TREE_NAV_CLEARANCE, 1280 - TREE_NAV_CLEARANCE);
-          const y = Phaser.Math.Clamp(scaledConfig.y + offsetY, TREE_NAV_CLEARANCE, 720 - TREE_NAV_CLEARANCE);
+          const x = clamp(scaledConfig.x + offsetX, TREE_NAV_CLEARANCE, 1280 - TREE_NAV_CLEARANCE);
+          const y = clamp(scaledConfig.y + offsetY, TREE_NAV_CLEARANCE, 720 - TREE_NAV_CLEARANCE);
           const key = `${x}:${y}`;
           if (seen.has(key) || !this.canPlaceTreeAt(x, y)) continue;
           seen.add(key);
@@ -4303,7 +4291,7 @@ export class Game extends Scene {
       return;
     }
     if (this.isPaused) {
-      this.destroyStoryOverlay();
+      this.destroyPauseOverlay();
       this.setGamePaused(false);
       return;
     }
@@ -4951,63 +4939,78 @@ export class Game extends Scene {
     this.events.once("shutdown", () => this.backgroundPauseHandler?.());
   }
 
-  private createBattleBriefing() {
-    const level = this.levelRuntime.level;
-    const losses = getLevelLossCount(level.id);
-    this.setGamePaused(true);
-    const target = targetMatchDuration(level);
-    this.createStoryOverlay();
-    generateRectTexture(this, "story_btn", 330, 66, 0xa42820, 1, 5, 0xffd45f);
-    const startBack = this.add.image(640, 618, "story_btn")
-      .setDepth(2002)
-      .setInteractive({ useHandCursor: true });
-    const startText = this.add.text(640, 617, t("game_close"), {
-      fontFamily: "Arial Black",
-      fontSize: 25,
-      color: "#ffffff",
-      stroke: "#000000",
-      strokeThickness: 5,
-    }).setOrigin(0.5).setDepth(2003).setInteractive({ useHandCursor: true });
-    this.storyOverlayObjects.push(startBack, startText);
-    const start = () => {
-      this.destroyStoryOverlay();
-      this.setGamePaused(false);
-      this.log("BRIEFING", `started losses=${losses} target=${target.targetSeconds}s reserve=${level.director.reserveBudget}`);
-    };
-    startBack.on("pointerdown", start);
-    startText.on("pointerdown", start);
-  }
-
   private openPauseMenu() {
+    if (this.pauseOverlay || this.battleEnded || this.isOnline) return;
     this.setGamePaused(true);
-    this.createStoryOverlay();
+    const storyData = this.cache.json.get("campaign-story") as CampaignStoryData | undefined;
+    const entry = storyData?.levels[this.levelRuntime.level.id];
+    const shade = this.add.rectangle(640, 360, 1280, 720, 0x120805, 0.78)
+      .setDepth(2000).setInteractive();
+    const wood = this.add.rectangle(640, 360, 900, 560, 0x4a2715, 0.99)
+      .setStrokeStyle(9, 0x2a130a).setDepth(2001);
+    const parchment = this.add.rectangle(640, 344, 830, 440, 0xd8bd82, 0.98)
+      .setStrokeStyle(5, 0xe9c968).setDepth(2002);
+    const ribbon = this.add.rectangle(640, 142, 590, 68, 0x8f261f, 1)
+      .setStrokeStyle(4, 0xe6bd55).setDepth(2003);
+    const title = this.add.text(640, 141, "BATTLE PAUSED", {
+      fontFamily: "Arial Black", fontSize: 30, color: "#fff0b3",
+      stroke: "#2a0d08", strokeThickness: 6,
+    }).setOrigin(0.5).setDepth(2004);
+    const missionTitle = this.add.text(640, 205,
+      `MISSION ${this.levelRuntime.level.order}: ${(entry?.title ?? this.levelRuntime.level.title).toUpperCase()}`, {
+        fontFamily: "Arial Black", fontSize: 24, color: "#5a2418",
+      }).setOrigin(0.5).setDepth(2004);
+    const story = this.add.text(265, 252, entry?.body ?? this.levelRuntime.level.story.intro, {
+      fontFamily: "Georgia", fontStyle: "italic", fontSize: 21, color: "#2d1b12",
+      lineSpacing: 8, wordWrap: { width: 750, useAdvancedWrap: true },
+    }).setDepth(2004);
+    const objective = this.add.text(265, 390, `OBJECTIVE\n${entry?.objective ?? "Defeat the enemy stronghold."}`, {
+      fontFamily: "Arial Black", fontSize: 20, color: "#7c241b", lineSpacing: 7,
+      wordWrap: { width: 750, useAdvancedWrap: true },
+    }).setDepth(2004);
 
     generateRectTexture(this, "pause_menu_btn", 300, 66, 0x5a351d, 1, 5, 0xffd45f);
-    const menuBack = this.add.image(485, 618, "pause_menu_btn")
-      .setDepth(2002)
-      .setInteractive({ useHandCursor: true });
-    const menuText = this.add.text(485, 617, t("game_main_menu"), {
+    const menuBack = this.add.image(485, 575, "pause_menu_btn").setDepth(2004).setInteractive({ useHandCursor: true });
+    const menuText = this.add.text(485, 574, t("game_main_menu"), {
       fontFamily: "Arial Black",
       fontSize: 23,
       color: "#ffffff",
       stroke: "#000000",
       strokeThickness: 5,
-    }).setOrigin(0.5).setDepth(2003).setInteractive({ useHandCursor: true });
+    }).setOrigin(0.5).setDepth(2005).setInteractive({ useHandCursor: true });
     generateRectTexture(this, "pause_close_btn", 260, 66, 0xa42820, 1, 5, 0xffd45f);
-    const closeBack = this.add.image(795, 618, "pause_close_btn")
-      .setDepth(2002)
+    const closeBack = this.add.image(795, 575, "pause_close_btn")
+      .setDepth(2004)
       .setInteractive({ useHandCursor: true });
-    const closeText = this.add.text(795, 617, t("game_close"), {
+    const closeText = this.add.text(795, 574, t("game_close"), {
       fontFamily: "Arial Black",
       fontSize: 23,
       color: "#ffffff",
       stroke: "#000000",
       strokeThickness: 5,
-    }).setOrigin(0.5).setDepth(2003).setInteractive({ useHandCursor: true });
-    this.storyOverlayObjects.push(menuBack, menuText, closeBack, closeText);
+    }).setOrigin(0.5).setDepth(2005).setInteractive({ useHandCursor: true });
+    // Keep the complete pause surface under one owner. Android WebView can
+    // dispatch a final pointer event while a scene hand-off is retiring its
+    // display list; a single guarded container prevents stale/double-destroyed
+    // child references during close, reopen, or shutdown.
+    this.pauseOverlay = this.add.container(0, 0, [
+      shade,
+      wood,
+      parchment,
+      ribbon,
+      title,
+      missionTitle,
+      story,
+      objective,
+      menuBack,
+      menuText,
+      closeBack,
+      closeText,
+    ]).setDepth(2000);
+    this.events.once("shutdown", () => this.destroyPauseOverlay());
 
     const returnToMenu = () => {
-      this.destroyStoryOverlay();
+      this.destroyPauseOverlay();
       this.setGamePaused(false);
       stopSceneMusic(this, "battle-music");
       this.scene.start("SceneTransition", {
@@ -5017,7 +5020,7 @@ export class Game extends Scene {
       });
     };
     const close = () => {
-      this.destroyStoryOverlay();
+      this.destroyPauseOverlay();
       this.setGamePaused(false);
       this.log("PAUSE", "closed");
     };
@@ -5025,7 +5028,7 @@ export class Game extends Scene {
     menuText.on("pointerdown", returnToMenu);
     closeBack.on("pointerdown", close);
     closeText.on("pointerdown", close);
-    this.log("PAUSE", "story menu opened");
+    this.log("PAUSE", "parchment menu opened");
   }
 
   private openOnlineLeaveDialog() {
@@ -5106,41 +5109,58 @@ export class Game extends Scene {
     this.log("PAUSE", "online leave dialog opened");
   }
 
-  private createStoryOverlay() {
-    this.destroyStoryOverlay();
-    const level = this.levelRuntime.level;
-    const campaignStory = this.cache.json.get("campaign-story") as CampaignStoryData | undefined;
-    const story = campaignStory?.levels?.[level.id];
-    const storyTitle = story?.title?.trim() || level.title;
-    const storyBody = story?.body?.trim() || level.story.intro;
-    generateRectTexture(this, "story_shade", 1280, 720, 0x07101a, 0.88);
-    const shade = this.add.image(640, 360, "story_shade")
-      .setDepth(2000)
-      .setInteractive();
-    generateRectTexture(this, "story_panel", 920, 570, 0x24364a, 0.98, 5, 0xf0c85b);
-    const panel = this.add.image(640, 360, "story_panel")
-      .setDepth(2001);
-    const title = this.add.text(640, 112, t("game_level_title", { level: level.order, title: storyTitle.toUpperCase() }), {
-      fontFamily: "Arial Black",
-      fontSize: 28,
-      color: "#ffe17a",
-      stroke: "#000000",
-      strokeThickness: 5,
-    }).setOrigin(0.5).setDepth(2002);
-    const storyText = this.add.text(230, 190, storyBody, {
-      fontFamily: "Georgia",
-      fontStyle: "italic",
-      fontSize: 24,
-      color: "#fff3d1",
-      lineSpacing: 12,
-      wordWrap: { width: 820, useAdvancedWrap: true },
-    }).setDepth(2002);
-    this.storyOverlayObjects = [shade, panel, title, storyText];
+  private destroyPauseOverlay() {
+    if (!this.pauseOverlay) return;
+    const overlay = this.pauseOverlay;
+    this.pauseOverlay = undefined;
+    overlay.destroy(true);
   }
 
-  private destroyStoryOverlay() {
-    this.storyOverlayObjects.forEach((object) => object.destroy());
-    this.storyOverlayObjects = [];
+  private publishStoryCleanupQa() {
+    if (new URLSearchParams(window.location.search).get("storyQa") !== "1") return;
+    const storyTextures = this.textures.getTextureKeys().filter((key) => key.startsWith("story-story-"));
+    const storyScene = this.scene.manager.getScene("Story") as Phaser.Scene & {
+      runtimeObjectReferenceCount?: () => number;
+    };
+    const storyObjectReferenceCount = storyScene?.runtimeObjectReferenceCount?.() ?? 0;
+    const result = {
+      gameActive: this.scene.isActive("Game"),
+      storyActive: this.scene.isActive("Story"),
+      storySleeping: storyScene?.sys.isSleeping() ?? false,
+      storyTextureCount: storyTextures.length,
+      storyObjectReferenceCount,
+      passed: this.scene.isActive("Game") && storyTextures.length === 0 &&
+        storyObjectReferenceCount === 0 && !this.scene.isActive("Story"),
+    };
+    (window as typeof window & { __CASTLE_STORY_CLEANUP_QA__?: typeof result }).__CASTLE_STORY_CLEANUP_QA__ = result;
+    document.documentElement.dataset.storyCleanupQa = JSON.stringify(result);
+    this.log("STORY_QA", JSON.stringify(result));
+  }
+
+  private publishMapPackageQa() {
+    if (new URLSearchParams(window.location.search).get("mapQa") !== "1") return;
+    // Keep the authored map still for fast human inspection. This path is
+    // explicit QA-only and never participates in campaign or online flow.
+    this.setGamePaused(true);
+    const definition = getTiledBattleMapDefinition(this.levelRuntime.map.id);
+    const result = {
+      levelId: this.levelRuntime.level.id,
+      mapId: this.levelRuntime.map.id,
+      sourceMapId: definition?.sourceMapId,
+      sourcePackageLevel: definition?.sourcePackageLevel,
+      visualBiome: definition?.visualBiome,
+      mapUrl: definition?.mapUrl,
+      tiledActive: Boolean(this.tiledMapRender),
+      navigationActive: Boolean(this.tiledNavigation),
+      resourceVisuals: [...new Set(this.levelRuntime.map.resources.map((resource) =>
+        resource.visual.source === "asset" ? resource.visual.assetKey : resource.visual.id
+      ))],
+      playerCastle: this.levelRuntime.map.anchors.playerCastle,
+      enemyCastle: this.levelRuntime.map.anchors.enemyCastle,
+    };
+    (window as typeof window & { __CASTLE_MAP_QA__?: typeof result }).__CASTLE_MAP_QA__ = result;
+    document.documentElement.dataset.mapQa = JSON.stringify(result);
+    this.log("MAP_QA", JSON.stringify(result));
   }
 
   private recordIncomeEvent(team: Team, amount: number) {

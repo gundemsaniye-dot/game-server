@@ -8,6 +8,7 @@ import {
   migrateCampaignProgress,
   normalizeCombatLoadout,
 } from "../systems/ProgressionStore";
+import { getLevelRuntime } from "../systems/LevelRuntime";
 
 const GAME_WIDTH = 1280;
 const GAME_HEIGHT = 720;
@@ -141,6 +142,25 @@ export class Preloader extends Scene {
       });
       return;
     }
+    if ((qaAllowed || params.get("storyQa") === "1") && params.get("scene") === "story") {
+      const order = Math.max(1, Math.min(20, Number.parseInt(params.get("level") ?? "1", 10) || 1));
+      const levelId = `level_${String(order).padStart(3, "0")}`;
+      const runtime = getLevelRuntime(levelId);
+      this.scene.start("Story", { battleStartData: runtime.battleStartData });
+      return;
+    }
+    if ((qaAllowed || params.get("tutorialQa") === "1") && params.get("scene") === "tutorial") {
+      const order = Math.max(1, Math.min(20, Number.parseInt(params.get("level") ?? "1", 10) || 1));
+      const levelId = `level_${String(order).padStart(3, "0")}`;
+      const runtime = getLevelRuntime(levelId);
+      const initialPage = Math.max(0, Number.parseInt(params.get("tutorialPage") ?? "0", 10) || 0);
+      this.scene.start("HowToPlay", {
+        battleStartData: runtime.battleStartData,
+        qaUnlockThroughLevel: order,
+        initialPage,
+      });
+      return;
+    }
     if ((import.meta.env.DEV || import.meta.env.VITE_ANDROID_QA === "1") && new URLSearchParams(window.location.search).get("scene") === "loadout") {
       castleLog("PRELOAD", "complete -> ArmyLoadout direct path");
       this.scene.start("ArmyLoadout");
@@ -199,10 +219,11 @@ export class Preloader extends Scene {
   private directBattleLevel() {
     const params = new URLSearchParams(window.location.search);
     const perf = getAndroidPerfRequest();
+    const mapQa = params.get("mapQa") === "1";
     const androidCastleQa = import.meta.env.VITE_ANDROID_QA === "1" &&
       window.location.pathname.includes("/android-qa/castle-combat");
     if (
-      (!import.meta.env.DEV && !perf.enabled && import.meta.env.VITE_ANDROID_QA !== "1") ||
+      (!import.meta.env.DEV && !perf.enabled && import.meta.env.VITE_ANDROID_QA !== "1" && !mapQa) ||
       (params.get("scene") !== "battle" && !androidCastleQa)
     ) return undefined;
     const order = Math.max(1, Math.min(20, Number.parseInt(params.get("level") ?? "1", 10) || 1));

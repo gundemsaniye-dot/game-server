@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { castleContactX } from "../../../shared/online/CastleContact";
 import { createSideGeometry, type AxisAlignedBounds, type SideGeometry } from "../../../shared/online/SideGeometry";
+import { campaignMapPackageFor } from "../../../shared/maps/CampaignMapPackages";
 
 interface TiledProperty {
   name: string;
@@ -37,6 +38,7 @@ interface TiledMap {
 
 export interface OnlineMapContract {
   mapId: string;
+  sourceMapId: string;
   worldWidth: number;
   worldHeight: number;
   castleContactX: { left: number; right: number };
@@ -87,7 +89,8 @@ function finite(value: number | undefined, label: string) {
 }
 
 function loadOnlineMapContract(mapId = "grasslands_01"): OnlineMapContract {
-  const mapPath = resolve(__dirname, `../../../public/assets/tiled/maps/${mapId}.json`);
+  const sourceMapId = campaignMapPackageFor(mapId).sourceMapId;
+  const mapPath = resolve(__dirname, `../../../public/assets/tiled/maps/${sourceMapId}.json`);
   const map = JSON.parse(readFileSync(mapPath, "utf8")) as TiledMap;
   const gameplay = map.layers.find((layer) => layer.name === "GAMEPLAY_ZONES");
   if (!gameplay?.objects) throw new Error(`Online TMJ contract for ${mapId} is missing GAMEPLAY_ZONES.`);
@@ -129,7 +132,8 @@ function loadOnlineMapContract(mapId = "grasslands_01"): OnlineMapContract {
   const rightCastleLineX = finite(Number(property(enemyCastle.properties, "anchorX")), "enemyCastle.anchorX");
 
   return {
-    mapId: String(property(map.properties, "mapId") ?? mapId),
+    mapId,
+    sourceMapId,
     worldWidth: map.width * map.tilewidth,
     worldHeight: map.height * map.tileheight,
     tileSize: map.tilewidth,

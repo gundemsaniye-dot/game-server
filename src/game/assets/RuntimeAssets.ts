@@ -95,6 +95,22 @@ export function queueCampaignStory(scene: Scene) {
   }
 }
 
+export function storyTextureKey(assetPath: string) {
+  return `story-${assetPath.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase()}`;
+}
+
+export function queueStoryTextures(scene: Scene, assetPaths: readonly string[]) {
+  queueImages(scene, [...new Set(assetPaths)].map((assetPath) => ({
+    key: storyTextureKey(assetPath),
+    path: assetPath,
+  })));
+}
+
+export function releaseStoryRuntimeMemory(scene: Scene) {
+  const keys = scene.textures.getTextureKeys().filter((key) => key.startsWith("story-story-"));
+  releaseTextures(scene, keys);
+}
+
 export function queueLobbyAudio(scene: Scene) {
   if (!scene.cache.audio.exists("lobby-music")) {
     scene.load.audio("lobby-music", "audio/lobi-music.mp3");
