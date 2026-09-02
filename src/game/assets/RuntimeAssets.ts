@@ -182,9 +182,12 @@ export function releaseLobbyRuntimeMemory(scene: Scene) {
 }
 
 export function releaseBattleRuntimeMemory(scene: Scene) {
-  // Disabled texture release for performance to prevent Android VRAM fragmentation
+  // Shared battle textures and decoded audio buffers are reused. Stopped sound
+  // *instances* are not: one-shot sounds normally destroy themselves on complete,
+  // which never fires if a scene transition stops them mid-playback.
   for (const asset of BATTLE_AUDIO) {
     scene.sound.stopByKey(asset.key);
+    scene.sound.removeByKey(asset.key);
   }
   for (const asset of POWER_BATTLE_AUDIO) {
     scene.sound.stopByKey(asset.key);

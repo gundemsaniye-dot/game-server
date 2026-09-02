@@ -62,6 +62,16 @@ android {
             matchingFallbacks = ['release']
             buildConfigField "boolean", "PERF_LOG_BRIDGE", "false"
         }
+        productionBenchmark {
+            // Verify shipping code/flags on a separate package, preserving the
+            // Play-installed application's signature and saved campaign data.
+            initWith release
+            applicationIdSuffix ".perf"
+            signingConfig signingConfigs.debug
+            debuggable false
+            matchingFallbacks = ['release']
+            buildConfigField "boolean", "PERF_LOG_BRIDGE", "false"
+        }
     }
 }
 

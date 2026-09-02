@@ -12,10 +12,10 @@ export interface AndroidPerfCounters {
 }
 
 export interface AndroidPerfResult {
-  schema: 1;
+  schema: 2;
   status: "running" | "complete";
   elapsedMs: number;
-  stage: "baseline" | "12-per-team" | "24-per-team" | "30-per-team";
+  stage: "live" | "baseline" | "12-per-team" | "24-per-team" | "30-per-team";
   fps: number;
   p50Ms: number;
   p95Ms: number;
@@ -25,6 +25,9 @@ export interface AndroidPerfResult {
   over34: number;
   over50: number;
   frameCount: number;
+  sampleFrameCount: number;
+  sampleMs: number;
+  percentileFrameCount: number;
   longTaskCount: number;
   longTaskMs: number;
   jsHeapMb: number | null;
@@ -62,6 +65,8 @@ export class AndroidPerformanceMonitor {
   private maxMs = 0;
   private lastSummaryAt = 0;
   private lastSummaryFrame = 0;
+  private totalFrameMs = 0;
+  private lastSummaryMs = 0;
   private longTaskCount = 0;
   private longTaskMs = 0;
   private drawCalls = 0;
@@ -71,7 +76,7 @@ export class AndroidPerformanceMonitor {
   private drawCallIncrement?: () => void;
   private disposed = false;
 
-  constructor(private readonly counters: () => AndroidPerfCounters) {
+  constructor(private readonly counters: () => AndroidPerfCounters, private readonly synthetic = false) {
     try {
       this.observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
@@ -126,6 +131,8 @@ export class AndroidPerformanceMonitor {
     this.drawCallIncrement = undefined;
   }
 
+  pause() { this.lastFrameAt = 0; }
+
   recordFrame(_smoothedDeltaMs: number, elapsedMs: number) {
     if (this.disposed) return;
     const now = performance.now();
@@ -133,14 +140,15 @@ export class AndroidPerformanceMonitor {
       this.lastFrameAt = now;
       // Briefing/pause screens render before battle simulation starts. Keep
       // those draw calls out of the per-frame battle result.
-      this.drawCalls = 0;
+      if (this.frameCount === 0) this.drawCalls = 0;
       return;
     }
     const deltaMs = now - this.lastFrameAt;
     this.lastFrameAt = now;
-    const index = Math.min(this.frameCount, MAX_FRAMES - 1);
+    const index = this.frameCount % MAX_FRAMES;
     this.frames[index] = deltaMs;
     this.frameCount += 1;
+    this.totalFrameMs += deltaMs;
     this.maxMs = Math.max(this.maxMs, deltaMs);
     if (deltaMs > 20) this.over20 += 1;
     if (deltaMs > 34) this.over34 += 1;
@@ -153,7 +161,10 @@ export class AndroidPerformanceMonitor {
 
   publish(elapsedMs: number, complete: boolean) {
     const result = this.snapshot(elapsedMs, complete, complete ? 0 : this.lastSummaryFrame);
-    if (!complete) this.lastSummaryFrame = Math.min(this.frameCount, MAX_FRAMES);
+    if (!complete) {
+      this.lastSummaryFrame = this.frameCount;
+      this.lastSummaryMs = this.totalFrameMs;
+    }
     window.__CASTLE_ANDROID_PERF__ = result;
     const line = `[CastlePerf][${complete ? "RESULT" : "SNAPSHOT"}] ${JSON.stringify(result)}`;
     console.log(line);
@@ -163,16 +174,21 @@ export class AndroidPerformanceMonitor {
   }
 
   private snapshot(elapsedMs: number, complete: boolean, startFrame: number): AndroidPerfResult {
-    const count = Math.min(this.frameCount, MAX_FRAMES);
-    const sorted = Array.from(this.frames.subarray(Math.min(startFrame, count), count)).sort((a, b) => a - b);
+    const sampleFrameCount = this.frameCount - startFrame;
+    const sampleMs = this.totalFrameMs - (complete ? 0 : this.lastSummaryMs);
+    const sorted: number[] = [];
+    for (let i = Math.max(startFrame, this.frameCount - MAX_FRAMES); i < this.frameCount; i++) {
+      sorted.push(this.frames[i % MAX_FRAMES]);
+    }
+    sorted.sort((a, b) => a - b);
     const percentile = (ratio: number) => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * ratio))] ?? 0;
     const memory = performance as Performance & { memory?: { usedJSHeapSize: number } };
     return {
-      schema: 1,
+      schema: 2,
       status: complete ? "complete" : "running",
       elapsedMs: Math.round(elapsedMs),
-      stage: elapsedMs < 30_000 ? "baseline" : elapsedMs < 120_000 ? "12-per-team" : elapsedMs < 240_000 ? "24-per-team" : "30-per-team",
-      fps: Math.round((1000 / Math.max(0.01, percentile(0.5))) * 10) / 10,
+      stage: !this.synthetic ? "live" : elapsedMs < 30_000 ? "baseline" : elapsedMs < 120_000 ? "12-per-team" : elapsedMs < 240_000 ? "24-per-team" : "30-per-team",
+      fps: sampleMs > 0 ? Math.round(10000 * sampleFrameCount / sampleMs) / 10 : 0,
       p50Ms: round2(percentile(0.5)),
       p95Ms: round2(percentile(0.95)),
       p99Ms: round2(percentile(0.99)),
@@ -181,6 +197,9 @@ export class AndroidPerformanceMonitor {
       over34: this.over34,
       over50: this.over50,
       frameCount: this.frameCount,
+      sampleFrameCount,
+      sampleMs: round2(sampleMs),
+      percentileFrameCount: sorted.length,
       longTaskCount: this.longTaskCount,
       longTaskMs: round2(this.longTaskMs),
       jsHeapMb: memory.memory ? round2(memory.memory.usedJSHeapSize / 1_048_576) : null,

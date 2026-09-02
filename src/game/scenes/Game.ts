@@ -1,4 +1,6 @@
 import { generateRectTexture } from "../assets/RuntimeAssets";
+import { woodPanelTexture, cardDecorationTexture, sideBadgeTexture, HudPlate, hudCoin } from "../assets/HudTextures";
+import { renderedFps } from "../performance/RenderFrameClock";
 import { Scene } from "phaser";
 import { NetworkClient } from "../network/NetworkClient";
 import { OnlineMatchRuntime } from "../network/OnlineMatchRuntime";
@@ -257,8 +259,8 @@ interface ResourceNode {
 interface UnitButton {
   type: UnitType;
   side: Side;
-  card: Phaser.GameObjects.Rectangle;
-  border: Phaser.GameObjects.Rectangle;
+  card: HudPlate;
+  border: HudPlate;
   selectionSeal: Phaser.GameObjects.Arc;
   icon: Phaser.GameObjects.Sprite;
   iconBaseScale: number;
@@ -1298,6 +1300,8 @@ export class Game extends Scene {
 
   update(_time: number, delta: number) {
     if (this.battleEnded || this.isPaused) {
+      this.androidPerfMonitor?.pause();
+      this.onlinePerfLastFrameAt = 0;
       return;
     }
 
@@ -1450,11 +1454,12 @@ export class Game extends Scene {
       astarCacheHits: this.astarCacheHits,
       targetScans: this.targetScans,
       targetScanMs: Math.round(this.targetScanMs * 100) / 100,
-    }));
+    }), this.androidPerf.enabled && (!this.androidPerf.realSystems || this.androidPerf.syntheticPopulation));
     this.androidPerfMonitor = monitor;
     const renderer = this.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
     monitor.installDrawCallCounter(renderer.gl);
     this.events.once("shutdown", () => {
+      monitor.publish(this.elapsedMs, true);
       monitor.dispose();
       if (this.androidPerfMonitor === monitor) this.androidPerfMonitor = undefined;
     });
@@ -1476,7 +1481,11 @@ export class Game extends Scene {
         sounds: ((this.sound as Phaser.Sound.BaseSoundManager & { sounds?: Phaser.Sound.BaseSound[] }).sounds ?? [])
           .map((sound) => ({ key: sound.key, playing: sound.isPlaying, paused: sound.isPaused })),
       },
-      stages: [{ at: 0, perTeam: 0 }, { at: 30, perTeam: 12 }, { at: 120, perTeam: 24 }, { at: 240, perTeam: 30 }],
+      mode: this.isOnline ? "online" : "offline",
+      syntheticPopulation: this.androidPerf.enabled && (!this.androidPerf.realSystems || this.androidPerf.syntheticPopulation),
+      stages: this.androidPerf.enabled && (!this.androidPerf.realSystems || this.androidPerf.syntheticPopulation)
+        ? [{ at: 0, perTeam: 0 }, { at: 30, perTeam: 12 }, { at: 120, perTeam: 24 }, { at: 240, perTeam: 30 }]
+        : [],
     })}`;
     console.log(startLine);
     window.CastlePerfNative?.log(startLine);
@@ -3258,9 +3267,7 @@ export class Game extends Scene {
 
   private createSidePanel(side: Side, interactive: boolean) {
     const x = side === "left" ? 58 : 1222;
-    const panel = this.add
-      .rectangle(x, 360, 114, 720, 0x4b2d1c)
-      .setStrokeStyle(4, 0x21140d);
+    const panel = new HudPlate(this, x, 360, 114, 720, 0x4b2d1c, 4, 0x21140d);
     panel.setDepth(1000);
     if (interactive) {
       panel.setInteractive({ useHandCursor: true });
@@ -3278,51 +3285,12 @@ export class Game extends Scene {
       );
     }
 
-    // The menu remains exactly 114 px wide. Layered, deterministic marks give
-    // the flat panel an aged-oak finish without placing any art over the map.
-    this.add
-      .rectangle(x, 360, 104, 710, 0x5b3822, 0.72)
-      .setStrokeStyle(2, 0x7a5637, 0.72)
-      .setDepth(1001);
-    const grainOffsets = [-44, -31, -17, -3, 12, 27, 42];
-    grainOffsets.forEach((offset, index) => {
-      this.add
-        .rectangle(
-          x + offset,
-          360,
-          index % 3 === 0 ? 3 : 2,
-          706,
-          index % 2 === 0 ? 0x2f1b11 : 0x8a5b36,
-          index % 2 === 0 ? 0.34 : 0.18,
-        )
-        .setDepth(1001)
-        .setRotation((index % 2 === 0 ? -1 : 1) * 0.003);
-    });
-    [68, 174, 280, 386, 492, 704].forEach((seamY, index) => {
-      this.add
-        .rectangle(x, seamY, 104, index === 5 ? 3 : 2, 0x24150d, 0.52)
-        .setDepth(1001);
-      this.add
-        .rectangle(x, seamY + 2, 102, 1, 0xa4774a, 0.18)
-        .setDepth(1001);
-    });
-    [76, 354, 696].forEach((nailY) => {
-      [-48, 48].forEach((offset) => {
-        this.add
-          .circle(x + offset, nailY, 3, 0x30251e)
-          .setStrokeStyle(1, 0x8c7963)
-          .setDepth(1002);
-      });
-    });
+    // Preserve the oak grain, seams and nails without submitting their
+    // individual vector geometry on every WebGL frame.
+    this.add.image(x, 360, woodPanelTexture(this)).setDepth(1001);
 
-    this.add
-      .rectangle(x, 28, 106, 47, 0x3d2417)
-      .setStrokeStyle(3, 0x8e6b47)
-      .setDepth(1002);
-    const coin = this.add
-      .circle(x - 32, 28, 14, 0xd9aa35)
-      .setStrokeStyle(3, 0x765018)
-      .setDepth(1003);
+    new HudPlate(this, x, 28, 106, 47, 0x3d2417, 3, 0x8e6b47).setDepth(1002);
+    const coin = hudCoin(this, x - 32, 28, 14, 3).setDepth(1003);
     this.add.circle(coin.x - 3, coin.y - 3, 4, 0xf0d47b, 0.72).setDepth(1004);
 
     const goldText = this.add
@@ -3409,45 +3377,11 @@ export class Game extends Scene {
     const spriteSize = this.unitBaseSpriteSize(type) + (compact ? -4 : 10);
     const labelY = compact ? y + 12 : y + 20;
     const costY = compact ? y + 25 : y + 37;
-    const border = this.add
-      .rectangle(x, y, borderSize, borderSize, 0x392317)
-      .setStrokeStyle(
-        compact ? 4 : 5,
-        side === "left" ? 0x3b2b21 : 0x603b39,
-      )
-      .setDepth(1003);
-    const card = this.add
-      .rectangle(x, y, cardSize, cardSize, 0xc2aa79)
-      .setStrokeStyle(compact ? 2 : 3, 0x705334)
-      .setDepth(1004);
-    this.add
-      .rectangle(
-        x,
-        y,
-        cardSize - (compact ? 7 : 9),
-        cardSize - (compact ? 7 : 9),
-        0xcab586,
-        0.16,
-      )
-      .setStrokeStyle(1, side === "left" ? 0x557f78 : 0x795052, 0.52)
-      .setDepth(1004);
-    const nailInset = compact ? 4 : 6;
-    [
-      [-1, -1],
-      [1, -1],
-      [-1, 1],
-      [1, 1],
-    ].forEach(([horizontal, vertical]) => {
-      this.add
-        .circle(
-          x + horizontal * (cardSize / 2 - nailInset),
-          y + vertical * (cardSize / 2 - nailInset),
-          compact ? 1.5 : 2,
-          0x4f4234,
-        )
-        .setStrokeStyle(1, 0x9a8568, 0.72)
-        .setDepth(1005);
-    });
+    const border = new HudPlate(this, x, y, borderSize, borderSize, 0x392317,
+      compact ? 4 : 5, side === "left" ? 0x3b2b21 : 0x603b39).setDepth(1003);
+    const card = new HudPlate(this, x, y, cardSize, cardSize, 0xc2aa79,
+      compact ? 2 : 3, 0x705334).setDepth(1004);
+    this.add.image(x, y, cardDecorationTexture(this, side, compact)).setDepth(1005);
     const selectionSeal = this.add
       .circle(
         x + borderSize / 2 - (compact ? 5 : 7),
@@ -3479,14 +3413,9 @@ export class Game extends Scene {
       })
       .setOrigin(0.5)
       .setDepth(1008);
-    this.add
-      .rectangle(x + (compact ? 18 : 23), costY, compact ? 34 : 42, compact ? 18 : 22, 0x3c2316)
-      .setStrokeStyle(2, 0x1d110b)
-      .setDepth(1006);
-    this.add
-      .circle(x + (compact ? 6 : 9), costY, compact ? 5 : 7, 0xd9aa35)
-      .setStrokeStyle(2, 0x765018)
-      .setDepth(1007);
+    new HudPlate(this, x + (compact ? 18 : 23), costY, compact ? 34 : 42, compact ? 18 : 22,
+      0x3c2316, 2, 0x1d110b).setDepth(1006);
+    hudCoin(this, x + (compact ? 6 : 9), costY, compact ? 5 : 7, 2).setDepth(1007);
 
     const text = this.add
       .text(x + (compact ? 21 : 28), costY, `${config.cost}`, {
@@ -3854,22 +3783,22 @@ export class Game extends Scene {
     ).setDepth(1220);
   }
 
-  private updateOnlinePerformanceOverlay(now: number, delta: number) {
+  private updateOnlinePerformanceOverlay(now: number, _delta: number) {
     if (!this.onlinePerformanceText) return;
 
     if (this.isOnline && import.meta.env.VITE_ONLINE_PERF_TELEMETRY === "1") {
-      const frameMs = this.onlinePerfLastFrameAt > 0
-        ? Math.max(0, now - this.onlinePerfLastFrameAt)
-        : Math.max(0, delta);
+      const frameMs = this.onlinePerfLastFrameAt > 0 ? Math.max(0, now - this.onlinePerfLastFrameAt) : 0;
       this.onlinePerfLastFrameAt = now;
-      this.onlinePerfFrameSamples[this.onlinePerfSampleIndex] = frameMs;
-      this.onlinePerfSampleIndex = (this.onlinePerfSampleIndex + 1) % this.onlinePerfFrameSamples.length;
-      this.onlinePerfSampleCount = Math.min(this.onlinePerfSampleCount + 1, this.onlinePerfFrameSamples.length);
+      if (frameMs > 0) {
+        this.onlinePerfFrameSamples[this.onlinePerfSampleIndex] = frameMs;
+        this.onlinePerfSampleIndex = (this.onlinePerfSampleIndex + 1) % this.onlinePerfFrameSamples.length;
+        this.onlinePerfSampleCount = Math.min(this.onlinePerfSampleCount + 1, this.onlinePerfFrameSamples.length);
+      }
     }
 
     if (now < this.onlinePerfNextUiAt) return;
     this.onlinePerfNextUiAt = now + 500;
-    const fps = Math.max(0, Math.round(this.game.loop.actualFps));
+    const fps = Math.max(0, Math.round(renderedFps(this.game)));
     if (!this.isOnline) {
       this.setTextIfChanged(this.onlinePerformanceText, `FPS ${fps}`);
       return;
@@ -3887,7 +3816,9 @@ export class Game extends Scene {
       roomId: this.roomId,
       side: this.localPlayerSide,
       elapsedMs: Math.round(this.elapsedMs),
-      fps,
+      fps: samples.length ? Math.round(10000 * samples.length / samples.reduce((sum, ms) => sum + ms, 0)) / 10 : 0,
+      frameCount: samples.length,
+      sampleMs: Math.round(samples.reduce((sum, ms) => sum + ms, 0)),
       p50Ms: Math.round(percentile(0.5) * 100) / 100,
       p95Ms: Math.round(percentile(0.95) * 100) / 100,
       p99Ms: Math.round(percentile(0.99) * 100) / 100,
@@ -3919,10 +3850,8 @@ export class Game extends Scene {
     // offline mode has no local-side identity banner.
     const direction = isLeft ? "→" : "←";
 
-    const badgeBack = this.add
-      .rectangle(panelX, 72, 78, 25, teamColor, 0.98)
-      .setStrokeStyle(3, 0xffd86a, 0.96)
-      .setDepth(1100);
+    this.add.image(panelX, 72, sideBadgeTexture(this, this.localPlayerSide)).setDepth(1100);
+
     const badgeText = this.add
       .text(panelX, 72, "YOU", {
         fontFamily: "Arial Black",
@@ -3933,7 +3862,6 @@ export class Game extends Scene {
       })
       .setOrigin(0.5)
       .setDepth(1101);
-    badgeBack.setData("online-side", this.localPlayerSide);
     badgeText.setData("online-side", this.localPlayerSide);
 
     const panelFlash = this.add
@@ -8619,7 +8547,7 @@ export class Game extends Scene {
     };
     const snapshot = {
       second: Math.round(this.elapsedMs / 1000),
-      fps: Math.round(this.game.loop.actualFps * 10) / 10,
+      fps: Math.round(renderedFps(this.game) * 10) / 10,
       jsHeapMb: performanceWithMemory.memory
         ? Math.round((performanceWithMemory.memory.usedJSHeapSize / 1_048_576) * 10) / 10
         : null,

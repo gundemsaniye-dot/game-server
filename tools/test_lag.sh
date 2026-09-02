@@ -1,32 +1,9 @@
 #!/bin/bash
-echo "Building debug APK..."
-npm run android:build:debug > /dev/null 2>&1
-echo "Installing APK..."
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk > /dev/null
-
-run_test() {
-  local mode=$1
-  echo "--- RUNNING TEST: $mode ---"
-  adb logcat -c
-  adb shell am force-stop com.castlestormers.game
-  
-  if [ "$mode" == "direct" ]; then
-    # Start app with intent to go directly to battle
-    adb shell am start -n com.castlestormers.game/com.castlestormers.game.MainActivity -e "androidPerf" "1" -e "scene" "battle" -e "level" "20"
-  else
-    # Start app normally (Menu)
-    adb shell am start -n com.castlestormers.game/com.castlestormers.game.MainActivity -e "androidPerf" "1"
-  fi
-  
-  echo "Waiting 15 seconds for game to load and run..."
-  sleep 15
-  
-  echo "Capturing logcat..."
-  adb logcat -d | grep -E "CastlePerf|FPS|lag|error" > "outputs/performance/adb_test_$mode.log"
-}
-
-mkdir -p outputs/performance
-run_test "direct"
-run_test "menu"
-
-echo "Done. Check outputs/performance/adb_test_*.log"
+set -euo pipefail
+# Old unhandled intent extras did not exercise two different online paths and
+# installing over the store application risked its data. This is read-only.
+echo "Enter a real online match through splash/menu in com.castlestormers.game.perf and pair a web opponent first."
+task_pid=$(adb shell pidof com.castlestormers.game.perf | tr -d '\r')
+test -n "$task_pid"
+adb forward tcp:9222 "localabstract:webview_devtools_remote_$task_pid"
+node tools/android-cdp.mjs '(() => { const s=window.__CASTLE_GAME__?.scene.getScene("Game"); if(!s?.isOnline || !s.sys.isActive() || s.battleEnded) throw new Error("Enter a real, active online match first"); return {room:s.roomId,elapsedMs:s.elapsedMs,online:window.__CASTLE_ONLINE_PERF__,perf:window.__CASTLE_ANDROID_PERF__}; })()'

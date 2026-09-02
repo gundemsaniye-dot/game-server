@@ -3,6 +3,7 @@ import { GameLoop } from "./game/GameLoop";
 import { Matchmaking } from "./game/Matchmaking";
 import { ConnectionManager } from "./network/ConnectionManager";
 import { Logger } from "./utils/Logger";
+import { deploymentHealth } from "./network/DeploymentHealth";
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -13,6 +14,11 @@ const connectionManager = new ConnectionManager(matchmaking, gameLoop);
 
 // Setup uWS app
 const app = App();
+app.get('/health', (res) => {
+  res.writeHeader('Content-Type', 'application/json')
+    .writeHeader('Cache-Control', 'no-store')
+    .end(JSON.stringify(deploymentHealth(process.env.RENDER_GIT_COMMIT)));
+});
 connectionManager.setup(app);
 
 // Start game loop
