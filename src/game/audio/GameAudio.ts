@@ -1,249 +1,164 @@
-import type { Scene } from "phaser";
+import type { Scene, Sound, Time, Tweens } from 'phaser';
+import { initializeSoundPreferences, isSoundMuted } from './SoundPreferences';
 
-type MusicKey = "lobby-music" | "battle-music";
-
-type MusicRequest = {
-  key: MusicKey;
-  volume: number;
-  fadeInMs: number;
-};
-
+type MusicKey = 'lobby-music' | 'battle-music';
 type LogFn = (scope: string, message: string) => void;
-type MusicOptions = {
-  fadeInMs?: number;
+type MusicRequest = { scene: Scene; key: MusicKey; volume: number; fadeInMs: number; log?: LogFn };
+type MusicState = {
+  pending?: MusicRequest;
+  resuming?: MusicRequest;
+  detachRequest?: () => void;
+  detachUnlock?: () => void;
+  fade?: Tweens.Tween;
+  verify?: Time.TimerEvent;
 };
-type VolumeSound = Phaser.Sound.BaseSound & {
-  volume: number;
-  isPlaying: boolean;
-  setVolume: (value: number) => VolumeSound;
-};
+type VolumeSound = Sound.BaseSound & { volume: number; setVolume(value: number): VolumeSound };
+const MUSIC_KEYS: MusicKey[] = ['lobby-music', 'battle-music'];
+const states = new WeakMap<Sound.BaseSoundManager, MusicState>();
 
-const MUSIC_KEYS: MusicKey[] = ["lobby-music", "battle-music"];
-
-let pendingMusic: MusicRequest | undefined;
-let unlockHandlersAttached = false;
-let detachAudioUnlock: (() => void) | undefined;
-
-export function playSceneMusic(
-  scene: Scene,
-  key: MusicKey,
-  volume: number,
-  log?: LogFn,
-  options: MusicOptions = {},
-) {
-  keepMusicAliveWhenWindowLosesFocus(scene, log);
-
-  const fadeInMs = options.fadeInMs ?? 0;
-  pendingMusic = { key, volume, fadeInMs };
-
-  stopOtherMusic(scene, key);
-
-  // Critical fix:
-  // Do NOT call music.play() while the Sound Manager is still locked.
-  // Some browsers/Phaser builds can mark the sound as "isPlaying" even though it is still silent.
-  // We queue it, unlock on the tap gesture, then start a fresh sound after unlock.
-  if (scene.sound.locked) {
-    log?.("AUDIO", formatAudioStatus(scene, key, "waiting for audio unlock before play"));
-    attachAudioUnlock(scene, log);
-    return;
-  }
-
-  if (getAudioContextState(scene) !== "running") {
-    log?.("AUDIO", formatAudioStatus(scene, key, "resuming audio context before play"));
-    void resumeUnlockedAudio(scene, log);
-    return;
-  }
-
-  const status = startFreshLoopingMusic(scene, key, volume, fadeInMs);
-  log?.("AUDIO", formatAudioStatus(scene, key, status));
-}
-
-export function stopSceneMusic(scene: Scene, key: MusicKey) {
-  const music = scene.sound.get(key);
-  if (music) {
-    scene.tweens.killTweensOf(music);
-  }
-
-  scene.sound.stopByKey(key);
-  scene.sound.removeByKey(key);
-
-  if (pendingMusic?.key === key) {
-    pendingMusic = undefined;
-  }
-  if (!pendingMusic) detachAudioUnlock?.();
-}
-
-
-function keepMusicAliveWhenWindowLosesFocus(scene: Scene, log?: LogFn) {
-  if (!scene.sound.pauseOnBlur) {
-    return;
-  }
-
-  scene.sound.pauseOnBlur = false;
-  log?.("AUDIO", "sound.pauseOnBlur=false; music will not be paused by Phaser blur/focus handling");
-}
-
-function stopOtherMusic(scene: Scene, keepKey: MusicKey) {
-  for (const musicKey of MUSIC_KEYS) {
-    if (musicKey !== keepKey) {
-      scene.sound.stopByKey(musicKey);
-      scene.sound.removeByKey(musicKey);
+/** One music listener per manager. No update/rAF listener, polling or storage reads in combat. */
+export function initializeGameAudio(sound: Sound.BaseSoundManager) {
+  if (states.has(sound)) return;
+  initializeSoundPreferences(sound);
+  const state: MusicState = {};
+  states.set(sound, state);
+  sound.on('mute', (_manager: Sound.BaseSoundManager, muted: boolean) => {
+    if (muted) {
+      cancelDeferredMusic(state);
+      // Master mute takes effect first. Stop and destroy instances (not decoded
+      // buffers), so neither music nor effect nodes keep running in the background.
+      sound.stopAll();
+      sound.removeAll();
+    } else if (state.pending) {
+      requestPlayback(state, state.pending);
     }
-  }
-}
-
-function startFreshLoopingMusic(scene: Scene, key: MusicKey, volume: number, fadeInMs: number) {
-  try {
-    const oldMusic = scene.sound.get(key);
-    if (oldMusic) {
-      scene.tweens.killTweensOf(oldMusic);
-      scene.sound.stopByKey(key);
-      scene.sound.removeByKey(key);
-    }
-
-    const initialVolume = fadeInMs > 0 ? 0 : volume;
-    const music = scene.sound.add(key, { loop: true, volume: initialVolume }) as VolumeSound;
-    music.setVolume(initialVolume);
-
-    const started = music.play({ loop: true, volume: initialVolume });
-
-    if (!started || !music.isPlaying) {
-      return `play rejected started=${String(started)} isPlaying=${String(music.isPlaying)}`;
-    }
-
-    fadeMusicTo(scene, music, volume, fadeInMs);
-    scene.time.delayedCall(220, () => verifyMusicAudible(scene, key, volume, logNoop));
-
-    return fadeInMs > 0
-      ? `fresh play started with ${fadeInMs}ms fade-in volume=${volume}`
-      : `fresh play started volume=${volume}`;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return `play error ${message}`;
-  }
-}
-
-function verifyMusicAudible(scene: Scene, key: MusicKey, volume: number, log: LogFn) {
-  const music = scene.sound.get(key) as VolumeSound | null;
-
-  if (!music) {
-    log("AUDIO", `${key} verify missing sound object`);
-    return;
-  }
-
-  if (!music.isPlaying && !scene.sound.locked && getAudioContextState(scene) === "running") {
-    scene.sound.stopByKey(key);
-    const retry = scene.sound.add(key, { loop: true, volume }) as VolumeSound;
-    retry.play({ loop: true, volume });
-    log("AUDIO", `${key} verify retry play volume=${volume}`);
-  }
-}
-
-function logNoop() {
-  // Intentionally silent; verification is a fallback, not normal logging spam.
-}
-
-function fadeMusicTo(scene: Scene, music: VolumeSound, volume: number, fadeInMs: number) {
-  scene.tweens.killTweensOf(music);
-
-  if (fadeInMs <= 0) {
-    music.setVolume(volume);
-    return;
-  }
-
-  music.setVolume(0);
-  scene.tweens.addCounter({
-    from: 0,
-    to: volume,
-    duration: fadeInMs,
-    ease: "Sine.InOut",
-    onUpdate: (tween) => {
-      music.setVolume(tween.getValue() ?? volume);
-    },
-    onComplete: () => {
-      music.setVolume(volume);
-    },
   });
 }
 
-function attachAudioUnlock(scene: Scene, log?: LogFn) {
-  if (unlockHandlersAttached) {
-    return;
-  }
-
-  unlockHandlersAttached = true;
-
+export function playSceneMusic(scene: Scene, key: MusicKey, volume: number,
+  log?: LogFn, options: { fadeInMs?: number } = {}) {
+  initializeGameAudio(scene.sound);
+  const state = states.get(scene.sound)!;
+  cancelDeferredMusic(state);
+  state.detachRequest?.();
+  const request: MusicRequest = { scene, key, volume, fadeInMs: options.fadeInMs ?? 0, log };
+  state.pending = request;
+  const detach = () => {
+    scene.events.off('shutdown', cleanup);
+    scene.events.off('destroy', cleanup);
+    if (state.detachRequest === detach) state.detachRequest = undefined;
+  };
   const cleanup = () => {
-    scene.sound.off("unlocked", unlock);
-    scene.events.off("shutdown", cleanup);
-    if (detachAudioUnlock === cleanup) detachAudioUnlock = undefined;
-    unlockHandlersAttached = false;
+    detach();
+    if (state.pending === request) {
+      state.pending = undefined;
+      cancelDeferredMusic(state);
+    }
   };
-  const unlock = () => {
-    cleanup();
-    void unlockAudio(scene, log);
-  };
+  state.detachRequest = detach;
+  scene.events.once('shutdown', cleanup);
+  scene.events.once('destroy', cleanup);
 
-  detachAudioUnlock = cleanup;
-  scene.sound.once("unlocked", unlock);
-  scene.events.once("shutdown", cleanup);
-  scene.sound.unlock();
-}
-
-async function unlockAudio(scene: Scene, log?: LogFn) {
-  await resumeAudioContext(scene);
-  scene.sound.resumeAll();
-
-  replayPendingMusicFresh(scene, log, "after unlock");
-}
-
-async function resumeUnlockedAudio(scene: Scene, log?: LogFn) {
-  await resumeAudioContext(scene);
-  scene.sound.resumeAll();
-  replayPendingMusicFresh(scene, log, "after resume");
-}
-
-function replayPendingMusicFresh(scene: Scene, log?: LogFn, suffix = "") {
-  if (!pendingMusic) {
-    return;
-  }
-
-  const { key, volume, fadeInMs } = pendingMusic;
-
-  if (scene.sound.locked || getAudioContextState(scene) !== "running") {
-    log?.("AUDIO", formatAudioStatus(scene, key, `still blocked ${suffix}`));
-    return;
-  }
-
-  stopOtherMusic(scene, key);
-  const status = startFreshLoopingMusic(scene, key, volume, fadeInMs);
-  const statusLine = formatAudioStatus(scene, key, status);
-
-  log?.("AUDIO", suffix ? `${statusLine} ${suffix}` : statusLine);
-}
-
-function getAudioContext(scene: Scene) {
-  return (scene.sound as Phaser.Sound.BaseSoundManager & { context?: AudioContext }).context;
-}
-
-function getAudioContextState(scene: Scene) {
-  return getAudioContext(scene)?.state ?? "no-context";
-}
-
-async function resumeAudioContext(scene: Scene) {
-  const context = getAudioContext(scene);
-
-  if (context && context.state !== "running") {
-    try {
-      await context.resume();
-    } catch {
-      // Some browsers reject resume until a stronger user activation arrives.
+  scene.sound.pauseOnBlur = false;
+  for (const other of MUSIC_KEYS) {
+    if (other !== key) {
+      scene.sound.stopByKey(other);
+      scene.sound.removeByKey(other);
     }
   }
+  requestPlayback(state, request);
 }
 
-function formatAudioStatus(scene: Scene, key: MusicKey, status: string) {
-  const music = scene.sound.get(key) as VolumeSound | null;
-  const playing = music ? ` isPlaying=${String(music.isPlaying)} volume=${String(music.volume)}` : " isPlaying=no-sound";
-  return `${key} ${status} context=${getAudioContextState(scene)} locked=${scene.sound.locked}${playing}`;
+export function stopSceneMusic(scene: Scene, key: MusicKey) {
+  const state = states.get(scene.sound);
+  if (state?.pending?.key === key) {
+    state.pending = undefined;
+    state.detachRequest?.();
+    cancelDeferredMusic(state);
+  }
+  const music = scene.sound.get(key);
+  if (music) scene.tweens.killTweensOf(music);
+  scene.sound.stopByKey(key);
+  scene.sound.removeByKey(key);
+}
+
+function cancelDeferredMusic(state: MusicState) {
+  state.detachUnlock?.();
+  state.fade?.remove();
+  state.fade = undefined;
+  state.verify?.remove(false);
+  state.verify = undefined;
+}
+
+function current(state: MusicState, request: MusicRequest) {
+  return state.pending === request && !isSoundMuted(request.scene.sound);
+}
+
+function contextOf(scene: Scene) {
+  return (scene.sound as Sound.BaseSoundManager & { context?: AudioContext }).context;
+}
+
+function requestPlayback(state: MusicState, request: MusicRequest) {
+  if (!current(state, request)) return;
+  const { scene, log } = request;
+  if (scene.sound.locked) {
+    if (state.detachUnlock) return;
+    const detach = () => {
+      scene.sound.off('unlocked', unlock);
+      if (state.detachUnlock === detach) state.detachUnlock = undefined;
+    };
+    const unlock = () => { detach(); requestPlayback(state, request); };
+    state.detachUnlock = detach;
+    scene.sound.once('unlocked', unlock);
+    scene.sound.unlock();
+    return;
+  }
+  const context = contextOf(scene);
+  if (context && context.state !== 'running') {
+    if (state.resuming === request) return;
+    state.resuming = request;
+    void context.resume().then(() => {
+      // Mute/scene changes may happen while the native resume promise is pending.
+      if (current(state, request) && context.state === 'running') {
+        scene.sound.resumeAll();
+        startFreshMusic(state, request);
+      }
+    }).catch(() => {
+      log?.('AUDIO', 'Audio context resume rejected; waiting for user activation');
+    }).finally(() => {
+      if (state.resuming === request) state.resuming = undefined;
+    });
+    return;
+  }
+  startFreshMusic(state, request);
+}
+
+function startFreshMusic(state: MusicState, request: MusicRequest, verify = true) {
+  if (!current(state, request)) return;
+  const { scene, key, volume, fadeInMs, log } = request;
+  cancelDeferredMusic(state);
+  try {
+    const old = scene.sound.get(key);
+    if (old) scene.tweens.killTweensOf(old);
+    scene.sound.stopByKey(key);
+    scene.sound.removeByKey(key);
+    const initialVolume = fadeInMs > 0 ? 0 : volume;
+    const music = scene.sound.add(key, { loop: true, volume: initialVolume }) as VolumeSound;
+    const started = music.play({ loop: true, volume: initialVolume });
+    if (started && music.isPlaying && fadeInMs > 0) {
+      // A real target makes killTweensOf effective; no per-frame JS fade callback.
+      state.fade = scene.tweens.add({ targets: music, volume, duration: fadeInMs, ease: 'Sine.InOut' });
+    }
+    log?.('AUDIO', `${key} play=${started} volume=${volume} muted=${scene.sound.mute}`);
+    if (verify) {
+      state.verify = scene.time.delayedCall(220, () => {
+        state.verify = undefined;
+        if (!current(state, request) || scene.sound.get(key)?.isPlaying || scene.sound.locked) return;
+        const context = contextOf(scene);
+        if (!context || context.state === 'running') startFreshMusic(state, request, false);
+      });
+    }
+  } catch (error) {
+    log?.('AUDIO', `Skipped ${key}: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }

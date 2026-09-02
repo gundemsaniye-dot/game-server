@@ -9,6 +9,7 @@ import {
 import { MenuLevelRuntime } from "../types/MapTypes";
 import { NetworkClient } from "../network/NetworkClient";
 import { playSceneMusic } from "../audio/GameAudio";
+import { initializeSoundPreferences, isSoundMuted, setSoundMuted } from "../audio/SoundPreferences";
 import { castleLog } from "../utils/DevLog";
 
 type MenuButtonConfig = {
@@ -55,7 +56,6 @@ const TAP_HIT_HEIGHT = 181;
 
 const SPLASH_DARKEN_MS = 620;
 const SPLASH_REVEAL_MS = 480;
-const SOUND_PREFERENCE_KEY = "castle-stormers.sound-muted";
 
 export class MainMenu extends Scene {
   private skipSplash = false;
@@ -89,7 +89,7 @@ export class MainMenu extends Scene {
     this.cameras.main.setBackgroundColor(0x000000);
     releaseBattleRuntimeMemory(this);
     releaseCampaignTexture(this);
-    this.applyStoredSoundPreference();
+    initializeSoundPreferences(this.sound);
     const autoOnlineQa = import.meta.env.VITE_ONLINE_QA === "1" &&
       new URLSearchParams(window.location.search).has("onlineQaAutoplay");
     if (autoOnlineQa) this.skipSplash = true;
@@ -534,12 +534,11 @@ export class MainMenu extends Scene {
     const content = this.getLegalContent();
     this.createSettingsFrame(t("menu_settings_title"), t("menu_settings_subtitle"));
 
-    const muted = this.sound.mute;
+    const muted = isSoundMuted(this.sound);
     this.createSettingsAction(445, 186, 360, 58, t("menu_settings_sound", { state: muted ? t("off") : t("on") }), () => {
-      this.sound.mute = !this.sound.mute;
-      this.storeSoundPreference(this.sound.mute);
+      setSoundMuted(this.sound, !isSoundMuted(this.sound));
       this.renderSettingsHome();
-    }, 0x5a351d);
+    }, 0x5a351d, false);
 
     this.createSettingsAction(835, 186, 360, 58, t("menu_settings_language", { lang: i18n.getLanguageName(i18n.getLanguage()) }), () => {
       i18n.toggleLanguage();
@@ -633,6 +632,7 @@ export class MainMenu extends Scene {
     label: string,
     onClick: () => void,
     fill = 0x70421f,
+    playClick = true,
   ) {
     const button = this.add.rectangle(x, y, width, height, fill, 1)
       .setStrokeStyle(3, 0xe0b85a, 1)
@@ -650,7 +650,7 @@ export class MainMenu extends Scene {
     button.on("pointerover", () => button.setFillStyle(0x8a5429, 1));
     button.on("pointerout", () => button.setFillStyle(fill, 1));
     button.on("pointerdown", () => {
-      if (!this.sound.mute) this.sound.play("select-sfx", { volume: 0.28 });
+      if (playClick && !isSoundMuted(this.sound)) this.sound.play("select-sfx", { volume: 0.28 });
       onClick();
     });
     this.settingsVisuals.push(button, text);
@@ -669,22 +669,6 @@ export class MainMenu extends Scene {
 
   private getLegalContent() {
     return this.cache.json.get("legal-content") as LegalContent;
-  }
-
-  private applyStoredSoundPreference() {
-    try {
-      this.sound.mute = window.localStorage.getItem(SOUND_PREFERENCE_KEY) === "true";
-    } catch {
-      this.sound.mute = false;
-    }
-  }
-
-  private storeSoundPreference(muted: boolean) {
-    try {
-      window.localStorage.setItem(SOUND_PREFERENCE_KEY, String(muted));
-    } catch {
-      // The preference simply remains session-only if storage is unavailable.
-    }
   }
 
   private startLobbyMusic() {

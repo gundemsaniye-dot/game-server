@@ -12,6 +12,7 @@ import { Story } from './scenes/Story';
 import { HowToPlay } from './scenes/HowToPlay';
 import { installRenderFrameClock } from './performance/RenderFrameClock';
 import { generateUiTextures } from './assets/RuntimeAssets';
+import { initializeGameAudio } from './audio/GameAudio';
 
 const launchParams = new URLSearchParams(window.location.search);
 const mobileTexturesOverride = launchParams.get('mobileTextures');
@@ -36,7 +37,7 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: 'game-container',
     backgroundColor: '#000000',
     disableContextMenu: true,
-    callbacks: { postBoot: installRenderFrameClock },
+    callbacks: { postBoot: game => { installRenderFrameClock(game); initializeGameAudio(game.sound); } },
     fps: {
         target: 60,
         min: 30,
@@ -127,7 +128,7 @@ const StartGame = (parent: string) => {
             old.events.once('destroy', () => setTimeout(() => {
                 diagnostics.__CASTLE_GAME__ = new Game({ ...config, parent,
                     scene: [OnlineControlPreloader, MainGame, GameOver, SceneTransition, MainMenu, MapSelect],
-                    callbacks: { postBoot: fresh => { installRenderFrameClock(fresh); fresh.sound.mute = mute; resolve(); } },
+                    callbacks: { postBoot: fresh => { installRenderFrameClock(fresh); initializeGameAudio(fresh.sound); fresh.sound.mute = mute; resolve(); } },
                 });
             }, 0));
             old.destroy(true);

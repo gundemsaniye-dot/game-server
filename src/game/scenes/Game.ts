@@ -36,6 +36,7 @@ import { AndroidPerformanceMonitor } from "../performance/AndroidPerformanceMoni
 import { isNativeAndroidRuntime, playAndroidHaptic } from "../platform/AndroidHaptics";
 import { MAP_ASSETS_BY_KEY, MAP_PROP_ATLASES } from "../config/mapAssets";
 import { playSceneMusic, stopSceneMusic } from "../audio/GameAudio";
+import { isSoundMuted } from "../audio/SoundPreferences";
 import {
   UNIT_ANIMATION_DEFINITIONS,
   UNIT_ATLAS_FRAME_ZERO_PAD,
@@ -9854,7 +9855,7 @@ export class Game extends Scene {
   }
 
   private playPowerSfx(key: string, volume: number) {
-    if (this.activePowerSfx.size >= POWER_SFX_MAX_ACTIVE || !this.cache.audio.exists(key)) return;
+    if (isSoundMuted(this.sound) || this.activePowerSfx.size >= POWER_SFX_MAX_ACTIVE || !this.cache.audio.exists(key)) return;
     try {
       const sound = this.sound.add(key, { volume });
       let released = false;
@@ -9950,7 +9951,7 @@ export class Game extends Scene {
   }
 
   private playUnitSpawnSfx(team: Team, type: UnitType) {
-    if (!isCavalryUnit(type)) {
+    if (isSoundMuted(this.sound) || !isCavalryUnit(type)) {
       return;
     }
 
@@ -10005,6 +10006,7 @@ export class Game extends Scene {
   }
 
   private reserveCombatSfxSlot() {
+    if (isSoundMuted(this.sound)) return false;
     if (!IS_ANDROID_RUNTIME && this.units.length < FX_DENSE_UNIT_THRESHOLD) return true;
     if (this.elapsedMs < this.nextCombatSfxAt) return false;
     this.nextCombatSfxAt = this.elapsedMs + COMBAT_SFX_INTERVAL_MS;
